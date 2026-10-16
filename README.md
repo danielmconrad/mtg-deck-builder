@@ -8,7 +8,7 @@ Install [mise](https://mise.jdx.dev/getting-started.html), then:
 
 ```sh
 mise trust && mise install
-mise run setup          # npm ci (network)
+mise run setup          # npm ci (network) and the git pre-commit hook
 mise run cards:refresh  # fetch card data and prices (network)
 mise run check          # offline: collection, tests, every deck
 ```
@@ -28,18 +28,20 @@ tests/                      Offline tests on synthetic fixtures
 
 Pass arguments after `--`, e.g. `mise run deck:check -- green-value`.
 
-| Command | What it does |
-| --- | --- |
-| `collection:check` | Validate both CSVs and summarize them |
-| `collection:search -- [filters]` | Find owned cards (see below) |
-| `cards:refresh [-- --missing]` | Fetch Scryfall data for every collection row and deck card; `--missing` fetches only uncached cards |
-| `deck:new -- <slug> --commander NAME` | Create a draft deck (`--commander` twice for partners; `--format casual-60` for casual) |
-| `deck:check -- <slug>` | Check size, commander rules, color identity, bans, copy limits and ownership |
-| `deck:stats -- <slug>` | Curve, card types, color pips, land color sources and role counts |
-| `deck:upgrades -- <slug>` | Price the upgrade package plus any shortfalls against the budget |
-| `deck:export -- <slug>` | Print a plain-text list for deck sites |
-| `decks:check` | Check every deck; the example is schema-checked only |
-| `check` | `collection:check`, `test` and `decks:check` |
+| Command                               | What it does                                                                                        |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `collection:check`                    | Validate both CSVs and summarize them                                                               |
+| `collection:search -- [filters]`      | Find owned cards (see below)                                                                        |
+| `cards:refresh [-- --missing]`        | Fetch Scryfall data for every collection row and deck card; `--missing` fetches only uncached cards |
+| `deck:new -- <slug> --commander NAME` | Create a draft deck (`--commander` twice for partners; `--format casual-60` for casual)             |
+| `deck:check -- <slug>`                | Check size, commander rules, color identity, bans, copy limits and ownership                        |
+| `deck:stats -- <slug>`                | Curve, card types, color pips, land color sources and role counts                                   |
+| `deck:upgrades -- <slug>`             | Price the upgrade package plus any shortfalls against the budget                                    |
+| `deck:export -- <slug>`               | Print a plain-text list for deck sites                                                              |
+| `decks:check`                         | Check every deck; the example is schema-checked only                                                |
+| `lint`                                | ESLint plus a Prettier formatting check                                                             |
+| `fix`                                 | Apply ESLint fixes and format everything with Prettier                                              |
+| `check`                               | `lint`, `collection:check`, `test` and `decks:check`                                                |
 
 Exit codes: `0` passed, `1` a check failed or input is invalid, `2` incomplete (unknown cards, missing card data, unknown prices).
 
@@ -52,6 +54,13 @@ mise run collection:search -- --identity C --type artifact --text "add \{" --jso
 ```
 
 `--commander NAME` limits results to that commander's color identity and Commander-legal cards. `--identity` takes letters from `WUBRG`, or `C` for colorless only. `--type`, `--text` and `--name` are case-insensitive regular expressions, and you can repeat `--type` and `--text`. `--min-mv`/`--max-mv` filter by mana value. `--legal FORMAT` uses Scryfall format names. `--precons` adds cards that only exist in Precons. `--proxies` counts proxy rows. `--oracle` prints rules text. `--json` prints machine-readable output.
+
+### Formatting and linting
+
+Prettier formats, ESLint lints ([eslint.config.js](eslint.config.js)). Two things keep code tidy without thinking about it:
+
+- **On commit:** the pre-commit hook from `setup` fixes and re-stages staged files, and blocks the commit on lint errors it can't fix. It refuses files with unstaged changes, since re-staging them would sweep those changes in; stage everything or run `mise run fix` first. `git commit --no-verify` skips it.
+- **On check:** `mise run check` fails on unformatted or unlinted files.
 
 ## Collection rules
 
@@ -66,18 +75,18 @@ mise run collection:search -- --identity C --type artifact --text "add \{" --jso
 
 See [the example](decks/example/deck.yaml) and [the schema](schemas/deck.schema.json). The example is a 40-card structural template, not a real deck.
 
-| Field | Meaning |
-| --- | --- |
-| `format` | `commander` (exactly 100 including commanders) or `casual-60` (at least 60) |
-| `status` | `draft` or `ready`; `example` is for the template only |
-| `commanders` | One or two entries with quantity 1; `[]` for casual |
-| `mainboard` | Everything else, including lands |
-| card entry | `name`, `quantity`, optional `role` (comma-separated labels) and `scryfall_id` (pins the printing used for pricing) |
-| `allow_proxies`, `unlimited_basics` | Ownership policy, see above |
-| `budget` | `amount` and `currency` (`USD`/`EUR`), needed for `deck:upgrades` |
-| `upgrades` | Paired `add`/`cut`/`reason` swaps; never applied automatically |
-| `playtests` | `date` (`"YYYY-MM-DD"`), `notes`, optional `changes` |
-| `strategy`, `power_notes`, `notes` | Free text |
+| Field                               | Meaning                                                                                                             |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `format`                            | `commander` (exactly 100 including commanders) or `casual-60` (at least 60)                                         |
+| `status`                            | `draft` or `ready`; `example` is for the template only                                                              |
+| `commanders`                        | One or two entries with quantity 1; `[]` for casual                                                                 |
+| `mainboard`                         | Everything else, including lands                                                                                    |
+| card entry                          | `name`, `quantity`, optional `role` (comma-separated labels) and `scryfall_id` (pins the printing used for pricing) |
+| `allow_proxies`, `unlimited_basics` | Ownership policy, see above                                                                                         |
+| `budget`                            | `amount` and `currency` (`USD`/`EUR`), needed for `deck:upgrades`                                                   |
+| `upgrades`                          | Paired `add`/`cut`/`reason` swaps; never applied automatically                                                      |
+| `playtests`                         | `date` (`"YYYY-MM-DD"`), `notes`, optional `changes`                                                                |
+| `strategy`, `power_notes`, `notes`  | Free text                                                                                                           |
 
 Use exact Scryfall names. You can give a double-faced card by its front-face name.
 

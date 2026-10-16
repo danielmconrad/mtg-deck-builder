@@ -4,8 +4,8 @@ node = "24.22.0"
 # Arguments after `--` are passed through to scripts/cli.mjs, e.g. `mise run deck:check -- green-value`.
 
 [tasks.setup]
-description = "Install locked project dependencies (network required)"
-run = "npm ci --ignore-scripts"
+description = "Install locked dependencies (network required) and the git pre-commit hook"
+run = ["npm ci --ignore-scripts", "mise generate git-pre-commit --write --task pre-commit"]
 
 [tasks."collection:check"]
 description = "Validate both collection exports and summarize them"
@@ -43,10 +43,47 @@ run = "node scripts/cli.mjs deck:upgrades"
 description = "Check every deck independently"
 run = "node scripts/cli.mjs decks:check"
 
+[tasks.lint]
+description = "Check code with ESLint and formatting with Prettier"
+run = ["node_modules/.bin/eslint .", "node_modules/.bin/prettier --check ."]
+
+[tasks.fix]
+description = "Apply ESLint fixes, then format everything with Prettier"
+run = ["node_modules/.bin/eslint --fix .", "node_modules/.bin/prettier --write --log-level warn ."]
+
+# Installed into .git/hooks by `setup`. The hook passes staged paths in $STAGED.
+# mise renders this script with Tera, so avoid `{#`, `{{` and `{%` (e.g. bash's ${#array[@]}).
+[tasks.pre-commit]
+description = "Git hook: fix and re-stage staged files; refuse partially staged ones"
+hide = true
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+files=()
+for file in $STAGED; do
+  [ -f "$file" ] && files+=("$file") # deleted files have nothing to fix
+done
+[ -z "${files[*]:-}" ] && exit 0
+# Re-staging a fixed file would also stage its unstaged edits, so stop instead.
+partial=$(git diff --name-only -- "${files[@]}")
+if [ -n "$partial" ]; then
+  echo "These files have unstaged changes; stage or stash them, or run 'mise run fix' and commit again:"
+  echo "$partial"
+  exit 1
+fi
+scripts=()
+for file in "${files[@]}"; do
+  [[ "$file" =~ \.m?js$ ]] && scripts+=("$file")
+done
+[ -n "${scripts[*]:-}" ] && node_modules/.bin/eslint --fix "${scripts[@]}"
+node_modules/.bin/prettier --write --ignore-unknown --log-level warn "${files[@]}"
+git add -- "${files[@]}"
+'''
+
 [tasks.test]
 description = "Run offline tests"
 run = "node --test"
 
 [tasks.check]
-description = "Run collection check, tests and all deck checks (offline)"
-depends = ["collection:check", "test", "decks:check"]
+description = "Run lint, collection check, tests and all deck checks (offline)"
+depends = ["lint", "collection:check", "test", "decks:check"]

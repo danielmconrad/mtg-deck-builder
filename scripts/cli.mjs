@@ -1,220 +1,143 @@
-import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
-import { stringify } from 'yaml';
-import { CACHE_VERSION, DAY_MS, PRICE_MAX_AGE_MS, cardIndex, emptyCache, fetchCards, loadCache, saveCache } from './cards.mjs';
-import { loadCollections, summarize } from './collection.mjs';
-import { checkDeck, deckEntries, exportDeck, parseDeck, upgradeReport } from './deck.mjs';
-import { parseIdentity, searchCollection } from './search.mjs';
-import { deckStats, formatStats } from './stats.mjs';
+import { emptyCache } from './card-cache.mjs';
+import { cardIndex } from './card-index.mjs';
+import { summarize } from './collection.mjs';
+import { deckEntries, exportDeck, newDeck } from './deck.mjs';
+import { checkLines, collectionSummaryLine, searchJson, searchLines, statsLines, upgradeLines } from './format.mjs';
+import { checkDeck, worstOutcome } from './rules.mjs';
+import { fetchCards } from './scryfall.mjs';
+import { searchCollection, searchFilters } from './search.mjs';
+import { deckStats } from './stats.mjs';
+import { upgradeReport } from './upgrades.mjs';
+import { openWorkspace } from './workspace.mjs';
 
-export const projectRoot = fileURLToPath(new URL('..', import.meta.url)).replace(/\/$/, '');
-const EXIT = { ok: 0, failed: 1, incomplete: 2 };
+const EXIT_CODES = { pass: 0, fail: 1, incomplete: 2 };
 
-function deckPath(root, slug) {
-  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) throw new Error('Deck slug must contain lowercase letters, numbers, and single hyphens only');
-  return `${root}/decks/${slug}/deck.yaml`;
-}
+const printAll = (write, lines) => {
+  for (const line of lines) write(line);
+};
 
-async function loadDeck(root, slug) {
-  return parseDeck(await readFile(deckPath(root, slug), 'utf8'), `decks/${slug}/deck.yaml`);
-}
-
-// Loads every deck folder, keeping parse failures per deck instead of aborting the rest.
-async function loadAllDecks(root) {
-  const folders = (await readdir(`${root}/decks`, { withFileTypes: true })).filter((entry) => entry.isDirectory());
-  folders.sort((first, second) => first.name.localeCompare(second.name));
-  return Promise.all(folders.map(async ({ name: slug }) => {
-    try {
-      return { slug, deck: await loadDeck(root, slug) };
-    } catch (error) {
-      return { slug, error };
-    }
-  }));
-}
-
-const loadIndex = async (root) => cardIndex(await loadCache(root));
-
-function printCheck(slug, report, write) {
-  const status = report.errors.length ? 'FAIL' : report.incomplete.length ? 'INCOMPLETE' : 'PASS';
-  write(`${status}: ${slug} (${report.total} cards)`);
-  for (const message of report.errors) write(`  ERROR: ${message}`);
-  for (const message of report.incomplete) write(`  INCOMPLETE: ${message}`);
-  for (const message of report.warnings) write(`  NOTE: ${message}`);
-  return report.errors.length ? EXIT.failed : report.incomplete.length ? EXIT.incomplete : EXIT.ok;
-}
-
-const worst = (codes) => (codes.includes(EXIT.failed) ? EXIT.failed : Math.max(EXIT.ok, ...codes));
-
-async function collectionCheck({ root, write }) {
-  for (const [name, rows] of Object.entries(await loadCollections(root))) {
-    const { rows: count, copies, names, proxyCopies } = summarize(rows);
-    write(`${name}: ${count} rows, ${copies} copies, ${names} distinct names, ${proxyCopies} proxy copies`);
+async function collectionCheck({ workspace, write }) {
+  for (const [name, rows] of Object.entries(await workspace.loadCollections())) {
+    write(collectionSummaryLine(name, summarize(rows)));
   }
-  return EXIT.ok;
+  return 'pass';
 }
 
-async function collectionSearch({ root, options, write, warn }) {
-  if (options.commander && options.identity) throw new Error('Use --commander or --identity, not both');
-  const number = (value, flag) => {
-    if (value === undefined) return undefined;
-    if (!/^\d+(\.\d+)?$/.test(value)) throw new Error(`${flag} must be a number`);
-    return Number(value);
-  };
-  const pattern = (value) => new RegExp(value, 'i');
-  const index = await loadIndex(root);
-  const filters = {
-    name: options.name && pattern(options.name),
-    type: options.type?.map(pattern),
-    text: options.text?.map(pattern),
-    identity: options.identity && parseIdentity(options.identity),
-    legal: options.legal,
-    minMv: number(options['min-mv'], '--min-mv'),
-    maxMv: number(options['max-mv'], '--max-mv'),
-    precons: options.precons,
-    proxies: options.proxies,
-  };
-  if (options.commander) {
-    const { card, problem } = index.lookup({ name: options.commander });
-    if (problem) throw new Error(problem);
-    filters.identity = new Set(card.color_identity);
-    filters.legal ??= 'commander';
+async function collectionSearch({ workspace, options, write, warn }) {
+  const [collections, index] = await Promise.all([workspace.loadCollections(), workspace.loadCardIndex()]);
+  const { results, unresolvedRows } = searchCollection(collections, index, searchFilters(options, index));
+  if (unresolvedRows) {
+    warn(`${unresolvedRows} collection rows have no cached card data and were skipped; run cards:refresh`);
   }
-  const { results, unresolved } = searchCollection(await loadCollections(root), index, filters);
-  if (unresolved) warn(`${unresolved} collection rows have no cached card data and were skipped; run cards:refresh`);
-  if (options.json) {
-    write(JSON.stringify(results.map(({ card, organized, precons }) => ({
-      name: card.name,
-      organized,
-      precons,
-      mana_cost: card.mana_cost,
-      mana_value: card.cmc,
-      type_line: card.type_line,
-      color_identity: card.color_identity,
-      oracle_text: card.oracle_text,
-    })), null, 2));
-    return EXIT.ok;
-  }
-  for (const { card, organized, precons } of results) {
-    const protectedCopies = precons ? ` (+${precons} in Precons)` : '';
-    write(`${organized}x ${card.name} ${card.mana_cost} — ${card.type_line} [${card.color_identity.join('') || 'C'}]${protectedCopies}`);
-    if (options.oracle) for (const line of card.oracle_text.split('\n')) write(`    ${line}`);
-  }
-  write(`${results.length} cards`);
-  return EXIT.ok;
+  printAll(write, options.json ? [searchJson(results)] : searchLines(results, { withOracleText: options.oracle }));
+  return 'pass';
 }
 
-async function cardsRefresh({ root, options, write, warn }) {
-  const collections = await loadCollections(root);
-  const identifiers = [...collections.organized, ...collections.precons].map((row) => ({ id: row.scryfallId }));
-  let exitCode = EXIT.ok;
-  for (const { slug, deck, error } of await loadAllDecks(root)) {
-    if (error) {
-      warn(`SKIPPED ${slug}: ${error.message}`);
-      exitCode = EXIT.incomplete;
-      continue;
-    }
-    for (const entry of [...deckEntries(deck), ...(deck.upgrades ?? []).flatMap((swap) => [swap.add, swap.cut])]) {
-      identifiers.push(entry.scryfall_id ? { id: entry.scryfall_id } : { name: entry.name });
-    }
-  }
-  const existing = options.missing ? await loadCache(root) : emptyCache();
-  const index = cardIndex(existing);
-  const wanted = identifiers.filter((identifier) => (identifier.id ? !index.byId.has(identifier.id) : index.lookup(identifier).problem));
-  if (!wanted.length) {
+// Scryfall identifiers for every collection row and every card a deck or upgrade names.
+function refreshIdentifiers(collections, decks) {
+  const rowIdentifiers = [...collections.organized, ...collections.precons].map((row) => ({ id: row.scryfallId }));
+  const entries = decks.flatMap((deck) => [
+    ...deckEntries(deck),
+    ...(deck.upgrades ?? []).flatMap((swap) => [swap.add, swap.cut]),
+  ]);
+  const entryIdentifiers = entries.map((entry) =>
+    entry.scryfall_id ? { id: entry.scryfall_id } : { name: entry.name },
+  );
+  return [...rowIdentifiers, ...entryIdentifiers];
+}
+
+async function cardsRefresh({ workspace, options, write, warn }) {
+  const [collections, loadedDecks] = await Promise.all([workspace.loadCollections(), workspace.loadAllDecks()]);
+  const skipped = loadedDecks.filter(({ error }) => error);
+  for (const { slug, error } of skipped) warn(`SKIPPED ${slug}: ${error.message}`);
+  const previous = options.missing ? await workspace.loadCache() : emptyCache();
+  const index = cardIndex(previous);
+  const decks = loadedDecks.filter(({ deck }) => deck).map(({ deck }) => deck);
+  const wanted = refreshIdentifiers(collections, decks).filter((identifier) => !index.isCached(identifier));
+  const notFound = [];
+  if (wanted.length) {
+    const fetched = await fetchCards(wanted, { onProgress: (done, total) => write(`Fetched ${done}/${total}`) });
+    notFound.push(...fetched.notFound);
+    const cache = { ...previous, cards: { ...previous.cards, ...fetched.cards } };
+    await workspace.saveCache(cache);
+    write(
+      `Cached ${Object.keys(cache.cards).length} printings (${Object.keys(fetched.cards).length} fetched from Scryfall).`,
+    );
+  } else {
     write('Card cache already covers every collection row and deck entry.');
-    return exitCode;
   }
-  const { cards, notFound } = await fetchCards(wanted, { onBatch: (count, total) => write(`Fetched ${count}/${total}`) });
-  const cache = { version: CACHE_VERSION, cards: { ...existing.cards, ...cards } };
-  await saveCache(root, cache);
-  write(`Cached ${Object.keys(cache.cards).length} printings (${Object.keys(cards).length} fetched from Scryfall).`);
   for (const missing of notFound) warn(`UNRESOLVED: ${JSON.stringify(missing)}`);
-  return notFound.length ? EXIT.incomplete : exitCode;
+  return notFound.length || skipped.length ? 'incomplete' : 'pass';
 }
 
-async function deckNew({ root, slug, options, write }) {
-  const format = options.format ?? 'commander';
-  const commanders = (options.commander ?? []).map((name) => ({ name, quantity: 1 }));
-  if (format === 'commander' && !commanders.length) throw new Error('Commander decks need --commander "<name>" (repeat it for a partner pair)');
-  const deck = {
-    schema_version: 1,
-    name: options.name ?? slug.split('-').map((word) => word[0].toUpperCase() + word.slice(1)).join(' '),
-    format,
-    status: 'draft',
-    allow_proxies: false,
-    unlimited_basics: false,
-    strategy: 'Describe the game plan.',
-    commanders,
-    mainboard: [],
-    upgrades: [],
-    playtests: [],
-  };
-  const text = `# yaml-language-server: $schema=../../schemas/deck.schema.json\n${stringify(deck)}`;
-  parseDeck(text, `decks/${slug}/deck.yaml`);
-  const path = deckPath(root, slug);
-  await mkdir(`${root}/decks/${slug}`, { recursive: true });
-  await writeFile(path, text, { flag: 'wx' });
-  write(`Created decks/${slug}/deck.yaml with an empty mainboard. Set the strategy, basics policy, and cards next.`);
-  return EXIT.ok;
+async function deckNew({ workspace, slug, options, write }) {
+  const deck = newDeck(slug, { format: options.format, commanderNames: options.commander, name: options.name });
+  const label = await workspace.createDeck(slug, deck);
+  write(`Created ${label} with an empty mainboard. Set the strategy, basics policy, and cards next.`);
+  return 'pass';
 }
 
-async function deckCheck({ root, slug, write }) {
-  const [deck, collections, index] = await Promise.all([loadDeck(root, slug), loadCollections(root), loadIndex(root)]);
-  return printCheck(slug, checkDeck(deck, collections, index), write);
+async function deckCheck({ workspace, slug, write }) {
+  const [deck, collections, index] = await Promise.all([
+    workspace.loadDeck(slug),
+    workspace.loadCollections(),
+    workspace.loadCardIndex(),
+  ]);
+  const report = checkDeck(deck, collections, index);
+  printAll(write, checkLines(slug, report));
+  return report.outcome;
 }
 
-async function deckStatsCommand({ root, slug, write }) {
-  const [deck, index] = await Promise.all([loadDeck(root, slug), loadIndex(root)]);
+async function deckStatsCommand({ workspace, slug, write }) {
+  const [deck, index] = await Promise.all([workspace.loadDeck(slug), workspace.loadCardIndex()]);
   const stats = deckStats(deck, index);
-  for (const line of formatStats(deck, stats)) write(line);
-  for (const problem of stats.problems) write(`  INCOMPLETE: ${problem}`);
-  return stats.problems.length ? EXIT.incomplete : EXIT.ok;
+  printAll(write, statsLines(deck, stats));
+  return stats.problems.length ? 'incomplete' : 'pass';
 }
 
-async function deckExport({ root, slug, write, warn }) {
+async function deckExport({ workspace, slug, write, warn }) {
   warn('Export does not validate the deck; run deck:check first.');
-  write(exportDeck(await loadDeck(root, slug)).trimEnd());
-  return EXIT.ok;
+  write(exportDeck(await workspace.loadDeck(slug)).trimEnd());
+  return 'pass';
 }
 
-async function deckUpgrades({ root, slug, write }) {
-  const [deck, collections, index] = await Promise.all([loadDeck(root, slug), loadCollections(root), loadIndex(root)]);
+async function deckUpgrades({ workspace, slug, write }) {
+  const [deck, collections, index] = await Promise.all([
+    workspace.loadDeck(slug),
+    workspace.loadCollections(),
+    workspace.loadCardIndex(),
+  ]);
   const report = upgradeReport(deck, collections, index);
-  const { currency } = deck.budget;
-  write(`Cards Organized cannot supply, priced at the cheapest cached Scryfall nonfoil ${currency} quote under ${PRICE_MAX_AGE_MS / DAY_MS} days old. Excludes shipping and tax.`);
-  for (const line of report.lines) write(`  ${line}`);
-  const total = `${(report.totalCents / 100).toFixed(2)} of ${(report.budgetCents / 100).toFixed(2)} ${currency} budget`;
-  if (!report.complete) {
-    write(`INCOMPLETE: known prices total ${total}`);
-    return EXIT.incomplete;
-  }
-  write(`${report.withinBudget ? 'WITHIN BUDGET' : 'OVER BUDGET'}: ${total}`);
-  return report.withinBudget ? EXIT.ok : EXIT.failed;
+  printAll(write, upgradeLines(report));
+  return report.outcome;
 }
 
-async function decksCheck({ root, write }) {
-  const decks = await loadAllDecks(root);
-  const candidates = decks.filter(({ deck }) => deck?.status !== 'example');
-  const [collections, index] = candidates.some(({ deck }) => deck)
-    ? await Promise.all([loadCollections(root), loadIndex(root)])
+async function decksCheck({ workspace, write }) {
+  const loadedDecks = await workspace.loadAllDecks();
+  const candidates = loadedDecks.filter(({ deck }) => deck && deck.status !== 'example');
+  const [collections, index] = candidates.length
+    ? await Promise.all([workspace.loadCollections(), workspace.loadCardIndex()])
     : [];
-  const codes = [];
-  for (const { slug, deck, error } of decks) {
+  const outcomes = loadedDecks.map(({ slug, deck, error }) => {
     if (error) {
       write(`FAIL: ${slug}: ${error.message}`);
-      codes.push(EXIT.failed);
-    } else if (deck.status === 'example') {
-      write(`SCHEMA ONLY: ${slug} (example template)`);
-    } else {
-      codes.push(printCheck(slug, checkDeck(deck, collections, index), write));
+      return 'fail';
     }
-  }
-  if (!candidates.length) write('No decks yet besides the example.');
-  return worst(codes);
+    if (deck.status === 'example') {
+      write(`SCHEMA ONLY: ${slug} (example template)`);
+      return 'pass';
+    }
+    const report = checkDeck(deck, collections, index);
+    printAll(write, checkLines(slug, report));
+    return report.outcome;
+  });
+  if (loadedDecks.every(({ deck }) => deck?.status === 'example')) write('No decks yet besides the example.');
+  return worstOutcome(outcomes);
 }
 
-const searchOptions = {
+const SEARCH_OPTIONS = {
   name: { type: 'string' },
   type: { type: 'string', multiple: true },
   text: { type: 'string', multiple: true },
@@ -229,34 +152,60 @@ const searchOptions = {
   json: { type: 'boolean' },
 };
 
-const commands = {
+const NEW_DECK_OPTIONS = {
+  commander: { type: 'string', multiple: true },
+  format: { type: 'string' },
+  name: { type: 'string' },
+};
+
+const COMMANDS = {
   'collection:check': { run: collectionCheck },
-  'collection:search': { run: collectionSearch, options: searchOptions, usage: '[--commander NAME | --identity WUBRG] [--type RE] [--text RE] [--name RE] [--min-mv N] [--max-mv N] [--legal FORMAT] [--precons] [--proxies] [--oracle] [--json]' },
+  'collection:search': {
+    run: collectionSearch,
+    options: SEARCH_OPTIONS,
+    usage:
+      '[--commander NAME | --identity WUBRG] [--type RE]... [--text RE]... [--name RE] [--min-mv N] [--max-mv N] [--legal FORMAT] [--precons] [--proxies] [--oracle] [--json]',
+  },
   'cards:refresh': { run: cardsRefresh, options: { missing: { type: 'boolean' } }, usage: '[--missing]' },
-  'deck:new': { run: deckNew, slug: true, options: { commander: { type: 'string', multiple: true }, format: { type: 'string' }, name: { type: 'string' } }, usage: '[--commander NAME]... [--format commander|casual-60] [--name TEXT]' },
-  'deck:check': { run: deckCheck, slug: true },
-  'deck:stats': { run: deckStatsCommand, slug: true },
-  'deck:export': { run: deckExport, slug: true },
-  'deck:upgrades': { run: deckUpgrades, slug: true },
+  'deck:new': {
+    run: deckNew,
+    takesSlug: true,
+    options: NEW_DECK_OPTIONS,
+    usage: '[--commander NAME]... [--format commander|casual-60] [--name TEXT]',
+  },
+  'deck:check': { run: deckCheck, takesSlug: true },
+  'deck:stats': { run: deckStatsCommand, takesSlug: true },
+  'deck:export': { run: deckExport, takesSlug: true },
+  'deck:upgrades': { run: deckUpgrades, takesSlug: true },
   'decks:check': { run: decksCheck },
 };
 
-const usage = () => `Usage:\n${Object.entries(commands)
-  .map(([name, command]) => `  ${[name, command.slug && '<deck-slug>', command.usage].filter(Boolean).join(' ')}`)
-  .join('\n')}`;
+function usage() {
+  const lines = Object.entries(COMMANDS).map(([name, command]) =>
+    [name, command.takesSlug && '<deck-slug>', command.usage].filter(Boolean).join(' '),
+  );
+  return `Usage:\n${lines.map((line) => `  ${line}`).join('\n')}`;
+}
 
-export async function runCli(args, { root = projectRoot, write = console.log, warn = console.error } = {}) {
-  const [name, ...rest] = args;
-  const command = Object.hasOwn(commands, name ?? '') ? commands[name] : null;
+function parseCommandLine([name, ...rest]) {
+  const command = Object.hasOwn(COMMANDS, name ?? '') ? COMMANDS[name] : null;
   if (!command) throw new Error(usage());
   let parsed;
   try {
     parsed = parseArgs({ args: rest, options: command.options ?? {}, allowPositionals: true, strict: true });
   } catch (error) {
-    throw new Error(`${error.message}\n${usage()}`);
+    throw new Error(`${error.message}\n${usage()}`, { cause: error });
   }
-  if (parsed.positionals.length !== (command.slug ? 1 : 0)) throw new Error(usage());
-  return command.run({ root, write, warn, options: parsed.values, slug: parsed.positionals[0] });
+  const expectedPositionals = command.takesSlug ? 1 : 0;
+  if (parsed.positionals.length !== expectedPositionals) throw new Error(usage());
+  return { command, options: parsed.values, slug: parsed.positionals[0] };
+}
+
+// Returns the process exit code: 0 pass, 1 fail, 2 incomplete. Invalid input throws.
+export async function runCli(args, { root, write = console.log, warn = console.error } = {}) {
+  const { command, options, slug } = parseCommandLine(args);
+  const outcome = await command.run({ workspace: openWorkspace(root), options, slug, write, warn });
+  return EXIT_CODES[outcome];
 }
 
 if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {
@@ -264,6 +213,6 @@ if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) 
     process.exitCode = await runCli(process.argv.slice(2));
   } catch (error) {
     console.error(`ERROR: ${error.message}`);
-    process.exitCode = EXIT.failed;
+    process.exitCode = EXIT_CODES.fail;
   }
 }

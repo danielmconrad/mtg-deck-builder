@@ -55,7 +55,9 @@
   "allOf": [
     {
       "if": { "properties": { "format": { "const": "commander" } } },
-      "then": { "properties": { "commanders": { "minItems": 1, "items": { "properties": { "quantity": { "const": 1 } } } } } },
+      "then": {
+        "properties": { "commanders": { "minItems": 1, "items": { "properties": { "quantity": { "const": 1 } } } } }
+      },
       "else": { "properties": { "commanders": { "maxItems": 0 } } }
     }
   ],

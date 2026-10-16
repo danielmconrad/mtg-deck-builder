@@ -1,34 +1,80 @@
 import { ownedCounts } from './collection.mjs';
 
 const COLORS = 'WUBRG';
+const IDENTITY_PATTERN = /^[WUBRGC]+$/i;
+const NUMBER_PATTERN = /^\d+(\.\d+)?$/;
 
+// Letters from WUBRG; C alone means colorless only.
 export function parseIdentity(text) {
-  if (!/^[WUBRGC]+$/i.test(text)) throw new Error(`Color identity "${text}" must use W, U, B, R, G, or C for colorless`);
+  if (!IDENTITY_PATTERN.test(text)) {
+    throw new Error(`Color identity "${text}" must use W, U, B, R, G, or C for colorless`);
+  }
   return new Set([...text.toUpperCase()].filter((letter) => COLORS.includes(letter)));
 }
 
-function matches(card, filters) {
-  if (filters.identity && !card.color_identity.every((color) => filters.identity.has(color))) return false;
-  if (filters.legal && card.legalities[filters.legal] !== 'legal') return false;
-  if (filters.minMv !== undefined && card.cmc < filters.minMv) return false;
-  if (filters.maxMv !== undefined && card.cmc > filters.maxMv) return false;
-  if (filters.name && !filters.name.test(card.name)) return false;
-  return (filters.type ?? []).every((pattern) => pattern.test(card.type_line))
-    && (filters.text ?? []).every((pattern) => pattern.test(card.oracle_text));
+function parseNumber(value, flag) {
+  if (value === undefined) return undefined;
+  if (!NUMBER_PATTERN.test(value)) throw new Error(`${flag} must be a number`);
+  return Number(value);
 }
 
-// One result per card (oracle ID), listing Organized copies and protected Precons copies.
+const caseInsensitive = (source) => new RegExp(source, 'i');
+
+function commanderFilters(name, index, legalIn) {
+  const { card, problem } = index.lookup({ name });
+  if (problem) throw new Error(problem);
+  return { identity: new Set(card.colorIdentity), legalIn: legalIn ?? 'commander' };
+}
+
+// Translates collection:search command-line options into filters for searchCollection.
+export function searchFilters(options, index) {
+  if (options.commander && options.identity) throw new Error('Use --commander or --identity, not both');
+  const filters = {
+    name: options.name && caseInsensitive(options.name),
+    types: (options.type ?? []).map(caseInsensitive),
+    texts: (options.text ?? []).map(caseInsensitive),
+    identity: options.identity && parseIdentity(options.identity),
+    legalIn: options.legal,
+    minManaValue: parseNumber(options['min-mv'], '--min-mv'),
+    maxManaValue: parseNumber(options['max-mv'], '--max-mv'),
+    includePreconOnly: Boolean(options.precons),
+    allowProxies: Boolean(options.proxies),
+  };
+  if (!options.commander) return filters;
+  return { ...filters, ...commanderFilters(options.commander, index, filters.legalIn) };
+}
+
+// One predicate per filter; an unset filter matches everything.
+const FILTER_PREDICATES = [
+  (card, { identity }) => !identity || card.colorIdentity.every((color) => identity.has(color)),
+  (card, { legalIn }) => !legalIn || card.legalities[legalIn] === 'legal',
+  (card, { minManaValue }) => minManaValue === undefined || card.manaValue >= minManaValue,
+  (card, { maxManaValue }) => maxManaValue === undefined || card.manaValue <= maxManaValue,
+  (card, { name }) => !name || name.test(card.name),
+  (card, { types = [] }) => types.every((pattern) => pattern.test(card.typeLine)),
+  (card, { texts = [] }) => texts.every((pattern) => pattern.test(card.oracleText)),
+];
+
+const matches = (card, filters) => FILTER_PREDICATES.every((predicate) => predicate(card, filters));
+
+const byManaValueThenName = (first, second) =>
+  first.card.manaValue - second.card.manaValue || first.card.name.localeCompare(second.card.name);
+
+// One result per card (oracle ID), with Organized copies and protected Precons copies.
 export function searchCollection(collections, index, filters = {}) {
-  const organized = ownedCounts(collections.organized, index, filters.proxies);
-  const precons = ownedCounts(collections.precons, index, filters.proxies);
+  const policy = { allowProxies: filters.allowProxies };
+  const organized = ownedCounts(collections.organized, index, policy);
+  const precons = ownedCounts(collections.precons, index, policy);
   const oracleIds = new Set(organized.counts.keys());
-  if (filters.precons) for (const id of precons.counts.keys()) oracleIds.add(id);
-  const results = [];
-  for (const id of oracleIds) {
-    const card = index.byOracle.get(id)[0];
-    if (!matches(card, filters)) continue;
-    results.push({ card, organized: organized.counts.get(id) ?? 0, precons: precons.counts.get(id) ?? 0 });
-  }
-  results.sort((first, second) => first.card.cmc - second.card.cmc || first.card.name.localeCompare(second.card.name));
-  return { results, unresolved: organized.unresolved + (filters.precons ? precons.unresolved : 0) };
+  if (filters.includePreconOnly) for (const oracleId of precons.counts.keys()) oracleIds.add(oracleId);
+  const results = [...oracleIds]
+    .map((oracleId) => ({
+      card: index.printingsOf(oracleId)[0],
+      organized: organized.counts.get(oracleId) ?? 0,
+      precons: precons.counts.get(oracleId) ?? 0,
+    }))
+    .filter(({ card }) => matches(card, filters))
+    .sort(byManaValueThenName);
+  const unresolvedRows = organized.unresolvedRows + (filters.includePreconOnly ? precons.unresolvedRows : 0);
+  return { results, unresolvedRows };
 }

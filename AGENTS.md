@@ -23,6 +23,7 @@ Read [README.md](README.md) and the target `decks/<slug>/deck.yaml` first. Ask b
 - Run `mise run deck:check -- <slug>` after every deck edit, and read every ERROR and INCOMPLETE line. Exit code 2 is not a pass.
 - `cards:refresh` is the only command that uses the network. Run it when cards are missing (`-- --missing`) or prices are stale. Never run two at once.
 - For code changes, run the relevant test file, then `mise run check`. Tests must stay offline and use only fixtures from `tests/fixtures.mjs`, never the real collection. Unfinished decks may fail `decks:check`; say so rather than editing them.
+- Run `mise run fix` before finishing a code change; `check` fails on lint errors or unformatted files. Don't silence a lint rule without a comment saying why.
 - Use the existing CSV, YAML and schema libraries. Pin new dependencies through npm.
 
 ## Git
