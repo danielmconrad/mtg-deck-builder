@@ -9,7 +9,7 @@ These are the frameworks experienced players lean on, with how to check each one
 
 ## 1. Start from the plan, not the card pool
 
-- **Say how the deck wins in one sentence** before picking cards. Record it in `strategy`.
+- **Say how the deck wins in one sentence** before picking cards. Record it in `primer`.
 - **Split the strategy cards** using the Command Zone's 2025 framework, roughly 40% enablers, 35% payoffs and 25% enhancers, adjusted to the deck:
   - **Enablers** make the plan work, e.g. sacrifice outlets in Aristocrats.
   - **Payoffs** reward it, e.g. Blood Artist.

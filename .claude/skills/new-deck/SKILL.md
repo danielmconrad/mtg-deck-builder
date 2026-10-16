@@ -16,6 +16,7 @@ Ask only about what the user hasn't already said. Don't fill gaps with defaults.
 - **Power level:** a Commander Bracket (1–5) or the playgroup's own terms. The bracket table is in the `deckbuilding-strategy` skill.
 - **Budget:** amount and currency for optional upgrades.
 - **Proxies:** allowed or not.
+- **Collections:** whose cards to build from, if not every unprotected collection (e.g. a friend's deck from `collections/brad/*`). Record the patterns in the deck's `collections` field so every command reads the right cards without flags.
 - **Basic lands:** run `mise run collection:search -- --type basic --count`. The collections usually hold very few basics, so every deck fails ownership unless the user has untracked basics. Ask, and set `unlimited_basics: true` if they do.
 
 ## 2. Survey the collection
@@ -74,7 +75,7 @@ Then **wait for the user to choose.** Don't run `deck:new` or write a list befor
 mise run deck:new -- <slug> --commander "Name"     # repeat --commander for partners
 ```
 
-- **Header fields:** fill `strategy`, `power_notes`, `bracket`, `budget`, `allow_proxies` and `unlimited_basics` in `decks/<slug>/deck.yaml`.
+- **Header fields:** fill `primer` (the game plan, one line of YAML with no manual line breaks), `collections` (if the brief limits them), `power_notes`, `bracket`, `budget`, `allow_proxies` and `unlimited_basics` in the new `deck.yaml` (pass a nested slug such as `brad/<slug>` to `deck:new` to group decks by owner).
 - **Mainboard:** owned cards only. Give each entry a `role` from the vocabulary below.
 - **Size:** reach exactly 100 cards including commanders, or at least 60 for casual.
 
@@ -96,10 +97,11 @@ Then review it with the checklist in `deckbuilding-strategy`, and explain the de
 1. Add paired swaps under `upgrades` (`add`, `cut`, `reason`). Never edit the baseline to apply them.
 2. Unowned cards have no card data yet. **Ask before** running `mise run cards:refresh -- --missing`, since it uses the network.
 3. Run `mise run deck:upgrades -- <slug>` and report the total against the budget. Unknown prices stay unknown, never zero.
+4. Run `mise run deck:check -- <slug>`, then `mise run deck:files -- <slug>` right away, so `decklist-upgraded.archidekt.txt` and `decklist-upgraded.moxfield.txt` exist with every swap made (the added cards in their own Upgrade category in Archidekt, and only in the Sideboard section in Moxfield, not in Deck). Do this whenever upgrades are added or changed, not only at hand-off.
 
 ## 7. Hand off
 
 - **Summary:** what's in the deck, what failed or is still unknown, and the upgrade total.
-- **Decklist files:** run `mise run deck:files -- <slug>` after the final `deck:check`. It writes `decklist.txt` and, when the deck has upgrades, `decklist-upgraded.txt` beside `deck.yaml` in the project's default format (`MTG_EXPORT_FORMAT` in `.env`). Rerun it after every later deck edit so the files never go stale.
+- **Decklist files:** run `mise run deck:files -- <slug>` after the final `deck:check`. It writes `decklist.archidekt.txt` and `decklist.moxfield.txt` and, when the deck has upgrades, `decklist-upgraded.archidekt.txt` and `decklist-upgraded.moxfield.txt` beside `deck.yaml`. Rerun it after every later deck edit so the files never go stale.
 - **Viewing online:** if the user wants to paste the deck into a site, run `mise run deck:export -- <slug> --copy` (add `--upgrades apply` for a playtest list) and tell them where to paste it.
 - **Git:** don't commit unless asked.

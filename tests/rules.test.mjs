@@ -10,7 +10,7 @@ const commanderDeck = (fields = {}) => ({
   format: 'commander',
   status: 'draft',
   allow_proxies: false,
-  strategy: 'Test',
+  primer: 'Test',
   commanders: [entry(leader.name)],
   mainboard: [entry(forest.name, 99)],
   ...fields,

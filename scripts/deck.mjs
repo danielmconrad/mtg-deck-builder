@@ -7,8 +7,9 @@ import { normalizeName } from './card.mjs';
 
 const validateSchema = new Ajv({ allErrors: true, strict: false }).compile(schema);
 const MAX_YAML_ALIASES = 50;
-const EDITOR_SCHEMA_DIRECTIVE = '# yaml-language-server: $schema=../../schemas/deck.schema.json';
-const STRATEGY_PLACEHOLDER = 'Describe the game plan.';
+// The editor schema path is relative to the deck file; the default fits decks/<slug>/deck.yaml.
+const DEFAULT_SCHEMA_PATH = '../../schemas/deck.schema.json';
+const PRIMER_PLACEHOLDER = 'Describe the game plan.';
 
 export const deckEntries = (deck) => [...deck.commanders, ...deck.mainboard];
 
@@ -24,10 +25,14 @@ export function parseDeck(text, source = 'deck') {
   return deck;
 }
 
-export const serializeDeck = (deck) => `${EDITOR_SCHEMA_DIRECTIVE}\n${stringify(deck)}`;
+export const serializeDeck = (deck, { schemaPath = DEFAULT_SCHEMA_PATH } = {}) =>
+  `# yaml-language-server: $schema=${schemaPath}\n${stringify(deck, { lineWidth: 0 })}`;
 
+// A nested slug (brad/green-value) is titled from its last part.
 const titleFromSlug = (slug) =>
   slug
+    .split('/')
+    .at(-1)
     .split('-')
     .map((word) => word[0].toUpperCase() + word.slice(1))
     .join(' ');
@@ -43,7 +48,7 @@ export function newDeck(slug, { format = 'commander', commanderNames = [], name 
     status: 'draft',
     allow_proxies: false,
     unlimited_basics: false,
-    strategy: STRATEGY_PLACEHOLDER,
+    primer: PRIMER_PLACEHOLDER,
     commanders: commanderNames.map((commanderName) => ({ name: commanderName, quantity: 1 })),
     mainboard: [],
     upgrades: [],
@@ -65,17 +70,21 @@ function takeCut(mainboard, cut) {
   return target;
 }
 
-// The deck as it would be with every upgrade swap made. Each add takes its cut's place in the list.
+// The deck as it would be with every upgrade swap made. The added cards are kept apart in
+// upgradesIn, still part of the deck, so exports can show them in their own section for buying.
+// A later swap may cut an earlier add.
 export function applyUpgrades(deck) {
   let mainboard = deck.mainboard.map((entry) => ({ ...entry }));
+  let upgradesIn = [];
   for (const { add, cut } of deck.upgrades ?? []) {
-    const target = takeCut(mainboard, cut);
-    const existing = findEntry(mainboard, add.name);
+    takeCut(findEntry(mainboard, cut.name) ? mainboard : upgradesIn, cut);
+    const existing = findEntry(upgradesIn, add.name);
     if (existing) existing.quantity += add.quantity;
-    else mainboard.splice(mainboard.indexOf(target) + 1, 0, { ...add });
+    else upgradesIn.push({ ...add });
     mainboard = mainboard.filter((entry) => entry.quantity > 0);
+    upgradesIn = upgradesIn.filter((entry) => entry.quantity > 0);
   }
-  return { ...deck, mainboard };
+  return { ...deck, mainboard, upgradesIn };
 }
 
 // The baseline deck split for review: swapOut holds the copies the upgrades would cut, keeping

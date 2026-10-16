@@ -101,16 +101,13 @@ async function cardsRefresh({ workspace, options, write, warn }) {
 async function deckNew({ workspace, slug, options, write }) {
   const deck = newDeck(slug, { format: options.format, commanderNames: options.commander, name: options.name });
   const label = await workspace.createDeck(slug, deck);
-  write(`Created ${label} with an empty mainboard. Set the strategy, basics policy, and cards next.`);
+  write(`Created ${label} with an empty mainboard. Set the primer, basics policy, and cards next.`);
   return 'pass';
 }
 
 async function deckCheck({ workspace, slug, write }) {
-  const [deck, collections, index] = await Promise.all([
-    workspace.loadDeck(slug),
-    workspace.loadCollections(),
-    workspace.loadCardIndex(),
-  ]);
+  const deck = await workspace.loadDeck(slug);
+  const [collections, index] = await Promise.all([workspace.loadCollections(deck), workspace.loadCardIndex()]);
   const report = checkDeck(deck, collections, index);
   printAll(write, checkLines(slug, report));
   return report.outcome;
@@ -143,11 +140,8 @@ function exportFormat(options, env) {
 
 // Loads what every export needs once, then renders the deck under each requested upgrades mode.
 async function exporter(workspace, slug, warn) {
-  const [deck, collections, index] = await Promise.all([
-    workspace.loadDeck(slug),
-    workspace.loadCollections(),
-    workspace.loadCardIndex(),
-  ]);
+  const deck = await workspace.loadDeck(slug);
+  const [collections, index] = await Promise.all([workspace.loadCollections(deck), workspace.loadCardIndex()]);
   const uncached = new Set();
   const printingOf = printingChooser(index, collections.available, uncached);
   warn('Export does not validate the deck; run deck:check first.');
@@ -177,31 +171,39 @@ async function deckExport({ workspace, slug, options, env, write, warn, copyText
   return 'pass';
 }
 
-const DECKLIST_FILE = 'decklist.txt';
-const UPGRADED_DECKLIST_FILE = 'decklist-upgraded.txt';
+// deck:files writes every format here, so the committed lists paste straight into either site.
+const DECKLIST_FORMATS = ['archidekt', 'moxfield'];
+const decklistFile = (format) => `decklist.${format}.txt`;
+const upgradedDecklistFile = (format) => `decklist-upgraded.${format}.txt`;
+// Names deck:files used to write (a single format, then -format suffixes); removed so they can't go stale.
+const LEGACY_DECKLIST_FILES = [
+  'decklist.txt',
+  'decklist-upgraded.txt',
+  ...DECKLIST_FORMATS.flatMap((format) => [`decklist-${format}.txt`, `decklist-upgraded-${format}.txt`]),
+];
 
-// Writes the decklists kept in Git beside deck.yaml: the deck with upgrade swaps split out, and,
-// when the deck has upgrades, the deck with every swap made.
-async function deckFiles({ workspace, slug, options, env, write, warn }) {
-  const format = exportFormat(options, env);
+// Writes the decklists kept in Git beside deck.yaml, once per format: the deck with upgrade swaps
+// split out, and, when the deck has upgrades, the deck with every swap made.
+async function deckFiles({ workspace, slug, warn, write }) {
   const { deck, render, warnUncached } = await exporter(workspace, slug, warn);
-  const written = [await workspace.writeDeckFile(slug, DECKLIST_FILE, render(format, 'split'))];
-  if (deck.upgrades?.length) {
-    written.push(await workspace.writeDeckFile(slug, UPGRADED_DECKLIST_FILE, render(format, 'apply')));
-  } else {
-    await workspace.removeDeckFile(slug, UPGRADED_DECKLIST_FILE);
+  const written = [];
+  for (const format of DECKLIST_FORMATS) {
+    written.push(await workspace.writeDeckFile(slug, decklistFile(format), render(format, 'split')));
+    if (deck.upgrades?.length) {
+      written.push(await workspace.writeDeckFile(slug, upgradedDecklistFile(format), render(format, 'apply')));
+    } else {
+      await workspace.removeDeckFile(slug, upgradedDecklistFile(format));
+    }
   }
+  await Promise.all(LEGACY_DECKLIST_FILES.map((file) => workspace.removeDeckFile(slug, file)));
   warnUncached();
-  write(`Wrote ${written.join(' and ')} in ${format} format.`);
+  write(`Wrote ${written.join(', ')}.`);
   return 'pass';
 }
 
 async function deckUpgrades({ workspace, slug, write }) {
-  const [deck, collections, index] = await Promise.all([
-    workspace.loadDeck(slug),
-    workspace.loadCollections(),
-    workspace.loadCardIndex(),
-  ]);
+  const deck = await workspace.loadDeck(slug);
+  const [collections, index] = await Promise.all([workspace.loadCollections(deck), workspace.loadCardIndex()]);
   const report = upgradeReport(deck, collections, index);
   printAll(write, upgradeLines(report));
   return report.outcome;
@@ -210,9 +212,11 @@ async function deckUpgrades({ workspace, slug, write }) {
 async function decksCheck({ workspace, write }) {
   const loadedDecks = await workspace.loadAllDecks();
   const candidates = loadedDecks.filter(({ deck }) => deck && deck.status !== 'example');
-  const [collections, index] = candidates.length
-    ? await Promise.all([workspace.loadCollections(), workspace.loadCardIndex()])
-    : [];
+  const index = candidates.length ? await workspace.loadCardIndex() : null;
+  // Each deck reads its own collections; scopedWorkspace loads each distinct scope only once.
+  const collectionsFor = new Map(
+    await Promise.all(candidates.map(async ({ deck }) => [deck, await workspace.loadCollections(deck)])),
+  );
   const outcomes = loadedDecks.map(({ slug, deck, error }) => {
     if (error) {
       write(`FAIL: ${slug}: ${error.message}`);
@@ -222,7 +226,7 @@ async function decksCheck({ workspace, write }) {
       write(`SCHEMA ONLY: ${slug} (example template)`);
       return 'pass';
     }
-    const report = checkDeck(deck, collections, index);
+    const report = checkDeck(deck, collectionsFor.get(deck), index);
     printAll(write, checkLines(slug, report));
     return report.outcome;
   });
@@ -272,42 +276,54 @@ const SEARCH_OPTIONS = {
 };
 
 // Which collections to read and which not to dismantle. Each option wins over its .env variable
-// (see .env.example). Both take comma-separated collection names. --collections defaults to every
-// collection, and --protect to Precons; an empty value means every collection, or none protected.
+// (see .env.example). Both take comma-separated glob patterns relative to the project root, such as
+// collections/conrad* or collections/**/Precons.csv. --collections defaults to every collection, and
+// --protect to any Precons.csv; an empty value means every collection, or none protected.
 const COLLECTION_OPTIONS = {
   collections: {
     type: 'string',
-    placeholder: 'NAMES',
+    placeholder: 'PATTERNS',
     description:
-      'Comma-separated collections to read, ignoring the rest; defaults to MTG_COLLECTIONS in .env, else all',
+      'Comma-separated path globs (e.g. collections/conrad*) of collections to read, ignoring the rest; defaults to MTG_COLLECTIONS in .env, else all',
   },
   protect: {
     type: 'string',
-    placeholder: 'NAMES',
-    description: 'Comma-separated collections to protect; defaults to MTG_PROTECTED_COLLECTIONS in .env, else Precons',
+    placeholder: 'PATTERNS',
+    description:
+      'Comma-separated path globs of collections to protect; defaults to MTG_PROTECTED_COLLECTIONS in .env, else collections/**/Precons.csv',
   },
 };
-const DEFAULT_PROTECTED = 'Precons';
+const DEFAULT_PROTECTED = 'collections/**/Precons.csv';
 
-const nameList = (value) =>
+const patternList = (value) =>
   value
     .split(',')
-    .map((name) => name.trim())
+    .map((pattern) => pattern.trim())
     .filter(Boolean);
 
 const collectionScope = (options, env) => ({
-  only: nameList(options.collections ?? env.MTG_COLLECTIONS ?? ''),
-  protect: nameList(options.protect ?? env.MTG_PROTECTED_COLLECTIONS ?? DEFAULT_PROTECTED),
+  optionOnly: options.collections === undefined ? undefined : patternList(options.collections),
+  envOnly: patternList(env.MTG_COLLECTIONS ?? ''),
+  protect: patternList(options.protect ?? env.MTG_PROTECTED_COLLECTIONS ?? DEFAULT_PROTECTED),
 });
 
-// The workspace with the collection scope applied, so commands just call loadCollections().
+// The workspace with the collection scope applied, so commands just call loadCollections(), passing
+// the deck when there is one. The collections read come from --collections, else the deck's own
+// collections field, else MTG_COLLECTIONS. Each distinct scope is loaded, and warned about, once.
 // loadEveryCollection ignores the scope, so cards:refresh caches every collection.
 function scopedWorkspace(workspace, scope, warn) {
-  async function loadCollections() {
-    const collections = await workspace.loadCollections(scope);
-    for (const name of collections.unknownOnly) warn(`No collections/${name}.csv to read`);
-    for (const name of collections.unknownProtected) warn(`No collections/${name}.csv to protect`);
+  const loaded = new Map();
+  async function load(only) {
+    const collections = await workspace.loadCollections({ only, protect: scope.protect });
+    for (const pattern of collections.unknownOnly) warn(`No collection matches ${pattern} to read`);
+    for (const pattern of collections.unknownProtected) warn(`No collection matches ${pattern} to protect`);
     return collections;
+  }
+  function loadCollections(deck) {
+    const only = scope.optionOnly ?? deck?.collections ?? scope.envOnly;
+    const key = JSON.stringify(only);
+    if (!loaded.has(key)) loaded.set(key, load(only));
+    return loaded.get(key);
   }
   return { ...workspace, loadCollections, loadEveryCollection: () => workspace.loadCollections() };
 }
@@ -339,7 +355,8 @@ const COMMANDS = {
   'deck:new': {
     run: deckNew,
     takesSlug: true,
-    summary: 'Create a draft deck at decks/<deck-slug>/deck.yaml; never overwrites',
+    summary:
+      'Create a draft deck at decks/<deck-slug>/deck.yaml (slug may be nested, e.g. brad/elves); never overwrites',
     options: {
       commander: {
         type: 'string',
@@ -384,8 +401,8 @@ const COMMANDS = {
     run: deckFiles,
     takesSlug: true,
     summary: 'Write the decklist files kept beside deck.yaml',
-    details: `Writes ${DECKLIST_FILE} (upgrade cuts under Swap Out, adds in the sideboard) and, if the deck has upgrades, ${UPGRADED_DECKLIST_FILE} (every swap made). Overwrites both; rerun after every deck edit. Does not validate the deck.`,
-    options: { format: FORMAT_OPTION, ...COLLECTION_OPTIONS },
+    details: `Writes ${DECKLIST_FORMATS.map(decklistFile).join(' and ')} (upgrade cuts under Swap Out, adds in the sideboard) and, if the deck has upgrades, ${DECKLIST_FORMATS.map(upgradedDecklistFile).join(' and ')} (every swap made, adds under Upgrade). Overwrites them; rerun after every deck edit. Does not validate the deck.`,
+    options: COLLECTION_OPTIONS,
   },
   'deck:upgrades': {
     run: deckUpgrades,

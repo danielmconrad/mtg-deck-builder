@@ -1,0 +1,95 @@
+Commander
+1 Bruenor Battlehammer (AFR) 219
+
+Deck
+1 Hard-Won Jitte (TMT) 91
+1 Andúril, Flame of the West (HOC) 39
+1 Andúril, Narsil Reforged (HOC) 40
+1 Sting, Bilbo's Sword (HOB) 178
+1 Captain America's Shield (MSH) 244
+1 Cloak of the Bat (CLB) 307
+1 Greataxe (AFR) 245
+1 Vibranium Energy Daggers (MSH) 254
+1 Hawkeye's Bow (MSH) 132
+1 Dwarven Shortsword (HOB) 10
+1 Auxiliary Boosters (EOE) 5
+1 Swordsman's Steel (MSC) 752
+1 Stormbeacon Blade (TDM) 27
+1 Ragged Short Spear (HOB) 108
+1 Warrior's Blades (FRA) 163
+1 Lion Heart (FIN) 261
+1 Unstable Molecule Suit (MSC) 116
+1 Dwalin, Weaponmaster (HOB) 154
+1 Dáin Ironfoot (PMEI) 2026-18
+1 Thorin, Mountain-king (HOB) 243
+1 Gilgamesh, Master-at-Arms (FIN) 338
+1 Iron Hills Blacksmith (HOB) 16
+1 Blink Dog (AFR) 3
+1 Dual-Sun Adepts (EOE) 12
+1 Mockingbird, Ace Agent (MSH) 22
+1 Captain America, Wings of Freedom (MSH) 10
+1 Barret Wallace (FIN) 129
+1 Danitha, Sword of Hope (FRA) 196
+1 Weapons Vendor (FIN) 40
+1 Ingenious Smith (AFR) 21
+1 Ashe, Princess of Dalmasca (FIN) 7
+1 Teyo, Lightshield Expert (FRA) 204
+1 The Arkenstone // Seek the Heart (HOB) 247
+1 Fighter Class (AFR) 222
+1 Marble Diamond (CLB) 446
+1 Fire Diamond (CLB) 445
+1 The Mind Stone (MSH) 21
+1 Troop of Ponies (HOB) 3
+1 Murmuring Volume (FRA) 174
+1 Banishing Light (EOE) 6
+1 Memory Trap (FRA) 15
+1 Stormplain Detainment (TDM) 28
+1 Reduce to Memory (STX) 25
+1 Crib Swap (ECL) 11
+1 Prophesied End (FRA) 17
+1 Emeritus of Truce // Swords to Plowshares (SOS) 13
+1 Solitary Cell (FRA) 149
+1 Scourglass (MSC) 276
+1 Settle the Wreckage (HOB) 26
+1 Fulminous Forte (FRA) 84
+1 Teferi's Protection (MAR) 51
+1 Unbreakable Formation (SLD) 7052
+1 Asgardian Citadel (MSH) 258
+1 Dimension X (TMT) 183
+1 Needle Spires (EOS) 30
+1 Iron Hills (HOB) 185
+1 The Lonely Mountain (HOB) 187
+1 Rumble Arena (TLA) 277
+1 Plaza of Heroes (MSC) 255
+16 Plains (FRA) 383
+10 Mountain (FRA) 392
+1 Worn Powerstone (MH3) 298
+1 Boros Keyrune (GK1) 96
+1 Boros Cluestone (CM2) 175
+1 Surveillance Room (MSH) 274
+1 Dedicated Commons (FRA) 175
+1 Monumental Henge (MH3) 222
+1 Dragonfire Blade (TDM) 324
+1 Medic's Kitesail (FRA) 173
+1 Item Shopkeep (FIN) 142
+1 Armory Veteran (AFR) 130
+1 Prophetic Prism (CMM) 404
+1 Eye of Vecna (AFR) 243
+1 Your Fate Ends Here (FRA) 24
+1 Harsh Annotation (SOS) 18
+
+Sideboard
+1 Sol Ring (EOC) 57
+1 Arcane Signet (LTC) 273
+1 Talisman of Conviction (LTC) 285
+1 Command Tower (EOC) 59
+1 Sacred Foundry (TRK) 295
+1 Inspiring Vantage (OTJ) 269
+1 Lightning Greaves (LTC) 281
+1 Swiftfoot Boots (MSC) 216
+1 Puresteel Paladin
+1 Sigarda's Aid
+1 Stoneforge Mystic
+1 Skullclamp (TDC) 103
+1 Swords to Plowshares (TDC) 134
+1 Path to Exile (LTC) 175

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { availableCopies, ownedCounts, parseCollection, summarize } from '../scripts/collection.mjs';
+import { availableCopies, holdDeckCards, ownedCounts, parseCollection, summarize } from '../scripts/collection.mjs';
 import { forest, indexOf, row, spell } from './fixtures.mjs';
 
 const HEADER = 'Name,Quantity,Scryfall ID,Set code,Collector number,Foil,Proxy';
@@ -26,6 +26,27 @@ test('parseCollection rejects bad headers, empty exports, IDs and proxy flags', 
   assert.throws(() => parseCollection(HEADER), /no card rows/);
   assert.throws(() => parseCollection(`${HEADER}\n${csvRow().replace(SCRYFALL_ID, 'bad')}`), /Scryfall ID/);
   assert.throws(() => parseCollection(`${HEADER}\n${csvRow().replace('false', 'maybe')}`), /Proxy/);
+});
+
+test('parseCollection reads binder exports without a Proxy column as real cards', () => {
+  const rows = parseCollection(
+    `Binder Name,Binder Type,Name,Quantity,Scryfall ID,Set code,Collector number,Foil\n` +
+      `beholder,deck,Forest,2,${SCRYFALL_ID},TST,001,normal\nall cards,binder,Forest,3,${SCRYFALL_ID},TST,001,normal`,
+  );
+  assert.deepEqual(
+    rows.map(({ isProxy, inDeckBinder }) => ({ isProxy, inDeckBinder })),
+    [
+      { isProxy: false, inDeckBinder: true },
+      { isProxy: false, inDeckBinder: false },
+    ],
+  );
+});
+
+test('holdDeckCards holds every copy of a card named in a deck binder', () => {
+  const inDeck = { ...row(forest, 1), inDeckBinder: true };
+  const spare = row(forest, 4);
+  const free = row(spell, 2);
+  assert.deepEqual(holdDeckCards([inDeck, spare, free]), { free: [free], held: [inDeck, spare] });
 });
 
 test('ownedCounts merges printings by oracle ID and counts rows missing from the cache', () => {

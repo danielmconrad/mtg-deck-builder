@@ -1,7 +1,7 @@
 import { parse } from 'csv-parse/sync';
 import { isBasic } from './card.mjs';
 
-const REQUIRED_HEADERS = ['Name', 'Quantity', 'Scryfall ID', 'Set code', 'Collector number', 'Foil', 'Proxy'];
+const REQUIRED_HEADERS = ['Name', 'Quantity', 'Scryfall ID', 'Set code', 'Collector number', 'Foil'];
 const UUID_PATTERN = /^[a-f\d]{8}(?:-[a-f\d]{4}){3}-[a-f\d]{12}$/i;
 const POSITIVE_INTEGER = /^[1-9]\d*$/;
 const HEADER_ROWS = 1;
@@ -19,7 +19,10 @@ function toRow(record, location) {
     throw new Error(`${location}: Quantity must be a positive integer`);
   }
   if (!UUID_PATTERN.test(record['Scryfall ID'])) throw new Error(`${location}: invalid Scryfall ID`);
-  if (!['true', 'false'].includes(record.Proxy)) throw new Error(`${location}: invalid Proxy flag`);
+  // Binder exports have no Proxy column, and their rows are real cards.
+  if (record.Proxy !== undefined && !['true', 'false'].includes(record.Proxy)) {
+    throw new Error(`${location}: invalid Proxy flag`);
+  }
   if (!record['Set code'] || !record['Collector number'] || !record.Foil) {
     throw new Error(`${location}: incomplete printing information`);
   }
@@ -31,6 +34,7 @@ function toRow(record, location) {
     collectorNumber: record['Collector number'],
     finish: record.Foil,
     isProxy: record.Proxy === 'true',
+    inDeckBinder: record['Binder Type'] === 'deck',
   };
 }
 
@@ -43,6 +47,16 @@ export function parseCollection(text, source = 'collection') {
   });
   if (!records.length) throw new Error(`${source}: no card rows`);
   return records.map((record, index) => toRow(record, `${source}: record ${index + HEADER_ROWS + 1}`));
+}
+
+// Binder exports list built decks as deck binders. A card named in any of them is in use, so every copy
+// of it, spares in other binders included, is held back from new decks.
+export function holdDeckCards(rows) {
+  const inDecks = new Set(rows.filter((row) => row.inDeckBinder).map((row) => row.name));
+  return {
+    free: rows.filter((row) => !inDecks.has(row.name)),
+    held: rows.filter((row) => inDecks.has(row.name)),
+  };
 }
 
 const sumQuantities = (rows) => rows.reduce((total, row) => total + row.quantity, 0);

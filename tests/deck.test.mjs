@@ -18,7 +18,7 @@ const deck = (fields = {}) => ({
   format: 'commander',
   status: 'draft',
   allow_proxies: false,
-  strategy: 'Test',
+  primer: 'Test',
   commanders: [entry(leader.name)],
   mainboard: [entry(forest.name, 99)],
   ...fields,
@@ -80,19 +80,18 @@ test('removeCopies refuses to remove more copies than the list holds', () => {
   assert.throws(() => removeCopies(tallies, forest, 3), /cannot remove 3; the list has 2/);
 });
 
-test('applyUpgrades makes each swap in place and leaves the deck untouched', () => {
+test('applyUpgrades makes each swap, keeps the adds apart and leaves the deck untouched', () => {
   const deck = {
     mainboard: [entry('Forest', 2, { role: 'land' }), entry('Example Spell')],
     upgrades: [
       { add: entry('Sol Ring', 1, { role: 'ramp' }), cut: entry('Example Spell'), reason: 'Faster' },
       { add: entry('Example Spell'), cut: entry('Forest'), reason: 'Back in' },
+      { add: entry('Arcane Signet', 1, { role: 'ramp' }), cut: entry('Sol Ring'), reason: 'Later cut of an add' },
     ],
   };
-  assert.deepEqual(applyUpgrades(deck).mainboard, [
-    entry('Forest', 1, { role: 'land' }),
-    entry('Example Spell'),
-    entry('Sol Ring', 1, { role: 'ramp' }),
-  ]);
+  const applied = applyUpgrades(deck);
+  assert.deepEqual(applied.mainboard, [entry('Forest', 1, { role: 'land' })]);
+  assert.deepEqual(applied.upgradesIn, [entry('Example Spell'), entry('Arcane Signet', 1, { role: 'ramp' })]);
   assert.equal(deck.mainboard[1].quantity, 1);
 });
 

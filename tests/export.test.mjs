@@ -71,6 +71,20 @@ test('each format lists swap-out cards in the deck and sideboard cards outside i
     exportDeck(withSideboard),
     'Commander\n1 Example Leader\n\n98 Forest\n\nSwap Out\n1 Sol Ring\n\nSideboard\n1 Example Spell\n',
   );
+  const withUpgradesIn = {
+    ...deck,
+    mainboard: [entry('Forest', 98)],
+    upgradesIn: [entry('Sol Ring', 1, { role: 'ramp', scryfall_id: RING_ID })],
+  };
+  assert.match(exportDeck(withUpgradesIn), /98 Forest\n\nUpgrades\n1 Sol Ring\n$/);
+  assert.match(
+    exportDeck(withUpgradesIn, { format: 'moxfield', printingOf }),
+    /Deck\n98 Forest\n\nSideboard\n1 Sol Ring \(CMR\) 472\n$/,
+  );
+  assert.match(
+    exportDeck(withUpgradesIn, { format: 'archidekt', printingOf }),
+    /98x Forest\n1x Sol Ring \(CMR\) 472 \[Upgrade,Ramp\]\n$/,
+  );
   assert.match(
     exportDeck(withSideboard, { format: 'moxfield', printingOf }),
     /Deck\n98 Forest\n1 Sol Ring \(CMR\) 472\n\nSideboard\n1 Example Spell\n$/,

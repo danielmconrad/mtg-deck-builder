@@ -5,7 +5,7 @@ format: commander
 status: example
 allow_proxies: false
 unlimited_basics: false
-strategy: Draw cards from creature diversity and build a resilient board.
+primer: Draw cards from creature diversity and build a resilient board.
 power_notes: Discuss your playgroup's expectations before brewing.
 budget:
   amount: 30
@@ -38,7 +38,4 @@ upgrades:
     reason: Illustrates a paired swap for cheaper ramp; not an approved purchase.
 playtests: []
 notes: >-
-  This is a deliberately incomplete, 40-card schema example, not a recommended
-  or verified-owned deck. The budget is illustrative. Replace the brief and
-  commander, complete the mainboard, and verify basics and ownership before play.
-  For casual-60, set format to casual-60 and commanders to an empty list.
+  This is a deliberately incomplete, 40-card schema example, not a recommended or verified-owned deck. The budget is illustrative. Replace the brief and commander, complete the mainboard, and verify basics and ownership before play. For casual-60, set format to casual-60 and commanders to an empty list.

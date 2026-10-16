@@ -1,10 +1,10 @@
 # Agent Instructions
 
-Read [README.md](README.md) first, and the deck's `decks/<slug>/deck.yaml` when working on an existing deck. For a new deck, follow the `new-deck` skill in [.claude/skills/new-deck/SKILL.md](.claude/skills/new-deck/SKILL.md). For plans, role counts, land counts, brackets or reviewing a deck, use [deckbuilding-strategy](.claude/skills/deckbuilding-strategy/SKILL.md). Every command documents its options with `mise run <task> -- --help`. Ask before adding infrastructure such as a database, server or frontend.
+Read [README.md](README.md) first, and the deck's `deck.yaml` (under `decks/`, possibly nested, e.g. `decks/brad/<slug>/`) when working on an existing deck. For a new deck, follow the `new-deck` skill in [.claude/skills/new-deck/SKILL.md](.claude/skills/new-deck/SKILL.md). For plans, role counts, land counts, brackets or reviewing a deck, use [deckbuilding-strategy](.claude/skills/deckbuilding-strategy/SKILL.md). Every command documents its options with `mise run <task> -- --help`. Ask before adding infrastructure such as a database, server or frontend.
 
 ## Collection
 
-- Every `collections/*.csv` supplies cards except protected collections (`MTG_PROTECTED_COLLECTIONS` in `.env`, default `Precons`). Mention useful protected copies, but never put them in a deck. `MTG_COLLECTIONS` can limit which collections are read at all. Don't pass `--protect` or `--collections` unless the user asks.
+- Every `.csv` under `collections/` (at any depth) supplies cards except protected collections (`MTG_PROTECTED_COLLECTIONS` in `.env`, path globs, default `collections/**/Precons.csv`). Mention useful protected copies, but never put them in a deck. `MTG_COLLECTIONS` (path globs such as `collections/conrad*`) can limit which collections are read at all. A deck's own `collections` field in `deck.yaml` overrides `MTG_COLLECTIONS` for that deck. Don't pass `--protect` or `--collections` unless the user asks.
 - Never edit the CSV exports. Collection changes come from fresh ManaBox exports.
 - Decks are independent. Don't reserve cards across decks, and don't claim several decks can be assembled at once.
 

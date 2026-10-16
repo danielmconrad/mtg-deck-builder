@@ -1,0 +1,95 @@
+Commander
+1 Thranduil, the Elvenking (HOB) 246
+
+Deck
+1 Arwen Undómiel (LTR) 194
+1 Marwyn, the Preserver (FRA) 315
+1 Elrond, Lord of Rivendell (LTR) 307
+1 Glorfindel, Dauntless Rescuer (LTR) 171
+1 Trystan, Callous Cultivator // Trystan, Penitent Culler (ECL) 291
+1 Celeborn the Wise (LTR) 156
+1 Galion, Elvenking's Butler (HOB) 125
+1 High Perfect Morcant (ECL) 229
+1 Kagha, Shadow Archdruid (CLB) 279
+1 Legolas, Counter of Kills (LTR) 212
+1 Thranduil, Sindarin Liege // Silvan Rally (HOB) 166
+1 Maralen, Fae Ascendant (ECL) 233
+1 Thranduil the Strategist (HOC) 106
+1 Izoni, Center of the Web (MKM) 362
+1 Elvish Mystic (SOC) 266
+1 Woodland Weavemaster (HOB) 143
+1 Circle of Dreams Druid (AFR) 176
+1 Formidable Speaker (ECL) 176
+1 Guardian of the Halls (HOB) 127
+1 Elvenking's Harper (HOB) 38
+1 Iron-Shield Elf (ECL) 108
+1 Aftermath Analyst (EOC) 91
+1 Wood Elves (HOB) 142
+1 Thranduil's Company (HOB) 168
+1 Eclipsed Elf (ECL) 218
+1 Boughside Wanderers (HOB) 121
+1 Moonglove Extractor (ECL) 109
+1 Soulknife Spy (AFR) 75
+1 Silvan Reveler (HOB) 163
+1 Morcant's Loyalist (ECL) 341
+1 Moon-Vigil Adherents (ECL) 184
+1 Winter Eladrin (CLB) 104
+1 Morcant's Eyes (ECL) 185
+1 Liliana the Repentant (FRA) 231
+1 Midnight Tilling (ECL) 182
+1 Studious First-Year // Rampant Growth (SOS) 162
+1 Tend the Sprigs (ECL) 197
+1 Embrace the Paradox (SOS) 186
+1 Fatal Push (FCA) 9
+1 Bilbo's Deadly Slice (HOB) 62
+1 Feed the Cycle (BLB) 94
+1 Vraska's Final Mercy (FRA) 71
+1 Bogslither's Embrace (ECL) 94
+1 Grim Bounty (AFR) 106
+1 Shredder's Technique (TMT) 232
+1 Awaken the Honored Dead (TDM) 383
+1 Reality Shift (SOC) 199
+1 Arcane Denial (MSC) 147
+1 Villainous Wrath (SPM) 74
+1 Sandman's Quicksand (SPM) 63
+1 Blossoming Defense (ECL) 167
+1 Snakeskin Veil (STA) 57
+1 Foreboding Landscape (TDC) 365
+1 Elven Passage (HOB) 238
+1 Hobbit Hole (HOB) 184
+1 Shipwreck Marsh (FRA) 401
+1 Hidden Lair (MSH) 269
+1 Serpent's Pass (TLA) 279
+1 Mirkwood (HOB) 188
+1 Elvenking's Halls (HOB) 182
+1 Thornwood Falls (TDM) 269
+1 Meditation Pools (TLA) 272
+13 Forest (CLB) 468
+6 Island (HOB) 195
+6 Swamp (HOB) 191
+1 Encroaching Dragonstorm (TDM) 142
+1 Emergent Sequence (STX) 129
+1 Kishla Village (TDM) 259
+1 Jungle Hollow (TDM) 258
+1 Foggy Bottom Swamp (TLA) 269
+1 Mirkwood Pathmaker (HOB) 129
+1 Lys Alana Informant (ECL) 181
+1 Elven Raft-Steerer (HOB) 37
+1 Scarblade Scout (ECL) 118
+1 Cache Grab (BLB) 167
+1 Stoic Grove-Guide (ECL) 243
+1 Shattered Wings (EOE) 206
+
+Sideboard
+1 Sol Ring (EOC) 57
+1 Arcane Signet (LTC) 273
+1 Command Tower (EOC) 59
+1 Opulent Palace
+1 Zagoth Triome
+1 Priest of Titania
+1 Elvish Archdruid (LTC) 237
+1 Llanowar Elves
+1 Fyndhorn Elves
+1 Elvish Harbinger
+1 Skullclamp (TDC) 103
+1 Beast Within (EOC) 93

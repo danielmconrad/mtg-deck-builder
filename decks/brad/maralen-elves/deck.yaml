@@ -1,0 +1,367 @@
+# yaml-language-server: $schema=../../../schemas/deck.schema.json
+schema_version: 1
+name: Court of Mirkwood
+format: commander
+status: draft
+bracket: 3
+allow_proxies: false
+unlimited_basics: true
+collections:
+  - 'collections/brad/*'
+primer: >-
+  Ramp with mana Elves and land drops, then turn every Elf and Faerie that enters into card advantage: Maralen exiles two cards from an opponent's library each time and lets you cast one for free once a turn. Landfall Thranduils and Springleaf Parade flood the board, and the Elf lords (Morcant's Loyalist, Thranduil, Sindarin Liege, Moon-Vigil Adherents) turn that wide board into a lethal attack.
+power_notes: >-
+  Bracket 3 (Upgraded). Built only from BradsCollection's "all cards" binder with the commonest staples (Sol Ring, Arcane Signet, Command Tower, Cultivate) tied up in Brad's other decks, so it plays nearer an upgraded precon until the upgrades go in. No mass land denial, extra turns or two-card combos.
+notes: >-
+  Brad's deck, built only from his collection (see collections).
+budget:
+  amount: 100
+  currency: USD
+commanders:
+  - name: Maralen, Fae Ascendant
+    quantity: 1
+mainboard:
+  # Elves, Faeries and changelings
+  - name: "Morcant's Loyalist"
+    quantity: 1
+    role: synergy, wincon
+  - name: 'Thranduil, Sindarin Liege // Silvan Rally'
+    quantity: 1
+    role: synergy, wincon
+  - name: 'Moon-Vigil Adherents'
+    quantity: 1
+    role: synergy, wincon
+  - name: 'High Perfect Morcant'
+    quantity: 1
+    role: synergy
+  - name: 'Celeborn the Wise'
+    quantity: 1
+    role: synergy
+  - name: 'Legolas, Counter of Kills'
+    quantity: 1
+    role: synergy
+  - name: 'Elrond, Lord of Rivendell'
+    quantity: 1
+    role: synergy
+  - name: "Galion, Elvenking's Butler"
+    quantity: 1
+    role: synergy
+  - name: 'Kagha, Shadow Archdruid'
+    quantity: 1
+    role: synergy, draw
+  - name: 'Izoni, Center of the Web'
+    quantity: 1
+    role: synergy, wincon
+  - name: 'Trystan, Callous Cultivator // Trystan, Penitent Culler'
+    quantity: 1
+    role: synergy
+  - name: 'Elven Raft-Steerer'
+    quantity: 1
+    role: synergy
+  - name: 'Arwen Undómiel'
+    quantity: 1
+    role: synergy
+  - name: 'Mirkwood Pathmaker'
+    quantity: 1
+    role: synergy
+  - name: 'Lys Alana Informant'
+    quantity: 1
+    role: synergy
+  - name: 'Winter Eladrin'
+    quantity: 1
+    role: synergy, removal
+  - name: 'Glamermite'
+    quantity: 1
+    role: synergy
+  - name: 'Faerie Snoop'
+    quantity: 1
+    role: synergy, draw
+  - name: 'Illusion Spinners'
+    quantity: 1
+    role: synergy
+  - name: 'Mutable Explorer'
+    quantity: 1
+    role: synergy, ramp
+  - name: 'Stoic Grove-Guide'
+    quantity: 1
+    role: synergy
+  - name: 'Springleaf Parade'
+    quantity: 1
+    role: synergy, wincon
+  - name: "Morcant's Eyes"
+    quantity: 1
+    role: synergy
+  # Ramp
+  - name: 'Elvish Mystic'
+    quantity: 1
+    role: ramp, synergy
+  - name: 'Woodland Weavemaster'
+    quantity: 1
+    role: ramp, synergy
+  - name: 'Wood Elves'
+    quantity: 1
+    role: ramp, synergy
+  - name: 'Circle of Dreams Druid'
+    quantity: 1
+    role: ramp, synergy
+  - name: 'Thranduil the Strategist'
+    quantity: 1
+    role: ramp, synergy
+  - name: "Thranduil's Company"
+    quantity: 1
+    role: ramp, synergy
+  - name: 'Studious First-Year // Rampant Growth'
+    quantity: 1
+    role: ramp
+  - name: 'Emergent Sequence'
+    quantity: 1
+    role: ramp
+  - name: 'Encroaching Dragonstorm'
+    quantity: 1
+    role: ramp
+  - name: 'Tend the Sprigs'
+    quantity: 1
+    role: ramp
+  - name: 'Summon: Fenrir'
+    quantity: 1
+    role: ramp
+  # Card advantage
+  - name: 'Eclipsed Elf'
+    quantity: 1
+    role: draw, synergy
+  - name: 'Moonglove Extractor'
+    quantity: 1
+    role: draw, synergy
+  - name: 'Soulknife Spy'
+    quantity: 1
+    role: draw, synergy
+  - name: 'Silvan Reveler'
+    quantity: 1
+    role: draw, synergy
+  - name: 'Boughside Wanderers'
+    quantity: 1
+    role: draw, synergy
+  - name: 'Thranduil, the Elvenking'
+    quantity: 1
+    role: draw, synergy
+  - name: 'Formidable Speaker'
+    quantity: 1
+    role: draw, synergy
+  - name: 'Embrace the Paradox'
+    quantity: 1
+    role: draw
+  - name: 'Mister Fantastic, Reed Richards'
+    quantity: 1
+    role: draw
+  - name: 'Agent Venom'
+    quantity: 1
+    role: draw
+  # Removal
+  - name: 'Fatal Push'
+    quantity: 1
+    role: removal
+  - name: "Bilbo's Deadly Slice"
+    quantity: 1
+    role: removal
+  - name: 'Feed the Cycle'
+    quantity: 1
+    role: removal
+  - name: "Vraska's Final Mercy"
+    quantity: 1
+    role: removal
+  - name: "Bogslither's Embrace"
+    quantity: 1
+    role: removal
+  - name: 'Grim Bounty'
+    quantity: 1
+    role: removal
+  - name: "Shredder's Technique"
+    quantity: 1
+    role: removal
+  - name: 'Awaken the Honored Dead'
+    quantity: 1
+    role: removal
+  - name: 'Reality Shift'
+    quantity: 1
+    role: removal
+  - name: 'Shattered Wings'
+    quantity: 1
+    role: removal
+  - name: 'Arcane Denial'
+    quantity: 1
+    role: removal
+  - name: 'Unforgiving Aim'
+    quantity: 1
+    role: removal, synergy
+  # Wipes
+  - name: 'Villainous Wrath'
+    quantity: 1
+    role: wipe
+  - name: "Sandman's Quicksand"
+    quantity: 1
+    role: wipe
+  # Protection
+  - name: 'Blossoming Defense'
+    quantity: 1
+    role: protection
+  - name: 'Snakeskin Veil'
+    quantity: 1
+    role: protection
+  - name: 'Biosynthic Burst'
+    quantity: 1
+    role: protection
+  # Lands
+  - name: 'Foreboding Landscape'
+    quantity: 1
+    role: land
+  - name: 'Elven Passage'
+    quantity: 1
+    role: land
+  - name: 'Hobbit Hole'
+    quantity: 1
+    role: land
+  - name: 'Kishla Village'
+    quantity: 1
+    role: land
+  - name: 'Shipwreck Marsh'
+    quantity: 1
+    role: land
+  - name: 'Hidden Lair'
+    quantity: 1
+    role: land
+  - name: "Serpent's Pass"
+    quantity: 1
+    role: land
+  - name: 'Mirkwood'
+    quantity: 1
+    role: land
+  - name: 'Foggy Bottom Swamp'
+    quantity: 1
+    role: land
+  - name: 'Jungle Hollow'
+    quantity: 1
+    role: land
+  - name: "Elvenking's Halls"
+    quantity: 1
+    role: land
+  - name: 'Thornwood Falls'
+    quantity: 1
+    role: land
+  - name: 'Meditation Pools'
+    quantity: 1
+    role: land
+  - name: 'Forest'
+    quantity: 13
+    role: land
+  - name: 'Island'
+    quantity: 6
+    role: land
+  - name: 'Swamp'
+    quantity: 6
+    role: land
+upgrades:
+  - add:
+      name: 'Sol Ring'
+      quantity: 1
+      role: ramp
+    cut:
+      name: 'Summon: Fenrir'
+      quantity: 1
+    reason: 'Turn-one acceleration toward a turn-three or turn-four Maralen.'
+  - add:
+      name: 'Arcane Signet'
+      quantity: 1
+      role: ramp
+    cut:
+      name: 'Emergent Sequence'
+      quantity: 1
+    reason: 'Two-mana rock that makes all three colors.'
+  - add:
+      name: "Nature's Lore"
+      quantity: 1
+      role: ramp
+    cut:
+      name: 'Tend the Sprigs'
+      quantity: 1
+    reason: 'Puts a Forest into play untapped for two mana, and it finds a Triome.'
+  - add:
+      name: 'Command Tower'
+      quantity: 1
+      role: land
+    cut:
+      name: 'Kishla Village'
+      quantity: 1
+    reason: 'Untapped land for all three colors.'
+  - add:
+      name: 'Opulent Palace'
+      quantity: 1
+      role: land
+    cut:
+      name: 'Jungle Hollow'
+      quantity: 1
+    reason: 'Three colors instead of two from the same tapped land.'
+  - add:
+      name: 'Zagoth Triome'
+      quantity: 1
+      role: land
+    cut:
+      name: 'Foggy Bottom Swamp'
+      quantity: 1
+    reason: 'Three-color land that also cycles away late.'
+  - add:
+      name: 'Llanowar Elves'
+      quantity: 1
+      role: ramp, synergy
+    cut:
+      name: 'Mirkwood Pathmaker'
+      quantity: 1
+    reason: "A second one-mana mana Elf, which counts toward Maralen's free-spell cap."
+  - add:
+      name: 'Elvish Archdruid'
+      quantity: 1
+      role: ramp, synergy, wincon
+    cut:
+      name: 'Lys Alana Informant'
+      quantity: 1
+    reason: 'Lord that taps for one green per Elf; huge mana with a wide board.'
+  - add:
+      name: 'Heritage Druid'
+      quantity: 1
+      role: ramp, synergy
+    cut:
+      name: 'Glamermite'
+      quantity: 1
+    reason: 'Turns three summoning-sick Elves into three mana for explosive turns.'
+  - add:
+      name: 'Elvish Warmaster'
+      quantity: 1
+      role: synergy, wincon
+    cut:
+      name: 'Elven Raft-Steerer'
+      quantity: 1
+    reason: 'Makes an Elf token whenever another Elf enters; each token also triggers Maralen.'
+  - add:
+      name: 'Beast Whisperer'
+      quantity: 1
+      role: draw, synergy
+    cut:
+      name: 'Stoic Grove-Guide'
+      quantity: 1
+    reason: 'Draws a card on every creature spell, repeatable card advantage.'
+  - add:
+      name: 'Skullclamp'
+      quantity: 1
+      role: draw
+    cut:
+      name: "Morcant's Eyes"
+      quantity: 1
+    reason: 'Elf and changeling tokens become two cards each.'
+  - add:
+      name: 'Beast Within'
+      quantity: 1
+      role: removal
+    cut:
+      name: 'Shattered Wings'
+      quantity: 1
+    reason: 'Instant answer to any permanent, not just fliers and artifacts.'
+playtests: []

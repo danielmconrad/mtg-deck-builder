@@ -38,7 +38,7 @@ description = "Print or copy a paste-ready decklist: -- <slug> [--format FORMAT]
 run = "node scripts/cli.mjs deck:export"
 
 [tasks."deck:files"]
-description = "Write the committed decklist files beside deck.yaml: -- <slug> [--format FORMAT]"
+description = "Write the committed Archidekt and Moxfield decklist files beside deck.yaml: -- <slug>"
 run = "node scripts/cli.mjs deck:files"
 
 [tasks."deck:upgrades"]

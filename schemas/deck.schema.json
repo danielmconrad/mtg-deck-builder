@@ -3,7 +3,7 @@
   "title": "Collection-first Magic deck",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "name", "format", "status", "allow_proxies", "strategy", "commanders", "mainboard"],
+  "required": ["schema_version", "name", "format", "status", "allow_proxies", "primer", "commanders", "mainboard"],
   "properties": {
     "schema_version": { "const": 1 },
     "name": { "$ref": "#/definitions/text" },
@@ -12,7 +12,7 @@
     "allow_proxies": { "type": "boolean" },
     "unlimited_basics": { "type": "boolean" },
     "bracket": { "enum": [1, 2, 3, 4, 5] },
-    "strategy": { "$ref": "#/definitions/text" },
+    "primer": { "$ref": "#/definitions/text" },
     "power_notes": { "type": "string" },
     "notes": { "type": "string" },
     "budget": {
@@ -23,6 +23,12 @@
         "amount": { "type": "number", "minimum": 0 },
         "currency": { "enum": ["USD", "EUR"] }
       }
+    },
+    "collections": {
+      "description": "Path globs of the collections this deck is built from, e.g. collections/brad/*. Overrides MTG_COLLECTIONS; --collections overrides it.",
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/text" }
     },
     "commanders": { "type": "array", "maxItems": 2, "items": { "$ref": "#/definitions/card" } },
     "mainboard": { "type": "array", "items": { "$ref": "#/definitions/card" } },

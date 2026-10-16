@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../../schemas/deck.schema.json
+# yaml-language-server: $schema=../../../schemas/deck.schema.json
 schema_version: 1
 name: Gold Under the Mountain
 format: commander
@@ -6,14 +6,12 @@ status: draft
 bracket: 3
 allow_proxies: false
 unlimited_basics: true
-strategy: >-
-  Flood the board with Dwarves; each one makes a Treasure through Thorin, and
-  every artifact token gives the other Dwarves +1/+0. Win by swinging with a
-  wide, pumped Dwarf team, backed by equipment, An Unexpected Party and
-  Collective Inferno.
+collections:
+  - 'collections/conrad/*'
+primer: >-
+  Flood the board with Dwarves; each one makes a Treasure through Thorin, and every artifact token gives the other Dwarves +1/+0. Win by swinging with a wide, pumped Dwarf team, backed by equipment, An Unexpected Party and Collective Inferno.
 power_notes: >-
-  Bracket 3 (Upgraded). One Game Changer (The One Ring). No mass land denial,
-  extra turns or two-card combos.
+  Bracket 3 (Upgraded). One Game Changer (The One Ring). No mass land denial, extra turns or two-card combos.
 budget:
   amount: 100
   currency: USD
