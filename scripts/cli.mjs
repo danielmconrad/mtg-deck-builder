@@ -4,8 +4,8 @@ import { emptyCache } from './card-cache.mjs';
 import { cardIndex } from './card-index.mjs';
 import { summarize } from './collection.mjs';
 import { copyToClipboard } from './clipboard.mjs';
-import { deckEntries, newDeck } from './deck.mjs';
-import { PASTE_HINTS, exportDeck } from './export.mjs';
+import { applyUpgrades, deckEntries, newDeck } from './deck.mjs';
+import { PASTE_HINTS, exportDeck, printingChooser } from './export.mjs';
 import {
   checkLines,
   collectionSummaryLine,
@@ -122,19 +122,22 @@ async function deckStatsCommand({ workspace, slug, write }) {
 }
 
 async function deckExport({ workspace, slug, options, write, warn, copyText }) {
-  const [deck, index] = await Promise.all([workspace.loadDeck(slug), workspace.loadCardIndex()]);
-  const uncachedPins = new Set();
-  const printingOf = (entry) => {
-    if (!entry.scryfall_id) return null;
-    const card = index.byId.get(entry.scryfall_id);
-    if (!card) uncachedPins.add(entry.name);
-    return card ?? null;
-  };
+  const [loadedDeck, collections, index] = await Promise.all([
+    workspace.loadDeck(slug),
+    workspace.loadCollections(),
+    workspace.loadCardIndex(),
+  ]);
+  const deck = options['apply-upgrades'] ? applyUpgrades(loadedDeck) : loadedDeck;
+  const uncached = new Set();
+  const printingOf = printingChooser(index, collections.organized, uncached);
   const format = options.format ?? 'text';
   const text = exportDeck(deck, { format, printingOf });
   warn('Export does not validate the deck; run deck:check first.');
-  if (uncachedPins.size) {
-    warn(`Pinned printings not cached, exported by name only: ${[...uncachedPins].join(', ')} (run cards:refresh)`);
+  if (options['apply-upgrades'] && loadedDeck.upgrades?.length) {
+    warn(`Applied ${loadedDeck.upgrades.length} upgrade swaps; some added cards may not be owned yet.`);
+  }
+  if (uncached.size) {
+    warn(`Printings not cached, exported by name only: ${[...uncached].join(', ')} (run cards:refresh)`);
   }
   if (!options.copy) {
     write(text.trimEnd());
@@ -265,9 +268,11 @@ const COMMANDS = {
     run: deckExport,
     takesSlug: true,
     summary: 'Print a paste-ready decklist for another site, or copy it to the clipboard',
-    details: 'Does not validate the deck. Pinned scryfall_id printings export with set and collector number.',
+    details:
+      'Does not validate the deck. Moxfield and Archidekt lines carry set and collector number: the pinned scryfall_id, else the printing owned in Organized, else a cached printing.',
     options: {
       format: { type: 'string', placeholder: 'FORMAT', description: 'text (default), moxfield or archidekt' },
+      'apply-upgrades': { type: 'boolean', description: 'Export with every upgrade swap made, e.g. for playtesting' },
       copy: { type: 'boolean', description: 'Copy to the clipboard instead of printing' },
     },
   },

@@ -131,7 +131,7 @@ test('deck:export --copy sends the formatted list to the clipboard instead of st
     const copyText = async (text) => copied.push(text);
     const args = ['deck:export', 'fixture', '--format', 'moxfield', '--copy'];
     assert.equal(await runCli(args, { root, write: (line) => stdout.push(line), warn() {}, copyText }), 0);
-    assert.deepEqual(copied, ['Deck\n60 Forest\n']);
+    assert.deepEqual(copied, ['Deck\n60 Forest (TST) 1\n']);
     assert.match(stdout.join(), /Copied fixture in moxfield format to the clipboard/);
   }));
 
@@ -142,7 +142,20 @@ test('deck:export warns when a pinned printing is not cached', () =>
     );
     assert.equal(await cli('deck:export', 'fixture', '--format', 'moxfield'), 0);
     assert.deepEqual(stdout, ['Deck\n60 Forest']);
-    assert.match(stderr.join(), /exported by name only: Forest/);
+    assert.match(stderr.join(), /Printings not cached, exported by name only: Forest/);
+  }));
+
+test('deck:export --apply-upgrades exports the deck with every swap made', () =>
+  inWorkspace(async ({ cli, writeDeck, stdout, stderr }) => {
+    const swap = {
+      add: { name: 'Sol Ring', quantity: 1, role: 'ramp' },
+      cut: { name: 'Forest', quantity: 1 },
+      reason: 'Fixture',
+    };
+    await writeDeck({ ...casualDeck(), upgrades: [swap] });
+    assert.equal(await cli('deck:export', 'fixture', '--format', 'archidekt', '--apply-upgrades'), 0);
+    assert.deepEqual(stdout, ['59x Forest (TST) 1\n1x Sol Ring [ramp]']);
+    assert.match(stderr.join(), /Applied 1 upgrade swaps(.|\n)*exported by name only: Sol Ring/);
   }));
 
 test('--help prints the command overview, and with a command, its options', () =>

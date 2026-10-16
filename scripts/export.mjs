@@ -1,7 +1,27 @@
 import { roleLabels } from './deck.mjs';
 
 // Paste-ready decklists. Each format receives the deck and printingOf(entry), which returns the
-// cached card for an entry with a pinned scryfall_id, or null so the site picks its default printing.
+// cached printing to export for an entry, or null so the site picks its default printing.
+
+// Picks each entry's printing: its pinned scryfall_id, else the first owned non-proxy printing in
+// the given collection rows, else any cached printing. Names with no printing are added to missing.
+export function printingChooser(index, ownedRows, missing = new Set()) {
+  const ownedPrintings = new Map();
+  for (const row of ownedRows) {
+    const card = row.isProxy ? null : index.byId.get(row.scryfallId);
+    if (card && !ownedPrintings.has(card.oracleId)) ownedPrintings.set(card.oracleId, card);
+  }
+  return (entry) => {
+    if (entry.scryfall_id) {
+      const pinned = index.byId.get(entry.scryfall_id);
+      if (!pinned) missing.add(entry.name);
+      return pinned ?? null;
+    }
+    const { card } = index.lookup(entry);
+    if (!card) missing.add(entry.name);
+    return card ? (ownedPrintings.get(card.oracleId) ?? card) : null;
+  };
+}
 
 const printingSuffix = (card) => (card ? ` (${card.set.toUpperCase()}) ${card.collectorNumber}` : '');
 

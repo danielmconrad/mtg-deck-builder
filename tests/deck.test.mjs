@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { stringify } from 'yaml';
-import { newDeck, parseDeck, removeCopies, resolveEntries, roleLabels } from '../scripts/deck.mjs';
+import { applyUpgrades, newDeck, parseDeck, removeCopies, resolveEntries, roleLabels } from '../scripts/deck.mjs';
 import { entry, forest, indexOf, leader } from './fixtures.mjs';
 
 const deck = (fields = {}) => ({
@@ -70,4 +70,28 @@ test('resolveEntries merges printings of one card and records a pinned printing'
 test('removeCopies refuses to remove more copies than the list holds', () => {
   const { tallies } = resolveEntries([entry('Forest', 2)], indexOf(forest));
   assert.throws(() => removeCopies(tallies, forest, 3), /cannot remove 3; the list has 2/);
+});
+
+test('applyUpgrades makes each swap in place and leaves the deck untouched', () => {
+  const deck = {
+    mainboard: [entry('Forest', 2, { role: 'land' }), entry('Example Spell')],
+    upgrades: [
+      { add: entry('Sol Ring', 1, { role: 'ramp' }), cut: entry('Example Spell'), reason: 'Faster' },
+      { add: entry('Example Spell'), cut: entry('Forest'), reason: 'Back in' },
+    ],
+  };
+  assert.deepEqual(applyUpgrades(deck).mainboard, [
+    entry('Forest', 1, { role: 'land' }),
+    entry('Example Spell'),
+    entry('Sol Ring', 1, { role: 'ramp' }),
+  ]);
+  assert.equal(deck.mainboard[1].quantity, 1);
+});
+
+test('applyUpgrades refuses a cut the mainboard cannot cover', () => {
+  const deck = {
+    mainboard: [entry('Forest')],
+    upgrades: [{ add: entry('Sol Ring'), cut: entry('Forest', 2), reason: 'x' }],
+  };
+  assert.throws(() => applyUpgrades(deck), /cuts 2 Forest, but the mainboard has 1/);
 });

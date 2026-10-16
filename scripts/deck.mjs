@@ -1,6 +1,7 @@
 import Ajv from 'ajv';
 import { parseDocument, stringify } from 'yaml';
 import schema from '../schemas/deck.schema.json' with { type: 'json' };
+import { normalizeName } from './card.mjs';
 
 // Deck objects mirror the YAML document, so they keep its snake_case field names.
 
@@ -50,6 +51,24 @@ export function newDeck(slug, { format = 'commander', commanderNames = [], name 
   };
   parseDeck(serializeDeck(deck), `new deck ${slug}`);
   return deck;
+}
+
+// The deck as it would be with every upgrade swap made. Each add takes its cut's place in the list.
+export function applyUpgrades(deck) {
+  let mainboard = deck.mainboard.map((entry) => ({ ...entry }));
+  const findEntry = (name) => mainboard.find((entry) => normalizeName(entry.name) === normalizeName(name));
+  for (const { add, cut } of deck.upgrades ?? []) {
+    const target = findEntry(cut.name);
+    if (!target || target.quantity < cut.quantity) {
+      throw new Error(`Upgrade cuts ${cut.quantity} ${cut.name}, but the mainboard has ${target?.quantity ?? 0}`);
+    }
+    target.quantity -= cut.quantity;
+    const existing = findEntry(add.name);
+    if (existing) existing.quantity += add.quantity;
+    else mainboard.splice(mainboard.indexOf(target) + 1, 0, { ...add });
+    mainboard = mainboard.filter((entry) => entry.quantity > 0);
+  }
+  return { ...deck, mainboard };
 }
 
 // A card entry's role field holds comma-separated labels, e.g. "ramp, draw".
