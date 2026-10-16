@@ -57,7 +57,15 @@ mise run collection:search -- --identity BG --text "graveyard" --oracle
 mise run collection:search -- --identity C --type artifact --text "add \{" --json
 ```
 
-Filters combine, and `--type`, `--text` and `--name` take case-insensitive regular expressions. See `mise run collection:search -- --help` for the full list.
+Filters combine, and `--type`, `--text` and `--name` take case-insensitive regular expressions. To size up the collection before listing anything:
+
+```sh
+mise run collection:search -- --commanders --legal commander --group-by identity   # commander candidates per color identity
+mise run collection:search -- --identity WR --group-by creature-type               # tribes within red-white
+mise run collection:search -- --identity WR --nonland --text 'destroy target' --count
+```
+
+See `mise run collection:search -- --help` for the full list.
 
 ### Viewing a deck on Moxfield or Archidekt
 
@@ -118,6 +126,6 @@ Use exact Scryfall names. You can give a double-faced card by its front-face nam
 
 ## Working with an assistant
 
-Point the assistant at [AGENTS.md](AGENTS.md) (Claude Code and Copilot load it automatically). A good opening brief:
+Point the assistant at [AGENTS.md](AGENTS.md) (Claude Code and Copilot load it automatically). In Claude Code, the [`new-deck` skill](.claude/skills/new-deck/SKILL.md) holds the step-by-step brewing process; it loads when you ask for a new deck, or run `/new-deck`. A good opening brief:
 
 > Find three Commander directions my Organized collection supports. Keep precons intact, aim for casual interactive games, and suggest up to $30 of upgrades. Let me pick a direction before you build the list.

@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseIdentity, searchCollection, searchFilters } from '../scripts/search.mjs';
+import { countResults, groupResults, parseIdentity, searchCollection, searchFilters } from '../scripts/search.mjs';
 import { deckStats } from '../scripts/stats.mjs';
+import { identityLabel, orderedIdentity } from '../scripts/card.mjs';
 import { card, entry, forest, indexOf, leader, row, spell } from './fixtures.mjs';
 
 const elf = card('Llanowar Elves', {
@@ -85,4 +86,79 @@ test('deckStats reports cards it cannot resolve', () => {
     deckStats({ commanders: [], mainboard: [entry('Unknown Card')] }, index).problems.join(),
     /Unknown Card/,
   );
+});
+
+const background = card('Some Background', { typeLine: 'Legendary Enchantment — Background', colorIdentity: ['W'] });
+const planeswalker = card('Lead Walker', {
+  typeLine: 'Legendary Planeswalker — Teyo',
+  colorIdentity: ['W', 'U'],
+  oracleText: 'Lead Walker can be your commander.',
+});
+const kindred = card('Elf Rite', { typeLine: 'Kindred Instant — Elf', colorIdentity: ['G'] });
+const groupIndex = indexOf(leader, elf, ghoul, banned, background, planeswalker, kindred);
+const groupCollections = {
+  organized: [
+    row(leader, 1),
+    row(elf, 2),
+    row(ghoul, 1),
+    row(banned, 1),
+    row(background, 1),
+    row(planeswalker, 1),
+    row(kindred, 3),
+  ],
+  precons: [],
+};
+const search = (options) => searchCollection(groupCollections, groupIndex, searchFilters(options, groupIndex)).results;
+
+test('--commanders keeps legendary creatures, Backgrounds and "can be your commander" cards', () => {
+  assert.deepEqual(
+    search({ commanders: true }).map((result) => result.card.name),
+    ['Lead Walker', 'Some Background', 'Example Leader'],
+  );
+});
+
+test('countResults counts distinct cards and Organized copies', () => {
+  assert.deepEqual(countResults(search({ type: ['creature'] })), { cards: 3, copies: 4 });
+});
+
+test('grouping by identity uses WUBRG order and C for colorless', () => {
+  assert.deepEqual(groupResults(search({}), 'identity'), [
+    { key: 'G', cards: 3, copies: 6 },
+    { key: 'B', cards: 1, copies: 1 },
+    { key: 'C', cards: 1, copies: 1 },
+    { key: 'W', cards: 1, copies: 1 },
+    { key: 'WU', cards: 1, copies: 1 },
+  ]);
+});
+
+test('grouping by creature type counts each card once per type, including Kindred', () => {
+  assert.deepEqual(
+    groupResults(search({}), 'creature-type').map(({ key, cards }) => [key, cards]),
+    [
+      ['Elf', 3],
+      ['Druid', 1],
+      ['Zombie', 1],
+    ],
+  );
+});
+
+test('unknown --group-by keys are rejected with the valid choices', () => {
+  assert.throws(() => groupResults([], 'rarity'), /identity, creature-type/);
+});
+
+test('--nonland drops lands', () => {
+  const land = card('Some Land', { typeLine: 'Land', oracleText: '{T}: Add {C}.' });
+  const index = indexOf(land, elf);
+  const owned = { organized: [row(land, 1), row(elf, 1)], precons: [] };
+  const names = (options) =>
+    searchCollection(owned, index, searchFilters(options, index)).results.map((result) => result.card.name);
+  assert.deepEqual(names({ text: ['add \\{'] }), ['Some Land', 'Llanowar Elves']);
+  assert.deepEqual(names({ text: ['add \\{'], nonland: true }), ['Llanowar Elves']);
+});
+
+test('identity helpers order colors WUBRG regardless of Scryfall order', () => {
+  const golgari = card('Golgari Card', { colorIdentity: ['G', 'B'] });
+  assert.deepEqual(orderedIdentity(golgari), ['B', 'G']);
+  assert.equal(identityLabel(golgari), 'BG');
+  assert.equal(identityLabel(card('Colorless Card')), 'C');
 });

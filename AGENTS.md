@@ -1,6 +1,6 @@
 # Agent Instructions
 
-Read [README.md](README.md) and the target `decks/<slug>/deck.yaml` first. Ask before adding infrastructure such as a database, server or frontend.
+Read [README.md](README.md) first, and the deck's `decks/<slug>/deck.yaml` when working on an existing deck. For a new deck, follow the `new-deck` skill in [.claude/skills/new-deck/SKILL.md](.claude/skills/new-deck/SKILL.md). Every command documents its options with `mise run <task> -- --help`. Ask before adding infrastructure such as a database, server or frontend.
 
 ## Collection
 
@@ -10,11 +10,13 @@ Read [README.md](README.md) and the target `decks/<slug>/deck.yaml` first. Ask b
 
 ## Brewing
 
-- Before building, settle the format, the commander or theme, playgroup power level, budget, proxy policy and whether basics are unlimited. Ask only about what's missing.
-- For open-ended requests, use `collection:search` to propose two or three directions the collection supports, then let the user choose before writing a full list.
+- Before building, settle the format, the commander or theme, playgroup power level, budget, proxy policy and whether basics are unlimited. Ask only about what's missing. Organized holds very few basic lands, so ask whether the user has untracked basics (`unlimited_basics: true`) rather than letting every deck fail ownership.
+- For open-ended requests, survey with `collection:search` (`--commanders`, `--count`, `--group-by`) and propose two or three directions the collection supports. Let the user choose before running `deck:new` or writing a list.
 - Explain the game plan, mana base, key inclusions and weaknesses. Use `deck:stats` to back up claims about curve and color sources.
 - `deck.yaml` is the only decklist. Commanders go in `commanders`, not `mainboard`.
 - Build from owned cards. Suggest purchases only as `upgrades` swaps with a reason, and don't apply them without approval. A card the user approved but hasn't bought is still unowned.
+- Unowned cards have no card data until they're named in the deck and `cards:refresh -- --missing` runs. Ask before that refresh, since it uses the network, then price with `deck:upgrades`.
+- Give mainboard entries a `role` from: `land`, `ramp`, `draw`, `removal`, `wipe`, `protection`, `wincon`, `synergy`.
 - Never invent card text, legality, ownership, prices or test results. Use the cache via the CLI. If data is missing or stale, say so.
 - Record playtest notes and small changes in `playtests`. A few games don't make statistics.
 
@@ -22,7 +24,7 @@ Read [README.md](README.md) and the target `decks/<slug>/deck.yaml` first. Ask b
 
 - Run `mise run deck:check -- <slug>` after every deck edit, and read every ERROR and INCOMPLETE line. Exit code 2 is not a pass.
 - `cards:refresh` is the only command that uses the network. Run it when cards are missing (`-- --missing`) or prices are stale. Never run two at once.
-- For code changes, run the relevant test file, then `mise run check`. Tests must stay offline and use only fixtures from `tests/fixtures.mjs`, never the real collection. Unfinished decks may fail `decks:check`; say so rather than editing them.
+- For code changes, run the relevant test file, then `mise run check`. Tests must stay offline and use only fixtures from `tests/fixtures.mjs`, never the real collection. Other people's unfinished decks may make the all-decks `decks:check` fail; say so rather than editing them.
 - Run `mise run fix` before finishing a code change; `check` fails on lint errors or unformatted files. Don't silence a lint rule without a comment saying why.
 - Use the existing CSV, YAML and schema libraries. Pin new dependencies through npm.
 

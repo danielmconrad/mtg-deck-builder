@@ -6,10 +6,19 @@ import { summarize } from './collection.mjs';
 import { copyToClipboard } from './clipboard.mjs';
 import { deckEntries, newDeck } from './deck.mjs';
 import { PASTE_HINTS, exportDeck } from './export.mjs';
-import { checkLines, collectionSummaryLine, searchJson, searchLines, statsLines, upgradeLines } from './format.mjs';
+import {
+  checkLines,
+  collectionSummaryLine,
+  countLine,
+  groupLines,
+  searchJson,
+  searchLines,
+  statsLines,
+  upgradeLines,
+} from './format.mjs';
 import { checkDeck, worstOutcome } from './rules.mjs';
 import { fetchCards } from './scryfall.mjs';
-import { searchCollection, searchFilters } from './search.mjs';
+import { GROUP_BY_CHOICES, countResults, groupResults, searchCollection, searchFilters } from './search.mjs';
 import { deckStats } from './stats.mjs';
 import { commandHelp, overviewHelp, parseArgsOptions, withHelpOption } from './help.mjs';
 import { upgradeReport } from './upgrades.mjs';
@@ -29,13 +38,25 @@ async function collectionCheck({ workspace, write }) {
 }
 
 async function collectionSearch({ workspace, options, write, warn }) {
+  if (options.count && options['group-by']) throw new Error('Use --count or --group-by, not both');
   const [collections, index] = await Promise.all([workspace.loadCollections(), workspace.loadCardIndex()]);
   const { results, unresolvedRows } = searchCollection(collections, index, searchFilters(options, index));
   if (unresolvedRows) {
     warn(`${unresolvedRows} collection rows have no cached card data and were skipped; run cards:refresh`);
   }
-  printAll(write, options.json ? [searchJson(results)] : searchLines(results, { withOracleText: options.oracle }));
+  printAll(write, searchOutput(results, options));
   return 'pass';
+}
+
+// --group-by and --count summarize instead of listing; --json applies to whichever is printed.
+function searchOutput(results, options) {
+  const asJson = (value) => [JSON.stringify(value, null, 2)];
+  if (options['group-by']) {
+    const groups = groupResults(results, options['group-by']);
+    return options.json ? asJson(groups) : groupLines(groups);
+  }
+  if (options.count) return options.json ? asJson(countResults(results)) : [countLine(countResults(results))];
+  return options.json ? [searchJson(results)] : searchLines(results, { withOracleText: options.oracle });
 }
 
 // Scryfall identifiers for every collection row and every card a deck or upgrade names.
@@ -164,6 +185,11 @@ const SEARCH_OPTIONS = {
     placeholder: 'NAME',
     description: "Limit to this commander's color identity and Commander-legal cards",
   },
+  commanders: {
+    type: 'boolean',
+    description: 'Only cards that can be a commander: legendary creatures, Backgrounds, "can be your commander"',
+  },
+  nonland: { type: 'boolean', description: 'Exclude lands (modal spell/land cards count as spells)' },
   identity: { type: 'string', placeholder: 'WUBRG', description: 'Limit to a color identity; C means colorless only' },
   type: {
     type: 'string',
@@ -184,7 +210,13 @@ const SEARCH_OPTIONS = {
   precons: { type: 'boolean', description: 'Also list cards that only exist in Precons' },
   proxies: { type: 'boolean', description: 'Count proxy rows as owned copies' },
   oracle: { type: 'boolean', description: "Print each card's rules text" },
-  json: { type: 'boolean', description: 'Print machine-readable JSON' },
+  count: { type: 'boolean', description: 'Print only how many distinct cards and copies match' },
+  'group-by': {
+    type: 'string',
+    placeholder: 'KEY',
+    description: `Count matches per group instead of listing them: ${GROUP_BY_CHOICES.join(' or ')}`,
+  },
+  json: { type: 'boolean', description: 'Print machine-readable JSON (list, count or groups)' },
 };
 
 const COMMANDS = {

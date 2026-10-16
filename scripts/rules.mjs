@@ -1,4 +1,4 @@
-import { ageInDays, isBasic } from './card.mjs';
+import { ageInDays, hasCommanderText, isBackground, isBasic, isLegendaryCreature } from './card.mjs';
 import { availableCopies, ownedCounts } from './collection.mjs';
 import { deckEntries, resolveEntries } from './deck.mjs';
 
@@ -52,7 +52,6 @@ function sizeFindings(format, total) {
 }
 
 const hasKeyword = (card, keyword) => card.keywords.includes(keyword);
-const isBackground = (card) => card.frontType.includes('Background');
 const isTimeLordDoctor = (card) => /Time Lord Doctor$/.test(card.frontType);
 const hasPlainPartner = (card) => /^Partner(?:\s*\(|\s*$)/m.test(card.oracleText);
 const partnersWith = (card, other) => card.oracleText.includes(`Partner with ${other.name}`);
@@ -70,10 +69,10 @@ function isRecognizedPairing(first, second) {
   );
 }
 
+// A Background is only eligible as the second half of a pair.
 function isEligibleCommander(card, commanderCount) {
-  const isLegendaryCreature = card.frontType.includes('Legendary') && card.frontType.includes('Creature');
   const isPairedBackground = commanderCount === 2 && isBackground(card);
-  return isLegendaryCreature || isPairedBackground || card.oracleText.includes('can be your commander');
+  return isLegendaryCreature(card) || isPairedBackground || hasCommanderText(card);
 }
 
 function commanderFindings(commanders) {

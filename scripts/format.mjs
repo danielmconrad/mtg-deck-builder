@@ -1,4 +1,5 @@
 // Turns reports into the text the CLI prints. Nothing here decides an outcome.
+import { identityLabel, orderedIdentity } from './card.mjs';
 import { CARD_TYPES, CURVE_TOP_BUCKET, MANA_SYMBOLS } from './stats.mjs';
 import { CENTS_PER_UNIT, PRICE_MAX_AGE_DAYS } from './upgrades.mjs';
 
@@ -23,7 +24,7 @@ export function checkLines(slug, { total, findings, outcome }) {
 export function searchLines(results, { withOracleText = false } = {}) {
   const lines = results.flatMap(({ card, organized, precons }) => {
     const preconNote = precons ? ` (+${precons} in Precons)` : '';
-    const summary = `${organized}x ${card.name} ${card.manaCost} — ${card.typeLine} [${card.colorIdentity.join('') || 'C'}]${preconNote}`;
+    const summary = `${organized}x ${card.name} ${card.manaCost} — ${card.typeLine} [${identityLabel(card)}]${preconNote}`;
     const rulesText = withOracleText ? card.oracleText.split('\n').map((line) => `    ${line}`) : [];
     return [summary, ...rulesText];
   });
@@ -40,7 +41,7 @@ export const searchJson = (results) =>
       mana_cost: card.manaCost,
       mana_value: card.manaValue,
       type_line: card.typeLine,
-      color_identity: card.colorIdentity,
+      color_identity: orderedIdentity(card),
       oracle_text: card.oracleText,
     })),
     null,
@@ -89,4 +90,12 @@ export function upgradeLines({ currency, purchases, problems, unresolvedRows, to
     ...[...problems, ...unresolvedNote, ...purchases.map((purchase) => purchaseLine(purchase, currency))].map(indent),
     `${BUDGET_LABELS[outcome]}: ${money(totalCents, currency)} of ${money(budgetCents, currency)} budget`,
   ];
+}
+
+export const countLine = ({ cards, copies }) => `${cards} cards, ${copies} copies in Organized`;
+
+export function groupLines(groups) {
+  const width = Math.max(0, ...groups.map(({ cards }) => String(cards).length));
+  const lines = groups.map(({ key, cards, copies }) => `${String(cards).padStart(width)}  ${key} (${copies} copies)`);
+  return [...lines, `${groups.length} groups; counts are distinct cards`];
 }

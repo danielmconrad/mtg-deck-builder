@@ -1,3 +1,4 @@
+import { canBeCommander, creatureTypes, identityLabel, isLand } from './card.mjs';
 import { ownedCounts } from './collection.mjs';
 
 const COLORS = 'WUBRG';
@@ -37,6 +38,8 @@ export function searchFilters(options, index) {
     legalIn: options.legal,
     minManaValue: parseNumber(options['min-mv'], '--min-mv'),
     maxManaValue: parseNumber(options['max-mv'], '--max-mv'),
+    commandersOnly: Boolean(options.commanders),
+    nonlandOnly: Boolean(options.nonland),
     includePreconOnly: Boolean(options.precons),
     allowProxies: Boolean(options.proxies),
   };
@@ -47,6 +50,8 @@ export function searchFilters(options, index) {
 // One predicate per filter; an unset filter matches everything.
 const FILTER_PREDICATES = [
   (card, { identity }) => !identity || card.colorIdentity.every((color) => identity.has(color)),
+  (card, { commandersOnly }) => !commandersOnly || canBeCommander(card),
+  (card, { nonlandOnly }) => !nonlandOnly || !isLand(card),
   (card, { legalIn }) => !legalIn || card.legalities[legalIn] === 'legal',
   (card, { minManaValue }) => minManaValue === undefined || card.manaValue >= minManaValue,
   (card, { maxManaValue }) => maxManaValue === undefined || card.manaValue <= maxManaValue,
@@ -77,4 +82,29 @@ export function searchCollection(collections, index, filters = {}) {
     .sort(byManaValueThenName);
   const unresolvedRows = organized.unresolvedRows + (filters.includePreconOnly ? precons.unresolvedRows : 0);
   return { results, unresolvedRows };
+}
+
+export const countResults = (results) => ({
+  cards: results.length,
+  copies: results.reduce((sum, result) => sum + result.organized, 0),
+});
+
+const GROUP_KEYS = { identity: (card) => [identityLabel(card)], 'creature-type': creatureTypes };
+export const GROUP_BY_CHOICES = Object.keys(GROUP_KEYS);
+
+// Distinct cards and Organized copies per group, largest first. A card counts once in each of its groups.
+export function groupResults(results, by) {
+  if (!Object.hasOwn(GROUP_KEYS, by)) throw new Error(`--group-by must be one of: ${GROUP_BY_CHOICES.join(', ')}`);
+  const groups = new Map();
+  for (const { card, organized } of results) {
+    for (const key of GROUP_KEYS[by](card)) {
+      const group = groups.get(key) ?? { key, cards: 0, copies: 0 };
+      group.cards += 1;
+      group.copies += organized;
+      groups.set(key, group);
+    }
+  }
+  return [...groups.values()].sort(
+    (first, second) => second.cards - first.cards || first.key.localeCompare(second.key),
+  );
 }

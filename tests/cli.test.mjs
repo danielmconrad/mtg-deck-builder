@@ -167,6 +167,15 @@ test('usage errors include the help for that command', () =>
     await assert.rejects(cli('nope'), /Unknown command "nope"(.|\n)*Commands:/);
   }));
 
+test('collection:search can print a count or groups instead of the list', () =>
+  inWorkspace(async ({ cli, stdout }) => {
+    assert.equal(await cli('collection:search', '--count'), 0);
+    assert.equal(stdout.pop(), '1 cards, 60 copies in Organized');
+    assert.equal(await cli('collection:search', '--group-by', 'identity', '--json'), 0);
+    assert.deepEqual(JSON.parse(stdout.pop()), [{ key: 'G', cards: 1, copies: 60 }]);
+    await assert.rejects(cli('collection:search', '--count', '--group-by', 'identity'), /not both/);
+  }));
+
 test('the CLI rejects unknown commands, unknown flags, bad slugs and wrong argument counts', () =>
   inWorkspace(async ({ cli }) => {
     const invalid = [
