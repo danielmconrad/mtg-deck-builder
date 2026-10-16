@@ -52,11 +52,12 @@ export function newDeck(slug, { format = 'commander', commanderNames = [], name 
   return deck;
 }
 
-export function exportDeck(deck) {
-  const render = (entries) => entries.map((entry) => `${entry.quantity} ${entry.name}`).join('\n');
-  const commanderSection = deck.commanders.length ? `Commander\n${render(deck.commanders)}\n\n` : '';
-  return `${commanderSection}${render(deck.mainboard)}\n`;
-}
+// A card entry's role field holds comma-separated labels, e.g. "ramp, draw".
+export const roleLabels = (entry) =>
+  (entry.role ?? '')
+    .split(',')
+    .map((label) => label.trim())
+    .filter(Boolean);
 
 // A tally is every copy of one card in a list, keyed by oracle ID so printings merge.
 // printingId records a scryfall_id the deck pinned, which pricing honors.

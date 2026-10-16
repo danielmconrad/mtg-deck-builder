@@ -3,12 +3,15 @@ import { parseArgs } from 'node:util';
 import { emptyCache } from './card-cache.mjs';
 import { cardIndex } from './card-index.mjs';
 import { summarize } from './collection.mjs';
-import { deckEntries, exportDeck, newDeck } from './deck.mjs';
+import { copyToClipboard } from './clipboard.mjs';
+import { deckEntries, newDeck } from './deck.mjs';
+import { PASTE_HINTS, exportDeck } from './export.mjs';
 import { checkLines, collectionSummaryLine, searchJson, searchLines, statsLines, upgradeLines } from './format.mjs';
 import { checkDeck, worstOutcome } from './rules.mjs';
 import { fetchCards } from './scryfall.mjs';
 import { searchCollection, searchFilters } from './search.mjs';
 import { deckStats } from './stats.mjs';
+import { commandHelp, overviewHelp, parseArgsOptions, withHelpOption } from './help.mjs';
 import { upgradeReport } from './upgrades.mjs';
 import { openWorkspace } from './workspace.mjs';
 
@@ -97,9 +100,27 @@ async function deckStatsCommand({ workspace, slug, write }) {
   return stats.problems.length ? 'incomplete' : 'pass';
 }
 
-async function deckExport({ workspace, slug, write, warn }) {
+async function deckExport({ workspace, slug, options, write, warn, copyText }) {
+  const [deck, index] = await Promise.all([workspace.loadDeck(slug), workspace.loadCardIndex()]);
+  const uncachedPins = new Set();
+  const printingOf = (entry) => {
+    if (!entry.scryfall_id) return null;
+    const card = index.byId.get(entry.scryfall_id);
+    if (!card) uncachedPins.add(entry.name);
+    return card ?? null;
+  };
+  const format = options.format ?? 'text';
+  const text = exportDeck(deck, { format, printingOf });
   warn('Export does not validate the deck; run deck:check first.');
-  write(exportDeck(await workspace.loadDeck(slug)).trimEnd());
+  if (uncachedPins.size) {
+    warn(`Pinned printings not cached, exported by name only: ${[...uncachedPins].join(', ')} (run cards:refresh)`);
+  }
+  if (!options.copy) {
+    write(text.trimEnd());
+    return 'pass';
+  }
+  await copyText(text);
+  write(`Copied ${slug} in ${format} format to the clipboard. ${PASTE_HINTS[format]}`);
   return 'pass';
 }
 
@@ -138,73 +159,132 @@ async function decksCheck({ workspace, write }) {
 }
 
 const SEARCH_OPTIONS = {
-  name: { type: 'string' },
-  type: { type: 'string', multiple: true },
-  text: { type: 'string', multiple: true },
-  identity: { type: 'string' },
-  commander: { type: 'string' },
-  legal: { type: 'string' },
-  'min-mv': { type: 'string' },
-  'max-mv': { type: 'string' },
-  precons: { type: 'boolean' },
-  proxies: { type: 'boolean' },
-  oracle: { type: 'boolean' },
-  json: { type: 'boolean' },
-};
-
-const NEW_DECK_OPTIONS = {
-  commander: { type: 'string', multiple: true },
-  format: { type: 'string' },
-  name: { type: 'string' },
+  commander: {
+    type: 'string',
+    placeholder: 'NAME',
+    description: "Limit to this commander's color identity and Commander-legal cards",
+  },
+  identity: { type: 'string', placeholder: 'WUBRG', description: 'Limit to a color identity; C means colorless only' },
+  type: {
+    type: 'string',
+    multiple: true,
+    placeholder: 'REGEX',
+    description: 'Type line must match (case-insensitive)',
+  },
+  text: {
+    type: 'string',
+    multiple: true,
+    placeholder: 'REGEX',
+    description: 'Rules text must match (case-insensitive)',
+  },
+  name: { type: 'string', placeholder: 'REGEX', description: 'Card name must match (case-insensitive)' },
+  'min-mv': { type: 'string', placeholder: 'N', description: 'Minimum mana value' },
+  'max-mv': { type: 'string', placeholder: 'N', description: 'Maximum mana value' },
+  legal: { type: 'string', placeholder: 'FORMAT', description: 'Must be legal in this Scryfall format, e.g. modern' },
+  precons: { type: 'boolean', description: 'Also list cards that only exist in Precons' },
+  proxies: { type: 'boolean', description: 'Count proxy rows as owned copies' },
+  oracle: { type: 'boolean', description: "Print each card's rules text" },
+  json: { type: 'boolean', description: 'Print machine-readable JSON' },
 };
 
 const COMMANDS = {
-  'collection:check': { run: collectionCheck },
+  'collection:check': {
+    run: collectionCheck,
+    summary: 'Validate both collection exports and summarize them',
+  },
   'collection:search': {
     run: collectionSearch,
+    summary: 'Search owned cards by color identity, type, rules text and mana value',
+    details: 'Searches Organized; Precons copies are shown as protected. Filters combine with AND.',
     options: SEARCH_OPTIONS,
-    usage:
-      '[--commander NAME | --identity WUBRG] [--type RE]... [--text RE]... [--name RE] [--min-mv N] [--max-mv N] [--legal FORMAT] [--precons] [--proxies] [--oracle] [--json]',
   },
-  'cards:refresh': { run: cardsRefresh, options: { missing: { type: 'boolean' } }, usage: '[--missing]' },
+  'cards:refresh': {
+    run: cardsRefresh,
+    summary: 'Fetch Scryfall card data and prices for the collection and every deck (network)',
+    options: { missing: { type: 'boolean', description: 'Fetch only cards not already cached' } },
+  },
   'deck:new': {
     run: deckNew,
     takesSlug: true,
-    options: NEW_DECK_OPTIONS,
-    usage: '[--commander NAME]... [--format commander|casual-60] [--name TEXT]',
+    summary: 'Create a draft deck at decks/<deck-slug>/deck.yaml; never overwrites',
+    options: {
+      commander: {
+        type: 'string',
+        multiple: true,
+        placeholder: 'NAME',
+        description: 'Commander card; required for Commander, repeat for partners',
+      },
+      format: { type: 'string', placeholder: 'FORMAT', description: 'commander (default) or casual-60' },
+      name: { type: 'string', placeholder: 'TEXT', description: 'Deck name; defaults to the slug in title case' },
+    },
   },
-  'deck:check': { run: deckCheck, takesSlug: true },
-  'deck:stats': { run: deckStatsCommand, takesSlug: true },
-  'deck:export': { run: deckExport, takesSlug: true },
-  'deck:upgrades': { run: deckUpgrades, takesSlug: true },
-  'decks:check': { run: decksCheck },
+  'deck:check': {
+    run: deckCheck,
+    takesSlug: true,
+    summary: 'Check size, commander rules, color identity, bans, copy limits and ownership',
+  },
+  'deck:stats': {
+    run: deckStatsCommand,
+    takesSlug: true,
+    summary: 'Show mainboard curve, card types, color pips, land sources and roles',
+  },
+  'deck:export': {
+    run: deckExport,
+    takesSlug: true,
+    summary: 'Print a paste-ready decklist for another site, or copy it to the clipboard',
+    details: 'Does not validate the deck. Pinned scryfall_id printings export with set and collector number.',
+    options: {
+      format: { type: 'string', placeholder: 'FORMAT', description: 'text (default), moxfield or archidekt' },
+      copy: { type: 'boolean', description: 'Copy to the clipboard instead of printing' },
+    },
+  },
+  'deck:upgrades': {
+    run: deckUpgrades,
+    takesSlug: true,
+    summary: 'Price the upgrade package and any shortfalls against the budget',
+  },
+  'decks:check': {
+    run: decksCheck,
+    summary: 'Check every deck independently; the example is schema-checked only',
+  },
 };
 
-function usage() {
-  const lines = Object.entries(COMMANDS).map(([name, command]) =>
-    [name, command.takesSlug && '<deck-slug>', command.usage].filter(Boolean).join(' '),
-  );
-  return `Usage:\n${lines.map((line) => `  ${line}`).join('\n')}`;
-}
+const HELP_FLAGS = ['--help', '-h', 'help'];
 
 function parseCommandLine([name, ...rest]) {
-  const command = Object.hasOwn(COMMANDS, name ?? '') ? COMMANDS[name] : null;
-  if (!command) throw new Error(usage());
+  if (name === undefined || HELP_FLAGS.includes(name)) return { helpText: overviewHelp(COMMANDS) };
+  if (!Object.hasOwn(COMMANDS, name)) throw new Error(`Unknown command "${name}".\n\n${overviewHelp(COMMANDS)}`);
+  const command = COMMANDS[name];
+  const usageError = (message, cause) => new Error(`${message}\n\n${commandHelp(name, command)}`, { cause });
   let parsed;
   try {
-    parsed = parseArgs({ args: rest, options: command.options ?? {}, allowPositionals: true, strict: true });
+    const options = parseArgsOptions(withHelpOption(command.options));
+    parsed = parseArgs({ args: rest, options, allowPositionals: true, strict: true });
   } catch (error) {
-    throw new Error(`${error.message}\n${usage()}`, { cause: error });
+    throw usageError(error.message, error);
   }
+  const { help, ...options } = parsed.values;
+  if (help) return { helpText: commandHelp(name, command) };
   const expectedPositionals = command.takesSlug ? 1 : 0;
-  if (parsed.positionals.length !== expectedPositionals) throw new Error(usage());
-  return { command, options: parsed.values, slug: parsed.positionals[0] };
+  if (parsed.positionals.length !== expectedPositionals) {
+    throw usageError(
+      command.takesSlug ? `${name} needs exactly one <deck-slug>` : `${name} takes no positional arguments`,
+    );
+  }
+  return { command, options, slug: parsed.positionals[0] };
 }
 
 // Returns the process exit code: 0 pass, 1 fail, 2 incomplete. Invalid input throws.
-export async function runCli(args, { root, write = console.log, warn = console.error } = {}) {
-  const { command, options, slug } = parseCommandLine(args);
-  const outcome = await command.run({ workspace: openWorkspace(root), options, slug, write, warn });
+export async function runCli(
+  args,
+  { root, write = console.log, warn = console.error, copyText = copyToClipboard } = {},
+) {
+  const { helpText, command, options, slug } = parseCommandLine(args);
+  if (helpText) {
+    write(helpText);
+    return EXIT_CODES.pass;
+  }
+  const outcome = await command.run({ workspace: openWorkspace(root), options, slug, write, warn, copyText });
   return EXIT_CODES[outcome];
 }
 

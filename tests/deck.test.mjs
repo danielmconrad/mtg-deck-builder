@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { stringify } from 'yaml';
-import { exportDeck, newDeck, parseDeck, removeCopies, resolveEntries } from '../scripts/deck.mjs';
+import { newDeck, parseDeck, removeCopies, resolveEntries, roleLabels } from '../scripts/deck.mjs';
 import { entry, forest, indexOf, leader } from './fixtures.mjs';
 
 const deck = (fields = {}) => ({
@@ -51,8 +51,9 @@ test('newDeck requires a commander for Commander decks only', () => {
   assert.equal(newDeck('mono-g', { format: 'casual-60' }).commanders.length, 0);
 });
 
-test('exportDeck prints a Commander section followed by the mainboard', () => {
-  assert.equal(exportDeck(deck()), 'Commander\n1 Example Leader\n\n99 Forest\n');
+test('roleLabels splits comma-separated roles and ignores blanks', () => {
+  assert.deepEqual(roleLabels(entry('Sol Ring', 1, { role: 'ramp, artifact ,' })), ['ramp', 'artifact']);
+  assert.deepEqual(roleLabels(entry('Forest')), []);
 });
 
 test('resolveEntries merges printings of one card and records a pinned printing', () => {

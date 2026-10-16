@@ -1,5 +1,5 @@
 import { isLand } from './card.mjs';
-import { resolveEntries } from './deck.mjs';
+import { resolveEntries, roleLabels } from './deck.mjs';
 
 export const CARD_TYPES = [
   'Creature',
@@ -24,12 +24,6 @@ function pips(manaCost) {
   }
   return counts;
 }
-
-const roleLabels = (entry) =>
-  (entry.role ?? '')
-    .split(',')
-    .map((label) => label.trim())
-    .filter(Boolean);
 
 // Mainboard shape only; commanders sit in the command zone and are reported separately.
 export function deckStats(deck, index) {

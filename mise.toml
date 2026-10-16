@@ -1,7 +1,9 @@
 [tools]
 node = "24.22.0"
 
-# Arguments after `--` are passed through to scripts/cli.mjs, e.g. `mise run deck:check -- green-value`.
+# CLI tasks pass everything after `--` to scripts/cli.mjs, e.g. `mise run deck:check -- green-value`.
+# Options are documented in the CLI itself: `mise run <task> -- --help`. The tasks deliberately declare
+# no mise `usage` spec: with one, mise stops passing raw arguments and splits quoted values.
 
 [tasks.setup]
 description = "Install locked dependencies (network required) and the git pre-commit hook"
@@ -12,35 +14,35 @@ description = "Validate both collection exports and summarize them"
 run = "node scripts/cli.mjs collection:check"
 
 [tasks."collection:search"]
-description = "Search owned cards by identity, type, text and mana value"
+description = "Search owned cards by color identity, type, rules text and mana value (-- --help for filters)"
 run = "node scripts/cli.mjs collection:search"
 
 [tasks."cards:refresh"]
-description = "Fetch Scryfall card data and prices (network); --missing fetches only uncached cards"
+description = "Fetch Scryfall card data and prices for the collection and every deck (network; -- --help)"
 run = "node scripts/cli.mjs cards:refresh"
 
 [tasks."deck:new"]
-description = "Create a draft deck: <slug> --commander NAME"
+description = "Create a draft deck: -- <slug> --commander NAME (-- --help for options)"
 run = "node scripts/cli.mjs deck:new"
 
 [tasks."deck:check"]
-description = "Check one deck's rules and ownership: <slug>"
+description = "Check size, commander rules, color identity, bans, copy limits and ownership: -- <slug>"
 run = "node scripts/cli.mjs deck:check"
 
 [tasks."deck:stats"]
-description = "Show curve, types, pips, land sources and roles: <slug>"
+description = "Show mainboard curve, card types, color pips, land sources and roles: -- <slug>"
 run = "node scripts/cli.mjs deck:stats"
 
 [tasks."deck:export"]
-description = "Print a plain-text decklist: <slug>"
+description = "Print or copy a paste-ready decklist: -- <slug> [--format moxfield|archidekt] [--copy]"
 run = "node scripts/cli.mjs deck:export"
 
 [tasks."deck:upgrades"]
-description = "Price the upgrade package and shortfalls against the budget: <slug>"
+description = "Price the upgrade package and any shortfalls against the budget: -- <slug>"
 run = "node scripts/cli.mjs deck:upgrades"
 
 [tasks."decks:check"]
-description = "Check every deck independently"
+description = "Check every deck independently; the example is schema-checked only"
 run = "node scripts/cli.mjs decks:check"
 
 [tasks.lint]

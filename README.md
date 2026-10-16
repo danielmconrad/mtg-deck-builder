@@ -26,22 +26,26 @@ tests/                      Offline tests on synthetic fixtures
 
 ## Commands
 
-Pass arguments after `--`, e.g. `mise run deck:check -- green-value`.
+`mise tasks ls` lists every task. Deck and collection tasks pass arguments after `--` to the CLI, which documents its own options:
 
-| Command                               | What it does                                                                                        |
-| ------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| `collection:check`                    | Validate both CSVs and summarize them                                                               |
-| `collection:search -- [filters]`      | Find owned cards (see below)                                                                        |
-| `cards:refresh [-- --missing]`        | Fetch Scryfall data for every collection row and deck card; `--missing` fetches only uncached cards |
-| `deck:new -- <slug> --commander NAME` | Create a draft deck (`--commander` twice for partners; `--format casual-60` for casual)             |
-| `deck:check -- <slug>`                | Check size, commander rules, color identity, bans, copy limits and ownership                        |
-| `deck:stats -- <slug>`                | Curve, card types, color pips, land color sources and role counts                                   |
-| `deck:upgrades -- <slug>`             | Price the upgrade package plus any shortfalls against the budget                                    |
-| `deck:export -- <slug>`               | Print a plain-text list for deck sites                                                              |
-| `decks:check`                         | Check every deck; the example is schema-checked only                                                |
-| `lint`                                | ESLint plus a Prettier formatting check                                                             |
-| `fix`                                 | Apply ESLint fixes and format everything with Prettier                                              |
-| `check`                               | `lint`, `collection:check`, `test` and `decks:check`                                                |
+```sh
+mise run deck:export -- --help      # options for one command
+node scripts/cli.mjs --help         # every command, plus exit codes
+```
+
+| Task                | What it does                                                        |
+| ------------------- | ------------------------------------------------------------------- |
+| `collection:check`  | Validate both CSVs and summarize them                               |
+| `collection:search` | Find owned cards by color identity, type, rules text and mana value |
+| `cards:refresh`     | Fetch Scryfall card data and prices (network)                       |
+| `deck:new`          | Create a draft deck                                                 |
+| `deck:check`        | Check rules and ownership for one deck                              |
+| `deck:stats`        | Curve, card types, color pips, land sources and roles               |
+| `deck:upgrades`     | Price the upgrade package and any shortfalls against the budget     |
+| `deck:export`       | Print or copy a paste-ready decklist                                |
+| `decks:check`       | Check every deck; the example is schema-checked only                |
+| `lint` / `fix`      | Check, or fix, linting and formatting                               |
+| `check`             | `lint`, `collection:check`, `test` and `decks:check`                |
 
 Exit codes: `0` passed, `1` a check failed or input is invalid, `2` incomplete (unknown cards, missing card data, unknown prices).
 
@@ -53,7 +57,21 @@ mise run collection:search -- --identity BG --text "graveyard" --oracle
 mise run collection:search -- --identity C --type artifact --text "add \{" --json
 ```
 
-`--commander NAME` limits results to that commander's color identity and Commander-legal cards. `--identity` takes letters from `WUBRG`, or `C` for colorless only. `--type`, `--text` and `--name` are case-insensitive regular expressions, and you can repeat `--type` and `--text`. `--min-mv`/`--max-mv` filter by mana value. `--legal FORMAT` uses Scryfall format names. `--precons` adds cards that only exist in Precons. `--proxies` counts proxy rows. `--oracle` prints rules text. `--json` prints machine-readable output.
+Filters combine, and `--type`, `--text` and `--name` take case-insensitive regular expressions. See `mise run collection:search -- --help` for the full list.
+
+### Viewing a deck on Moxfield or Archidekt
+
+Neither site has a public API for creating decks, so export and paste:
+
+```sh
+mise run deck:export -- green-value --format moxfield --copy
+```
+
+- **Moxfield:** create a deck and paste into Import, or replace an existing list with Bulk Edit. The export uses MTG Arena's `Commander`/`Deck` sections.
+- **Archidekt:** open a deck's Import menu, paste and save. Roles become Archidekt categories and commanders get `[Commander{top}]`.
+- **Printings:** cards with a `scryfall_id` export with their set and collector number; others use the site's default printing.
+
+`--copy` uses `pbcopy`, `clip`, or `wl-copy`/`xclip`/`xsel` depending on the OS.
 
 ### Formatting and linting
 

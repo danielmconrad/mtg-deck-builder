@@ -125,10 +125,51 @@ test('deck:export prints the list to stdout and its caveat to stderr', () =>
     assert.match(stderr.join(), /does not validate/);
   }));
 
+test('deck:export --copy sends the formatted list to the clipboard instead of stdout', () =>
+  inWorkspace(async ({ root, stdout }) => {
+    const copied = [];
+    const copyText = async (text) => copied.push(text);
+    const args = ['deck:export', 'fixture', '--format', 'moxfield', '--copy'];
+    assert.equal(await runCli(args, { root, write: (line) => stdout.push(line), warn() {}, copyText }), 0);
+    assert.deepEqual(copied, ['Deck\n60 Forest\n']);
+    assert.match(stdout.join(), /Copied fixture in moxfield format to the clipboard/);
+  }));
+
+test('deck:export warns when a pinned printing is not cached', () =>
+  inWorkspace(async ({ cli, writeDeck, stdout, stderr }) => {
+    await writeDeck(
+      casualDeck([{ name: 'Forest', quantity: 60, scryfall_id: '00000000-0000-4000-8000-000000000099' }]),
+    );
+    assert.equal(await cli('deck:export', 'fixture', '--format', 'moxfield'), 0);
+    assert.deepEqual(stdout, ['Deck\n60 Forest']);
+    assert.match(stderr.join(), /exported by name only: Forest/);
+  }));
+
+test('--help prints the command overview, and with a command, its options', () =>
+  inWorkspace(async ({ cli, stdout }) => {
+    for (const args of [[], ['--help'], ['help']]) {
+      assert.equal(await cli(...args), 0);
+      assert.match(stdout.pop(), /Commands:\n(.|\n)*deck:export +Print a paste-ready decklist/);
+    }
+    assert.equal(await cli('deck:export', '--help'), 0);
+    assert.match(stdout.pop(), /--format FORMAT +text \(default\), moxfield or archidekt/);
+    assert.equal(await cli('collection:search', '-h'), 0);
+    assert.match(stdout.pop(), /--type REGEX \(repeatable\)/);
+  }));
+
+test('usage errors include the help for that command', () =>
+  inWorkspace(async ({ cli }) => {
+    await assert.rejects(
+      cli('deck:export'),
+      /deck:export needs exactly one <deck-slug>\n\nUsage: mise run deck:export/,
+    );
+    await assert.rejects(cli('deck:export', 'fixture', '--bogus'), /Unknown option '--bogus'(.|\n)*--copy/);
+    await assert.rejects(cli('nope'), /Unknown command "nope"(.|\n)*Commands:/);
+  }));
+
 test('the CLI rejects unknown commands, unknown flags, bad slugs and wrong argument counts', () =>
   inWorkspace(async ({ cli }) => {
     const invalid = [
-      [],
       ['nope'],
       ['deck:check'],
       ['deck:check', '../collections'],
