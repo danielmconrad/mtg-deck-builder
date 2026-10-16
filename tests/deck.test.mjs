@@ -1,7 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { stringify } from 'yaml';
-import { applyUpgrades, newDeck, parseDeck, removeCopies, resolveEntries, roleLabels } from '../scripts/deck.mjs';
+import {
+  applyUpgrades,
+  newDeck,
+  parseDeck,
+  removeCopies,
+  resolveEntries,
+  roleLabels,
+  splitUpgrades,
+} from '../scripts/deck.mjs';
 import { entry, forest, indexOf, leader } from './fixtures.mjs';
 
 const deck = (fields = {}) => ({
@@ -94,4 +102,19 @@ test('applyUpgrades refuses a cut the mainboard cannot cover', () => {
     upgrades: [{ add: entry('Sol Ring'), cut: entry('Forest', 2), reason: 'x' }],
   };
   assert.throws(() => applyUpgrades(deck), /cuts 2 Forest, but the mainboard has 1/);
+});
+
+test('splitUpgrades moves cut copies, roles included, to swapOut and adds to the sideboard', () => {
+  const deck = {
+    mainboard: [entry('Forest', 3, { role: 'land' }), entry('Example Spell', 1, { role: 'draw' })],
+    upgrades: [
+      { add: entry('Sol Ring'), cut: entry('Example Spell'), reason: 'Faster' },
+      { add: entry('Wastes'), cut: entry('Forest'), reason: 'Colorless' },
+    ],
+  };
+  const split = splitUpgrades(deck);
+  assert.deepEqual(split.mainboard, [entry('Forest', 2, { role: 'land' })]);
+  assert.deepEqual(split.swapOut, [entry('Example Spell', 1, { role: 'draw' }), entry('Forest', 1, { role: 'land' })]);
+  assert.deepEqual(split.sideboard, [entry('Sol Ring'), entry('Wastes')]);
+  assert.equal(deck.mainboard[0].quantity, 3);
 });

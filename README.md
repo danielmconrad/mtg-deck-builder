@@ -11,6 +11,7 @@ mise trust && mise install
 mise run setup          # npm ci (network) and the git pre-commit hook
 mise run cards:refresh  # fetch card data and prices (network)
 mise run check          # offline: collection, tests, every deck
+cp .env.example .env    # project defaults, e.g. the export format (ignored by Git)
 ```
 
 ## Layout
@@ -19,6 +20,7 @@ mise run check          # offline: collection, tests, every deck
 collections/Organized.csv   ManaBox export: cards available for decks
 collections/Precons.csv     ManaBox export: precon cards, reported but never used
 decks/<slug>/deck.yaml      One file per deck (see decks/example and schemas/)
+decks/<slug>/decklist*.txt  Generated decklists, written by deck:files and committed
 scripts/                    CLI (cli.mjs) and the modules behind it
 tests/                      Offline tests on synthetic fixtures
 .cache/cards.json           Scryfall data (ignored by Git)
@@ -43,6 +45,7 @@ node scripts/cli.mjs --help         # every command, plus exit codes
 | `deck:stats`        | Curve, card types, color pips, land sources and roles               |
 | `deck:upgrades`     | Price the upgrade package and any shortfalls against the budget     |
 | `deck:export`       | Print or copy a paste-ready decklist                                |
+| `deck:files`        | Write the committed decklist files beside `deck.yaml`               |
 | `decks:check`       | Check every deck; the example is schema-checked only                |
 | `lint` / `fix`      | Check, or fix, linting and formatting                               |
 | `check`             | `lint`, `collection:check`, `test` and `decks:check`                |
@@ -73,11 +76,27 @@ Neither site has a public API for creating decks, so export and paste:
 
 ```sh
 mise run deck:export -- green-value --format moxfield --copy
+mise run deck:export -- green-value --upgrades apply --copy   # every upgrade swap made, for playtesting
 ```
 
-- **Moxfield:** create a deck and paste into Import, or replace an existing list with Bulk Edit. The export uses MTG Arena's `Commander`/`Deck` sections.
-- **Archidekt:** open a deck's Import menu, paste and save. Roles become Archidekt categories and commanders get `[Commander{top}]`.
-- **Printings:** cards with a `scryfall_id` export with their set and collector number; others use the site's default printing.
+- **Default format:** `MTG_EXPORT_FORMAT` in `.env` (see [.env.example](.env.example)); `--format` overrides it, and without either the format is `text`.
+- **Moxfield:** create a deck and paste into Import, or replace an existing list with Bulk Edit. The export uses MTG Arena's `Commander`/`Deck`/`Sideboard` sections.
+- **Archidekt:** open a deck's Import menu, paste and save. Roles become Title Case categories and commanders get `[Commander{top}]`.
+- **Printings:** a pinned `scryfall_id` wins, then the printing you own in Organized, then any cached printing. The plain `text` format lists names only.
+- **Upgrades:** `--upgrades apply` makes every swap. `--upgrades split` keeps the deck, lists the cards it would cut under Swap Out (still in the deck) and the cards it would add in the sideboard. Moxfield has no Swap Out section, so those cards stay in Deck.
+
+### Decklist files
+
+Every finished deck keeps two generated files beside `deck.yaml`, committed with it:
+
+```sh
+mise run deck:files -- green-value
+```
+
+- **`decklist.txt`:** the deck exported with `--upgrades split`.
+- **`decklist-upgraded.txt`:** the deck with every swap made. It's written only when the deck has upgrades, and removed when it has none.
+
+Both use the default format and are overwritten on every run, so rerun `deck:files` after every deck edit.
 
 `--copy` uses `pbcopy`, `clip`, or `wl-copy`/`xclip`/`xsel` depending on the OS.
 

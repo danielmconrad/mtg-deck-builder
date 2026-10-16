@@ -100,5 +100,6 @@ Then review it with the checklist in `deckbuilding-strategy`, and explain the de
 ## 7. Hand off
 
 - **Summary:** what's in the deck, what failed or is still unknown, and the upgrade total.
-- **Viewing online:** if the user wants to see the deck on a site, run `mise run deck:export -- <slug> --format moxfield --copy` (or `archidekt`) and tell them where to paste it.
+- **Decklist files:** run `mise run deck:files -- <slug>` after the final `deck:check`. It writes `decklist.txt` and, when the deck has upgrades, `decklist-upgraded.txt` beside `deck.yaml` in the project's default format (`MTG_EXPORT_FORMAT` in `.env`). Rerun it after every later deck edit so the files never go stale.
+- **Viewing online:** if the user wants to paste the deck into a site, run `mise run deck:export -- <slug> --copy` (add `--upgrades apply` for a playtest list) and tell them where to paste it.
 - **Git:** don't commit unless asked.

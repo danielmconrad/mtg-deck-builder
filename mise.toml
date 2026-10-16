@@ -34,8 +34,12 @@ description = "Show mainboard curve, card types, color pips, land sources and ro
 run = "node scripts/cli.mjs deck:stats"
 
 [tasks."deck:export"]
-description = "Print or copy a paste-ready decklist: -- <slug> [--format moxfield|archidekt] [--copy]"
+description = "Print or copy a paste-ready decklist: -- <slug> [--format FORMAT] [--upgrades apply|split] [--copy]"
 run = "node scripts/cli.mjs deck:export"
+
+[tasks."deck:files"]
+description = "Write the committed decklist files beside deck.yaml: -- <slug> [--format FORMAT]"
+run = "node scripts/cli.mjs deck:files"
 
 [tasks."deck:upgrades"]
 description = "Price the upgrade package and any shortfalls against the budget: -- <slug>"

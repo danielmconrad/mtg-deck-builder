@@ -1,4 +1,4 @@
-import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readCache, writeCache } from './card-cache.mjs';
@@ -50,6 +50,14 @@ export function openWorkspace(root = PROJECT_ROOT) {
     return deckLabel(slug);
   }
 
+  // Generated files kept beside a deck's deck.yaml, such as exported decklists.
+  async function writeDeckFile(slug, fileName, text) {
+    await writeFile(join(deckPath(slug), '..', fileName), text);
+    return `decks/${slug}/${fileName}`;
+  }
+
+  const removeDeckFile = (slug, fileName) => rm(join(deckPath(slug), '..', fileName), { force: true });
+
   async function loadCollections() {
     const load = async (name) =>
       parseCollection(await readFile(join(root, 'collections', `${name}.csv`), 'utf8'), name);
@@ -61,5 +69,15 @@ export function openWorkspace(root = PROJECT_ROOT) {
   const saveCache = (cache) => writeCache(cachePath, cache);
   const loadCardIndex = async () => cardIndex(await loadCache());
 
-  return { loadDeck, loadAllDecks, createDeck, loadCollections, loadCache, saveCache, loadCardIndex };
+  return {
+    loadDeck,
+    loadAllDecks,
+    createDeck,
+    writeDeckFile,
+    removeDeckFile,
+    loadCollections,
+    loadCache,
+    saveCache,
+    loadCardIndex,
+  };
 }

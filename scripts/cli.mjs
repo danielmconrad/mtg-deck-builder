@@ -1,11 +1,11 @@
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { emptyCache } from './card-cache.mjs';
 import { cardIndex } from './card-index.mjs';
 import { summarize } from './collection.mjs';
 import { copyToClipboard } from './clipboard.mjs';
-import { applyUpgrades, deckEntries, newDeck } from './deck.mjs';
-import { PASTE_HINTS, exportDeck, printingChooser } from './export.mjs';
+import { applyUpgrades, deckEntries, newDeck, splitUpgrades } from './deck.mjs';
+import { EXPORT_FORMAT_NAMES, PASTE_HINTS, exportDeck, printingChooser } from './export.mjs';
 import {
   checkLines,
   collectionSummaryLine,
@@ -121,30 +121,76 @@ async function deckStatsCommand({ workspace, slug, write }) {
   return stats.problems.length ? 'incomplete' : 'pass';
 }
 
-async function deckExport({ workspace, slug, options, write, warn, copyText }) {
-  const [loadedDeck, collections, index] = await Promise.all([
+// --upgrades apply makes every swap; split keeps the deck, with cuts and adds in their own sections.
+function withUpgrades(deck, mode) {
+  if (mode === undefined) return deck;
+  if (mode === 'apply') return applyUpgrades(deck);
+  if (mode === 'split') return splitUpgrades(deck);
+  throw new Error('--upgrades must be one of: apply, split');
+}
+
+// --format wins, then the MTG_EXPORT_FORMAT project default (see .env.example), then text.
+function exportFormat(options, env) {
+  const format = options.format ?? env.MTG_EXPORT_FORMAT ?? 'text';
+  if (!EXPORT_FORMAT_NAMES.includes(format)) {
+    const source = options.format === undefined ? 'MTG_EXPORT_FORMAT' : '--format';
+    throw new Error(`${source} must be one of: ${EXPORT_FORMAT_NAMES.join(', ')}`);
+  }
+  return format;
+}
+
+// Loads what every export needs once, then renders the deck under each requested upgrades mode.
+async function exporter(workspace, slug, warn) {
+  const [deck, collections, index] = await Promise.all([
     workspace.loadDeck(slug),
     workspace.loadCollections(),
     workspace.loadCardIndex(),
   ]);
-  const deck = options['apply-upgrades'] ? applyUpgrades(loadedDeck) : loadedDeck;
   const uncached = new Set();
   const printingOf = printingChooser(index, collections.organized, uncached);
-  const format = options.format ?? 'text';
-  const text = exportDeck(deck, { format, printingOf });
   warn('Export does not validate the deck; run deck:check first.');
-  if (options['apply-upgrades'] && loadedDeck.upgrades?.length) {
-    warn(`Applied ${loadedDeck.upgrades.length} upgrade swaps; some added cards may not be owned yet.`);
-  }
-  if (uncached.size) {
-    warn(`Printings not cached, exported by name only: ${[...uncached].join(', ')} (run cards:refresh)`);
-  }
+  const render = (format, upgradesMode) => exportDeck(withUpgrades(deck, upgradesMode), { format, printingOf });
+  const warnUncached = () => {
+    if (uncached.size) {
+      warn(`Printings not cached, exported by name only: ${[...uncached].join(', ')} (run cards:refresh)`);
+    }
+  };
+  const warnApplied = () =>
+    warn(`Applied ${deck.upgrades.length} upgrade swaps; some added cards may not be owned yet.`);
+  return { deck, render, warnUncached, warnApplied };
+}
+
+async function deckExport({ workspace, slug, options, env, write, warn, copyText }) {
+  const format = exportFormat(options, env);
+  const { deck, render, warnUncached, warnApplied } = await exporter(workspace, slug, warn);
+  const text = render(format, options.upgrades);
+  if (options.upgrades === 'apply' && deck.upgrades?.length) warnApplied();
+  warnUncached();
   if (!options.copy) {
     write(text.trimEnd());
     return 'pass';
   }
   await copyText(text);
   write(`Copied ${slug} in ${format} format to the clipboard. ${PASTE_HINTS[format]}`);
+  return 'pass';
+}
+
+const DECKLIST_FILE = 'decklist.txt';
+const UPGRADED_DECKLIST_FILE = 'decklist-upgraded.txt';
+
+// Writes the decklists kept in Git beside deck.yaml: the deck with upgrade swaps split out, and,
+// when the deck has upgrades, the deck with every swap made.
+async function deckFiles({ workspace, slug, options, env, write, warn }) {
+  const format = exportFormat(options, env);
+  const { deck, render, warnUncached } = await exporter(workspace, slug, warn);
+  const written = [await workspace.writeDeckFile(slug, DECKLIST_FILE, render(format, 'split'))];
+  if (deck.upgrades?.length) {
+    written.push(await workspace.writeDeckFile(slug, UPGRADED_DECKLIST_FILE, render(format, 'apply')));
+  } else {
+    await workspace.removeDeckFile(slug, UPGRADED_DECKLIST_FILE);
+  }
+  warnUncached();
+  write(`Wrote ${written.join(' and ')} in ${format} format.`);
   return 'pass';
 }
 
@@ -223,6 +269,12 @@ const SEARCH_OPTIONS = {
   json: { type: 'boolean', description: 'Print machine-readable JSON (list, count or groups)' },
 };
 
+const FORMAT_OPTION = {
+  type: 'string',
+  placeholder: 'FORMAT',
+  description: `${EXPORT_FORMAT_NAMES.join(', ')}; defaults to MTG_EXPORT_FORMAT in .env, else text`,
+};
+
 const COMMANDS = {
   'collection:check': {
     run: collectionCheck,
@@ -271,10 +323,22 @@ const COMMANDS = {
     details:
       'Does not validate the deck. Moxfield and Archidekt lines carry set and collector number: the pinned scryfall_id, else the printing owned in Organized, else a cached printing.',
     options: {
-      format: { type: 'string', placeholder: 'FORMAT', description: 'text (default), moxfield or archidekt' },
-      'apply-upgrades': { type: 'boolean', description: 'Export with every upgrade swap made, e.g. for playtesting' },
+      format: FORMAT_OPTION,
+      upgrades: {
+        type: 'string',
+        placeholder: 'MODE',
+        description:
+          'apply: make every upgrade swap, e.g. for playtesting; split: keep the deck, listing cuts under Swap Out and adds in the sideboard',
+      },
       copy: { type: 'boolean', description: 'Copy to the clipboard instead of printing' },
     },
+  },
+  'deck:files': {
+    run: deckFiles,
+    takesSlug: true,
+    summary: 'Write the decklist files kept beside deck.yaml',
+    details: `Writes ${DECKLIST_FILE} (upgrade cuts under Swap Out, adds in the sideboard) and, if the deck has upgrades, ${UPGRADED_DECKLIST_FILE} (every swap made). Overwrites both; rerun after every deck edit. Does not validate the deck.`,
+    options: { format: FORMAT_OPTION },
   },
   'deck:upgrades': {
     run: deckUpgrades,
@@ -315,19 +379,29 @@ function parseCommandLine([name, ...rest]) {
 // Returns the process exit code: 0 pass, 1 fail, 2 incomplete. Invalid input throws.
 export async function runCli(
   args,
-  { root, write = console.log, warn = console.error, copyText = copyToClipboard } = {},
+  { root, env = process.env, write = console.log, warn = console.error, copyText = copyToClipboard } = {},
 ) {
   const { helpText, command, options, slug } = parseCommandLine(args);
   if (helpText) {
     write(helpText);
     return EXIT_CODES.pass;
   }
-  const outcome = await command.run({ workspace: openWorkspace(root), options, slug, write, warn, copyText });
+  const outcome = await command.run({ workspace: openWorkspace(root), options, slug, env, write, warn, copyText });
   return EXIT_CODES[outcome];
+}
+
+// Project defaults live in an untracked .env; .env.example documents them.
+function loadProjectEnv() {
+  try {
+    process.loadEnvFile(fileURLToPath(new URL('../.env', import.meta.url)));
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+  }
 }
 
 if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {
   try {
+    loadProjectEnv();
     process.exitCode = await runCli(process.argv.slice(2));
   } catch (error) {
     console.error(`ERROR: ${error.message}`);

@@ -43,10 +43,12 @@ async function inWorkspace(run) {
     await writeFile(join(root, 'collections', 'Precons.csv'), CSV);
     await writeFile(join(root, 'decks', 'fixture', 'deck.yaml'), stringify(casualDeck()));
     await writeCache(join(root, '.cache', 'cards.json'), cacheOf(forest));
-    const cli = (...args) =>
-      runCli(args, { root, write: (line) => stdout.push(line), warn: (line) => stderr.push(line) });
+    // An empty env by default, so a developer's shell or .env cannot change test results.
+    const cliWithEnv = (env, ...args) =>
+      runCli(args, { root, env, write: (line) => stdout.push(line), warn: (line) => stderr.push(line) });
+    const cli = (...args) => cliWithEnv({}, ...args);
     const writeDeck = (deck) => writeFile(join(root, 'decks', 'fixture', 'deck.yaml'), stringify(deck));
-    await run({ root, cli, writeDeck, stdout, stderr });
+    await run({ root, cli, cliWithEnv, writeDeck, stdout, stderr });
   } finally {
     globalThis.fetch = originalFetch;
     await rm(root, { recursive: true, force: true });
@@ -130,7 +132,7 @@ test('deck:export --copy sends the formatted list to the clipboard instead of st
     const copied = [];
     const copyText = async (text) => copied.push(text);
     const args = ['deck:export', 'fixture', '--format', 'moxfield', '--copy'];
-    assert.equal(await runCli(args, { root, write: (line) => stdout.push(line), warn() {}, copyText }), 0);
+    assert.equal(await runCli(args, { root, env: {}, write: (line) => stdout.push(line), warn() {}, copyText }), 0);
     assert.deepEqual(copied, ['Deck\n60 Forest (TST) 1\n']);
     assert.match(stdout.join(), /Copied fixture in moxfield format to the clipboard/);
   }));
@@ -145,7 +147,7 @@ test('deck:export warns when a pinned printing is not cached', () =>
     assert.match(stderr.join(), /Printings not cached, exported by name only: Forest/);
   }));
 
-test('deck:export --apply-upgrades exports the deck with every swap made', () =>
+test('deck:export --upgrades apply exports the deck with every swap made', () =>
   inWorkspace(async ({ cli, writeDeck, stdout, stderr }) => {
     const swap = {
       add: { name: 'Sol Ring', quantity: 1, role: 'ramp' },
@@ -153,9 +155,58 @@ test('deck:export --apply-upgrades exports the deck with every swap made', () =>
       reason: 'Fixture',
     };
     await writeDeck({ ...casualDeck(), upgrades: [swap] });
-    assert.equal(await cli('deck:export', 'fixture', '--format', 'archidekt', '--apply-upgrades'), 0);
-    assert.deepEqual(stdout, ['59x Forest (TST) 1\n1x Sol Ring [ramp]']);
+    assert.equal(await cli('deck:export', 'fixture', '--format', 'archidekt', '--upgrades', 'apply'), 0);
+    assert.deepEqual(stdout, ['59x Forest (TST) 1\n1x Sol Ring [Ramp]']);
     assert.match(stderr.join(), /Applied 1 upgrade swaps(.|\n)*exported by name only: Sol Ring/);
+  }));
+
+test('deck:export --upgrades split lists cuts under Swap Out and adds in the sideboard', () =>
+  inWorkspace(async ({ cli, writeDeck, stdout }) => {
+    const swap = { add: { name: 'Sol Ring', quantity: 1 }, cut: { name: 'Forest', quantity: 1 }, reason: 'Fixture' };
+    await writeDeck({ ...casualDeck(), upgrades: [swap] });
+    assert.equal(await cli('deck:export', 'fixture', '--upgrades', 'split'), 0);
+    assert.deepEqual(stdout, ['59 Forest\n\nSwap Out\n1 Forest\n\nSideboard\n1 Sol Ring']);
+    await assert.rejects(
+      cli('deck:export', 'fixture', '--upgrades', 'maybe'),
+      /--upgrades must be one of: apply, split/,
+    );
+  }));
+
+test('MTG_EXPORT_FORMAT sets the default export format, and --format overrides it', () =>
+  inWorkspace(async ({ cli, cliWithEnv, stdout }) => {
+    const env = { MTG_EXPORT_FORMAT: 'archidekt' };
+    assert.equal(await cliWithEnv(env, 'deck:export', 'fixture'), 0);
+    assert.equal(stdout.pop(), '60x Forest (TST) 1');
+    assert.equal(await cliWithEnv(env, 'deck:export', 'fixture', '--format', 'text'), 0);
+    assert.equal(stdout.pop(), '60 Forest');
+    await assert.rejects(
+      cliWithEnv({ MTG_EXPORT_FORMAT: 'tappedout' }, 'deck:export', 'fixture'),
+      /MTG_EXPORT_FORMAT must be one of: text, moxfield, archidekt/,
+    );
+    await assert.rejects(cli('deck:export', 'fixture', '--format', 'nope'), /--format must be one of/);
+  }));
+
+test('deck:files writes the split decklist, plus the upgraded one only when the deck has upgrades', () =>
+  inWorkspace(async ({ root, cliWithEnv, writeDeck, stdout }) => {
+    const folder = join(root, 'decks', 'fixture');
+    const env = { MTG_EXPORT_FORMAT: 'archidekt' };
+    const swap = { add: { name: 'Sol Ring', quantity: 1 }, cut: { name: 'Forest', quantity: 1 }, reason: 'Fixture' };
+    await writeDeck({ ...casualDeck(), upgrades: [swap] });
+    assert.equal(await cliWithEnv(env, 'deck:files', 'fixture'), 0);
+    assert.equal(
+      await readFile(join(folder, 'decklist.txt'), 'utf8'),
+      '59x Forest (TST) 1\n1x Forest (TST) 1 [Swap Out]\n1x Sol Ring [Sideboard]\n',
+    );
+    assert.equal(await readFile(join(folder, 'decklist-upgraded.txt'), 'utf8'), '59x Forest (TST) 1\n1x Sol Ring\n');
+    assert.match(
+      stdout.pop(),
+      /Wrote decks\/fixture\/decklist.txt and decks\/fixture\/decklist-upgraded.txt in archidekt/,
+    );
+
+    await writeDeck(casualDeck());
+    assert.equal(await cliWithEnv(env, 'deck:files', 'fixture', '--format', 'text'), 0);
+    assert.equal(await readFile(join(folder, 'decklist.txt'), 'utf8'), '60 Forest\n');
+    await assert.rejects(readFile(join(folder, 'decklist-upgraded.txt')), { code: 'ENOENT' });
   }));
 
 test('--help prints the command overview, and with a command, its options', () =>
@@ -165,7 +216,10 @@ test('--help prints the command overview, and with a command, its options', () =
       assert.match(stdout.pop(), /Commands:\n(.|\n)*deck:export +Print a paste-ready decklist/);
     }
     assert.equal(await cli('deck:export', '--help'), 0);
-    assert.match(stdout.pop(), /--format FORMAT +text \(default\), moxfield or archidekt/);
+    assert.match(
+      stdout.pop(),
+      /--format FORMAT +text, moxfield, archidekt; defaults to MTG_EXPORT_FORMAT in \.env, else text/,
+    );
     assert.equal(await cli('collection:search', '-h'), 0);
     assert.match(stdout.pop(), /--type REGEX \(repeatable\)/);
   }));

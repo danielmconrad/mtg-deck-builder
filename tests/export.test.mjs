@@ -27,10 +27,10 @@ test('Moxfield export omits the Commander section for casual decks', () => {
   assert.equal(exportDeck({ ...deck, commanders: [] }, { format: 'moxfield' }), 'Deck\n1 Sol Ring\n98 Forest\n');
 });
 
-test('Archidekt export tags commanders and turns roles into categories', () => {
+test('Archidekt export tags commanders and turns roles into Title Case categories', () => {
   assert.equal(
     exportDeck(deck, { format: 'archidekt', printingOf }),
-    '1x Example Leader [Commander{top}]\n1x Sol Ring (CMR) 472 [ramp,artifact]\n98x Forest\n',
+    '1x Example Leader [Commander{top}]\n1x Sol Ring (CMR) 472 [Ramp,Artifact]\n98x Forest\n',
   );
 });
 
@@ -58,4 +58,25 @@ test('printingChooser prefers the pin, then an owned non-proxy printing, then an
   assert.equal(printingOf(entry('Unknown Card')), null);
   assert.equal(printingOf(entry('Forest', 1, { scryfall_id: 'not-cached' })), null);
   assert.deepEqual([...missing], ['Unknown Card', 'Forest']);
+});
+
+test('each format lists swap-out cards in the deck and sideboard cards outside it', () => {
+  const withSideboard = {
+    ...deck,
+    mainboard: [entry('Forest', 98)],
+    swapOut: [entry('Sol Ring', 1, { role: 'ramp', scryfall_id: RING_ID })],
+    sideboard: [entry('Example Spell', 1, { role: 'draw' })],
+  };
+  assert.equal(
+    exportDeck(withSideboard),
+    'Commander\n1 Example Leader\n\n98 Forest\n\nSwap Out\n1 Sol Ring\n\nSideboard\n1 Example Spell\n',
+  );
+  assert.match(
+    exportDeck(withSideboard, { format: 'moxfield', printingOf }),
+    /Deck\n98 Forest\n1 Sol Ring \(CMR\) 472\n\nSideboard\n1 Example Spell\n$/,
+  );
+  assert.match(
+    exportDeck(withSideboard, { format: 'archidekt', printingOf }),
+    /98x Forest\n1x Sol Ring \(CMR\) 472 \[Swap Out\]\n1x Example Spell \[Sideboard\]\n$/,
+  );
 });

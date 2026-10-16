@@ -53,22 +53,48 @@ export function newDeck(slug, { format = 'commander', commanderNames = [], name 
   return deck;
 }
 
+const findEntry = (entries, name) => entries.find((entry) => normalizeName(entry.name) === normalizeName(name));
+
+// Takes a swap's cut out of a copied mainboard and returns the entry it came from.
+function takeCut(mainboard, cut) {
+  const target = findEntry(mainboard, cut.name);
+  if (!target || target.quantity < cut.quantity) {
+    throw new Error(`Upgrade cuts ${cut.quantity} ${cut.name}, but the mainboard has ${target?.quantity ?? 0}`);
+  }
+  target.quantity -= cut.quantity;
+  return target;
+}
+
 // The deck as it would be with every upgrade swap made. Each add takes its cut's place in the list.
 export function applyUpgrades(deck) {
   let mainboard = deck.mainboard.map((entry) => ({ ...entry }));
-  const findEntry = (name) => mainboard.find((entry) => normalizeName(entry.name) === normalizeName(name));
   for (const { add, cut } of deck.upgrades ?? []) {
-    const target = findEntry(cut.name);
-    if (!target || target.quantity < cut.quantity) {
-      throw new Error(`Upgrade cuts ${cut.quantity} ${cut.name}, but the mainboard has ${target?.quantity ?? 0}`);
-    }
-    target.quantity -= cut.quantity;
-    const existing = findEntry(add.name);
+    const target = takeCut(mainboard, cut);
+    const existing = findEntry(mainboard, add.name);
     if (existing) existing.quantity += add.quantity;
     else mainboard.splice(mainboard.indexOf(target) + 1, 0, { ...add });
     mainboard = mainboard.filter((entry) => entry.quantity > 0);
   }
   return { ...deck, mainboard };
+}
+
+// The baseline deck split for review: swapOut holds the copies the upgrades would cut, keeping
+// their roles, and sideboard holds the cards the upgrades would add.
+export function splitUpgrades(deck) {
+  const mainboard = deck.mainboard.map((entry) => ({ ...entry }));
+  const swapOut = [];
+  for (const { cut } of deck.upgrades ?? []) {
+    const target = takeCut(mainboard, cut);
+    const existing = findEntry(swapOut, cut.name);
+    if (existing) existing.quantity += cut.quantity;
+    else swapOut.push({ ...target, quantity: cut.quantity });
+  }
+  return {
+    ...deck,
+    mainboard: mainboard.filter((entry) => entry.quantity > 0),
+    swapOut,
+    sideboard: (deck.upgrades ?? []).map(({ add }) => ({ ...add })),
+  };
 }
 
 // A card entry's role field holds comma-separated labels, e.g. "ramp, draw".
