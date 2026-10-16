@@ -1,0 +1,52 @@
+[tools]
+node = "24.22.0"
+
+# Arguments after `--` are passed through to scripts/cli.mjs, e.g. `mise run deck:check -- green-value`.
+
+[tasks.setup]
+description = "Install locked project dependencies (network required)"
+run = "npm ci --ignore-scripts"
+
+[tasks."collection:check"]
+description = "Validate both collection exports and summarize them"
+run = "node scripts/cli.mjs collection:check"
+
+[tasks."collection:search"]
+description = "Search owned cards by identity, type, text and mana value"
+run = "node scripts/cli.mjs collection:search"
+
+[tasks."cards:refresh"]
+description = "Fetch Scryfall card data and prices (network); --missing fetches only uncached cards"
+run = "node scripts/cli.mjs cards:refresh"
+
+[tasks."deck:new"]
+description = "Create a draft deck: <slug> --commander NAME"
+run = "node scripts/cli.mjs deck:new"
+
+[tasks."deck:check"]
+description = "Check one deck's rules and ownership: <slug>"
+run = "node scripts/cli.mjs deck:check"
+
+[tasks."deck:stats"]
+description = "Show curve, types, pips, land sources and roles: <slug>"
+run = "node scripts/cli.mjs deck:stats"
+
+[tasks."deck:export"]
+description = "Print a plain-text decklist: <slug>"
+run = "node scripts/cli.mjs deck:export"
+
+[tasks."deck:upgrades"]
+description = "Price the upgrade package and shortfalls against the budget: <slug>"
+run = "node scripts/cli.mjs deck:upgrades"
+
+[tasks."decks:check"]
+description = "Check every deck independently"
+run = "node scripts/cli.mjs decks:check"
+
+[tasks.test]
+description = "Run offline tests"
+run = "node --test"
+
+[tasks.check]
+description = "Run collection check, tests and all deck checks (offline)"
+depends = ["collection:check", "test", "decks:check"]

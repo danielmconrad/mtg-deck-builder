@@ -1,0 +1,44 @@
+# yaml-language-server: $schema=../../schemas/deck.schema.json
+schema_version: 1
+name: Example Green Value
+format: commander
+status: example
+allow_proxies: false
+unlimited_basics: false
+strategy: Draw cards from creature diversity and build a resilient board.
+power_notes: Discuss your playgroup's expectations before brewing.
+budget:
+  amount: 30
+  currency: USD
+commanders:
+  - name: Radagast the Brown
+    quantity: 1
+    scryfall_id: b3988120-ebbe-4d24-9bb4-8c5331a14034
+mainboard:
+  - name: Forest
+    quantity: 36
+    role: lands
+  - name: Sol Ring
+    quantity: 1
+    role: ramp
+  - name: Cultivate
+    quantity: 1
+    role: ramp
+  - name: Beast Within
+    quantity: 1
+    role: interaction
+upgrades:
+  - add:
+      name: Nature's Lore
+      quantity: 1
+      role: ramp
+    cut:
+      name: Cultivate
+      quantity: 1
+    reason: Illustrates a paired swap for cheaper ramp; not an approved purchase.
+playtests: []
+notes: >-
+  This is a deliberately incomplete, 40-card schema example, not a recommended
+  or verified-owned deck. The budget is illustrative. Replace the brief and
+  commander, complete the mainboard, and verify basics and ownership before play.
+  For casual-60, set format to casual-60 and commanders to an empty list.
