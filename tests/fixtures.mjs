@@ -55,11 +55,12 @@ export const cacheOf = (...cards) => ({
   cards: Object.fromEntries(cards.map((value) => [value.id, value])),
 });
 export const indexOf = (...cards) => cardIndex(cacheOf(...cards));
-export const row = (value, quantity, { isProxy = false } = {}) => ({
+export const row = (value, quantity, { isProxy = false, collection = 'Organized' } = {}) => ({
   name: value.name,
   quantity,
   scryfallId: value.id,
   isProxy,
+  collection,
 });
 export const entry = (name, quantity = 1, extra = {}) => ({ name, quantity, ...extra });
 export const messages = (report, level) =>

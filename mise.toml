@@ -10,7 +10,7 @@ description = "Install locked dependencies (network required) and the git pre-co
 run = ["npm ci --ignore-scripts", "mise generate git-pre-commit --write --task pre-commit"]
 
 [tasks."collection:check"]
-description = "Validate both collection exports and summarize them"
+description = "Validate every collection export and summarize it"
 run = "node scripts/cli.mjs collection:check"
 
 [tasks."collection:search"]
@@ -18,7 +18,7 @@ description = "Search owned cards by color identity, type, rules text and mana v
 run = "node scripts/cli.mjs collection:search"
 
 [tasks."cards:refresh"]
-description = "Fetch Scryfall card data and prices for the collection and every deck (network; -- --help)"
+description = "Fetch Scryfall card data and prices for every collection and deck (network; -- --help)"
 run = "node scripts/cli.mjs cards:refresh"
 
 [tasks."deck:new"]

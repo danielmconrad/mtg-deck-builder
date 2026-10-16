@@ -36,7 +36,7 @@ These definitions date from October 2025. Tutors are unrestricted in every brack
 - **`deck:check` enforces Game Changers** from Scryfall's live `game_changer` flag. With a `bracket` set it fails over the limit; without one it lists them.
 - **The Game Changers list changes.** It had 53 cards after February 2026, and Wizards had an announcement due October 12, 2026. Refresh card data before relying on the count.
 - **Check the other bracket rules by reading the list.** No tool detects mass land denial, extra-turn chaining or two-card combos.
-- **See what's owned:** `mise run collection:search -- --game-changers --precons` shows which Game Changers the user owns.
+- **See what's owned:** `mise run collection:search -- --game-changers --include-protected` shows which Game Changers the user owns.
 
 ## 3. Fill the roles: pick one template as a checklist
 

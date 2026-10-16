@@ -1,5 +1,5 @@
 import { ageInDays, hasCommanderText, isBackground, isBasic, isLegendaryCreature } from './card.mjs';
-import { availableCopies, ownedCounts } from './collection.mjs';
+import { availableCopies, holdingsNote, ownedCounts, protectedHoldings } from './collection.mjs';
 import { deckEntries, resolveEntries } from './deck.mjs';
 
 const RULES_WARN_AGE_DAYS = 30;
@@ -108,22 +108,23 @@ function commanderLegalityFindings(card, identity) {
 
 function ownershipFindings(tallies, collections, index, deck) {
   const policy = { allowProxies: deck.allow_proxies };
-  const organized = ownedCounts(collections.organized, index, policy);
-  const precons = ownedCounts(collections.precons, index, policy);
-  const findings = organized.unresolvedRows
+  const owned = ownedCounts(collections.available, index, policy);
+  const holdings = protectedHoldings(collections.protected, index, policy);
+  const findings = owned.unresolvedRows
     ? [
         incomplete(
-          `${organized.unresolvedRows} Organized rows have no cached card data; ownership may be understated (run cards:refresh)`,
+          `${owned.unresolvedRows} available collection rows have no cached card data; ownership may be understated (run cards:refresh)`,
         ),
       ]
     : [];
   for (const { card, quantity } of tallies.values()) {
-    const available = availableCopies(organized, card, { unlimitedBasics: deck.unlimited_basics });
+    const available = availableCopies(owned, card, { unlimitedBasics: deck.unlimited_basics });
     if (quantity <= available) continue;
-    const protectedCopies = availableCopies(precons, card);
-    const preconNote = protectedCopies ? `; ${protectedCopies} in Precons (protected)` : '';
+    const protectedNote = holdings.has(card.oracleId)
+      ? `; ${holdingsNote(holdings.get(card.oracleId))} (protected)`
+      : '';
     findings.push(
-      error(`${card.name}: need ${quantity}, Organized has ${available} (short ${quantity - available})${preconNote}`),
+      error(`${card.name}: need ${quantity}, ${available} available (short ${quantity - available})${protectedNote}`),
     );
   }
   return findings;

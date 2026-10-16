@@ -17,8 +17,8 @@ cp .env.example .env    # project defaults, e.g. the export format (ignored by G
 ## Layout
 
 ```text
-collections/Organized.csv   ManaBox export: cards available for decks
-collections/Precons.csv     ManaBox export: precon cards, reported but never used
+collections/*.csv           ManaBox exports, one per collection, named after the file
+                            (e.g. Organized.csv). Protected ones are reported but never used
 decks/<slug>/deck.yaml      One file per deck (see decks/example and schemas/)
 decks/<slug>/decklist*.txt  Generated decklists, written by deck:files and committed
 scripts/                    CLI (cli.mjs) and the modules behind it
@@ -82,7 +82,7 @@ mise run deck:export -- green-value --upgrades apply --copy   # every upgrade sw
 - **Default format:** `MTG_EXPORT_FORMAT` in `.env` (see [.env.example](.env.example)); `--format` overrides it, and without either the format is `text`.
 - **Moxfield:** create a deck and paste into Import, or replace an existing list with Bulk Edit. The export uses MTG Arena's `Commander`/`Deck`/`Sideboard` sections.
 - **Archidekt:** open a deck's Import menu, paste and save. Roles become Title Case categories and commanders get `[Commander{top}]`.
-- **Printings:** a pinned `scryfall_id` wins, then the printing you own in Organized, then any cached printing. The plain `text` format lists names only.
+- **Printings:** a pinned `scryfall_id` wins, then the printing you own in an available collection, then any cached printing. The plain `text` format lists names only.
 - **Upgrades:** `--upgrades apply` makes every swap. `--upgrades split` keeps the deck, lists the cards it would cut under Swap Out (still in the deck) and the cards it would add in the sideboard. Moxfield has no Swap Out section, so those cards stay in Deck.
 
 ### Decklist files
@@ -109,7 +109,10 @@ Prettier formats, ESLint lints ([eslint.config.js](eslint.config.js)). Two thing
 
 ## Collection rules
 
-- Only Organized counts as available. Precons copies are shown as "in Precons (protected)" but never fill a deck. To use them, move them to Organized in ManaBox and re-export.
+- Every `collections/*.csv` is a collection named after its file, and every one counts as available unless it's protected. Add a collection by dropping in a new ManaBox export.
+- Protected collections are ones you don't want to dismantle, such as precons. Their copies are shown as e.g. "3 in Precons (protected)" but never fill a deck. List them, comma-separated, in `MTG_PROTECTED_COLLECTIONS` in `.env`. `--protect NAMES` overrides it for one command, and `--protect ''` protects nothing. With neither set, `Precons` is protected.
+- To read only some collections, list them in `MTG_COLLECTIONS` in `.env`, or pass `--collections NAMES` to one command. The rest are ignored entirely, and protection still applies to the ones read. Empty means every collection. `cards:refresh` always covers every collection, so changing the list never leaves card data missing.
+- `collection:check` lists the collections it reads and marks the protected ones. A name in either list with no matching file gets a warning.
 - Never hand-edit the exports. Replace them with fresh exports when the collection changes.
 - Every deck is checked on its own. Two decks can both use your only copy of a card.
 - All printings and finishes of a card count together.
@@ -150,4 +153,4 @@ Use exact Scryfall names. You can give a double-faced card by its front-face nam
 
 Point the assistant at [AGENTS.md](AGENTS.md) (Claude Code and Copilot load it automatically). In Claude Code, two skills load when relevant, or run them as slash commands: [`new-deck`](.claude/skills/new-deck/SKILL.md) holds the step-by-step brewing process, and [`deckbuilding-strategy`](.claude/skills/deckbuilding-strategy/SKILL.md) holds established frameworks (Commander Brackets, the Command Zone template, Karsten's land math) for building and reviewing decks. A good opening brief:
 
-> Find three Commander directions my Organized collection supports. Keep precons intact, aim for casual interactive games, and suggest up to $30 of upgrades. Let me pick a direction before you build the list.
+> Find three Commander directions my collection supports. Keep precons intact, aim for casual interactive games, and suggest up to $30 of upgrades. Let me pick a direction before you build the list.

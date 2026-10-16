@@ -5,7 +5,7 @@ description: Step-by-step workflow for brewing a new Commander or casual-60 deck
 
 # Brewing a new deck
 
-The rules in AGENTS.md still apply: Organized only, Precons protected, never invent card data. This skill is the order of work. Every command here is read-only and offline except `deck:new` (writes one file) and `cards:refresh` (network). `mise run <task> -- --help` documents every option.
+The rules in AGENTS.md still apply: only unprotected collections supply cards, protected copies are only mentioned, never invent card data. This skill is the order of work. Every command here is read-only and offline except `deck:new` (writes one file) and `cards:refresh` (network). `mise run <task> -- --help` documents every option.
 
 ## 1. Settle the brief
 
@@ -16,7 +16,7 @@ Ask only about what the user hasn't already said. Don't fill gaps with defaults.
 - **Power level:** a Commander Bracket (1–5) or the playgroup's own terms. The bracket table is in the `deckbuilding-strategy` skill.
 - **Budget:** amount and currency for optional upgrades.
 - **Proxies:** allowed or not.
-- **Basic lands:** run `mise run collection:search -- --type basic --count`. Organized usually holds very few basics, so every deck fails ownership unless the user has untracked basics. Ask, and set `unlimited_basics: true` if they do.
+- **Basic lands:** run `mise run collection:search -- --type basic --count`. The collections usually hold very few basics, so every deck fails ownership unless the user has untracked basics. Ask, and set `unlimited_basics: true` if they do.
 
 ## 2. Survey the collection
 
@@ -48,10 +48,10 @@ mise run collection:search -- --commander "$C" --nonland --text '(destroy|exile)
 
 Add `--count` to any of these for a quick depth check.
 
-Check staples that may exist only in Precons, so you can name them as protected alternatives:
+Check staples that may exist only in protected collections, so you can name them as protected alternatives:
 
 ```sh
-mise run collection:search -- --precons --name '^(Sol Ring|Arcane Signet|Command Tower|Swords to Plowshares|Path to Exile|Cultivate|Beast Within|Counterspell)$'
+mise run collection:search -- --include-protected --name '^(Sol Ring|Arcane Signet|Command Tower|Swords to Plowshares|Path to Exile|Cultivate|Beast Within|Counterspell)$'
 ```
 
 Writing a throwaway script over `--json` output is acceptable for one-off analysis in the scratchpad. If you need the same analysis twice, suggest a CLI option instead.
@@ -63,7 +63,7 @@ For each direction give:
 - **Commander and plan:** the commander, the game plan in two sentences, and how it wins.
 - **Key owned cards:** the cards that make it work, with counts from the survey (e.g. "25 Dwarves, 36 ramp pieces").
 - **Mana:** colors, how many sources it needs, and the ramp available.
-- **Gaps:** weak roles, and protected Precons copies that would help.
+- **Gaps:** weak roles, and protected copies that would help.
 - **Upgrades:** the rough upgrade need against the budget.
 
 Then **wait for the user to choose.** Don't run `deck:new` or write a list before they pick.

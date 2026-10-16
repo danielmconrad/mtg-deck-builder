@@ -55,11 +55,11 @@ function budgetOutcome(isComplete, totalCents, budgetCents) {
   return totalCents <= budgetCents ? 'pass' : 'fail';
 }
 
-// Prices every card the upgraded list needs that Organized cannot supply.
+// Prices every card the upgraded list needs that the available collections cannot supply.
 export function upgradeReport(deck, collections, index, { now = Date.now() } = {}) {
   if (!deck.budget) throw new Error('Set budget.amount and budget.currency before estimating upgrades');
   const { finalList, problems } = applyUpgrades(deck, index);
-  const owned = ownedCounts(collections.organized, index, { allowProxies: deck.allow_proxies });
+  const owned = ownedCounts(collections.available, index, { allowProxies: deck.allow_proxies });
   const purchases = [...finalList.values()].map((tally) => purchaseFor(tally, owned, deck, index, now)).filter(Boolean);
   const totalCents = purchases.reduce(
     (sum, purchase) => sum + (purchase.problem ? 0 : purchase.quantity * purchase.unitCents),

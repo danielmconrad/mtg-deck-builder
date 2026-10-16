@@ -104,9 +104,9 @@ mainboard:
   - name: Stark Industries Executive
     quantity: 1
     role: ramp
-  - name: Mechanized Ninja Cavalry
+  - name: Flametongue Kavu
     quantity: 1
-    role: synergy
+    role: removal
   - name: Errand-Rider of Gondor
     quantity: 1
     role: draw
@@ -170,7 +170,7 @@ mainboard:
   - name: Celebrate the Mountain-king
     quantity: 1
     role: removal
-  - name: Your Fate Ends Here
+  - name: Make Your Move
     quantity: 1
     role: removal
   - name: Heated Debate
@@ -209,9 +209,9 @@ mainboard:
   - name: Dwarven Mattock
     quantity: 1
     role: synergy, protection
-  - name: Long-Lost Lances
+  - name: Order // Chaos
     quantity: 1
-    role: synergy
+    role: removal, wincon
   - name: Collective Inferno
     quantity: 1
     role: wincon

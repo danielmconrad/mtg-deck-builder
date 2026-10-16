@@ -5,13 +5,19 @@ import { roleLabels } from './deck.mjs';
 // deck.swapOut lists deck cards proposed for cutting, and deck.sideboard cards outside the deck.
 // Arena-style lists have no section for swapOut, so Moxfield keeps those cards in Deck.
 
-// Picks each entry's printing: its pinned scryfall_id, else the first owned non-proxy printing in
-// the given collection rows, else any cached printing. Names with no printing are added to missing.
+// Picks each entry's printing: its pinned scryfall_id, else the non-proxy printing with the most
+// copies in the given collection rows (the earliest row wins a tie), else any cached printing.
+// Names with no printing are added to missing.
 export function printingChooser(index, ownedRows, missing = new Set()) {
-  const ownedPrintings = new Map();
+  const copiesById = new Map();
   for (const row of ownedRows) {
-    const card = row.isProxy ? null : index.byId.get(row.scryfallId);
-    if (card && !ownedPrintings.has(card.oracleId)) ownedPrintings.set(card.oracleId, card);
+    if (!row.isProxy) copiesById.set(row.scryfallId, (copiesById.get(row.scryfallId) ?? 0) + row.quantity);
+  }
+  const ownedPrintings = new Map();
+  for (const [id, copies] of copiesById) {
+    const card = index.byId.get(id);
+    const best = card && ownedPrintings.get(card.oracleId);
+    if (card && (!best || copies > best.copies)) ownedPrintings.set(card.oracleId, { card, copies });
   }
   return (entry) => {
     if (entry.scryfall_id) {
@@ -21,7 +27,7 @@ export function printingChooser(index, ownedRows, missing = new Set()) {
     }
     const { card } = index.lookup(entry);
     if (!card) missing.add(entry.name);
-    return card ? (ownedPrintings.get(card.oracleId) ?? card) : null;
+    return card ? (ownedPrintings.get(card.oracleId)?.card ?? card) : null;
   };
 }
 

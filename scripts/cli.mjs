@@ -31,8 +31,8 @@ const printAll = (write, lines) => {
 };
 
 async function collectionCheck({ workspace, write }) {
-  for (const [name, rows] of Object.entries(await workspace.loadCollections())) {
-    write(collectionSummaryLine(name, summarize(rows)));
+  for (const { name, isProtected, rows } of (await workspace.loadCollections()).sources) {
+    write(collectionSummaryLine(name, isProtected, summarize(rows)));
   }
   return 'pass';
 }
@@ -44,24 +44,26 @@ async function collectionSearch({ workspace, options, write, warn }) {
   if (unresolvedRows) {
     warn(`${unresolvedRows} collection rows have no cached card data and were skipped; run cards:refresh`);
   }
-  printAll(write, searchOutput(results, options));
+  printAll(write, searchOutput(results, options, collections.availableNames));
   return 'pass';
 }
 
 // --group-by and --count summarize instead of listing; --json applies to whichever is printed.
-function searchOutput(results, options) {
+function searchOutput(results, options, availableNames) {
   const asJson = (value) => [JSON.stringify(value, null, 2)];
   if (options['group-by']) {
     const groups = groupResults(results, options['group-by']);
     return options.json ? asJson(groups) : groupLines(groups);
   }
-  if (options.count) return options.json ? asJson(countResults(results)) : [countLine(countResults(results))];
+  if (options.count) {
+    return options.json ? asJson(countResults(results)) : [countLine(countResults(results), availableNames)];
+  }
   return options.json ? [searchJson(results)] : searchLines(results, { withOracleText: options.oracle });
 }
 
 // Scryfall identifiers for every collection row and every card a deck or upgrade names.
 function refreshIdentifiers(collections, decks) {
-  const rowIdentifiers = [...collections.organized, ...collections.precons].map((row) => ({ id: row.scryfallId }));
+  const rowIdentifiers = collections.sources.flatMap(({ rows }) => rows).map((row) => ({ id: row.scryfallId }));
   const entries = decks.flatMap((deck) => [
     ...deckEntries(deck),
     ...(deck.upgrades ?? []).flatMap((swap) => [swap.add, swap.cut]),
@@ -73,7 +75,7 @@ function refreshIdentifiers(collections, decks) {
 }
 
 async function cardsRefresh({ workspace, options, write, warn }) {
-  const [collections, loadedDecks] = await Promise.all([workspace.loadCollections(), workspace.loadAllDecks()]);
+  const [collections, loadedDecks] = await Promise.all([workspace.loadEveryCollection(), workspace.loadAllDecks()]);
   const skipped = loadedDecks.filter(({ error }) => error);
   for (const { slug, error } of skipped) warn(`SKIPPED ${slug}: ${error.message}`);
   const previous = options.missing ? await workspace.loadCache() : emptyCache();
@@ -147,7 +149,7 @@ async function exporter(workspace, slug, warn) {
     workspace.loadCardIndex(),
   ]);
   const uncached = new Set();
-  const printingOf = printingChooser(index, collections.organized, uncached);
+  const printingOf = printingChooser(index, collections.available, uncached);
   warn('Export does not validate the deck; run deck:check first.');
   const render = (format, upgradesMode) => exportDeck(withUpgrades(deck, upgradesMode), { format, printingOf });
   const warnUncached = () => {
@@ -257,7 +259,7 @@ const SEARCH_OPTIONS = {
   'min-mv': { type: 'string', placeholder: 'N', description: 'Minimum mana value' },
   'max-mv': { type: 'string', placeholder: 'N', description: 'Maximum mana value' },
   legal: { type: 'string', placeholder: 'FORMAT', description: 'Must be legal in this Scryfall format, e.g. modern' },
-  precons: { type: 'boolean', description: 'Also list cards that only exist in Precons' },
+  'include-protected': { type: 'boolean', description: 'Also list cards that exist only in protected collections' },
   proxies: { type: 'boolean', description: 'Count proxy rows as owned copies' },
   oracle: { type: 'boolean', description: "Print each card's rules text" },
   count: { type: 'boolean', description: 'Print only how many distinct cards and copies match' },
@@ -269,6 +271,47 @@ const SEARCH_OPTIONS = {
   json: { type: 'boolean', description: 'Print machine-readable JSON (list, count or groups)' },
 };
 
+// Which collections to read and which not to dismantle. Each option wins over its .env variable
+// (see .env.example). Both take comma-separated collection names. --collections defaults to every
+// collection, and --protect to Precons; an empty value means every collection, or none protected.
+const COLLECTION_OPTIONS = {
+  collections: {
+    type: 'string',
+    placeholder: 'NAMES',
+    description:
+      'Comma-separated collections to read, ignoring the rest; defaults to MTG_COLLECTIONS in .env, else all',
+  },
+  protect: {
+    type: 'string',
+    placeholder: 'NAMES',
+    description: 'Comma-separated collections to protect; defaults to MTG_PROTECTED_COLLECTIONS in .env, else Precons',
+  },
+};
+const DEFAULT_PROTECTED = 'Precons';
+
+const nameList = (value) =>
+  value
+    .split(',')
+    .map((name) => name.trim())
+    .filter(Boolean);
+
+const collectionScope = (options, env) => ({
+  only: nameList(options.collections ?? env.MTG_COLLECTIONS ?? ''),
+  protect: nameList(options.protect ?? env.MTG_PROTECTED_COLLECTIONS ?? DEFAULT_PROTECTED),
+});
+
+// The workspace with the collection scope applied, so commands just call loadCollections().
+// loadEveryCollection ignores the scope, so cards:refresh caches every collection.
+function scopedWorkspace(workspace, scope, warn) {
+  async function loadCollections() {
+    const collections = await workspace.loadCollections(scope);
+    for (const name of collections.unknownOnly) warn(`No collections/${name}.csv to read`);
+    for (const name of collections.unknownProtected) warn(`No collections/${name}.csv to protect`);
+    return collections;
+  }
+  return { ...workspace, loadCollections, loadEveryCollection: () => workspace.loadCollections() };
+}
+
 const FORMAT_OPTION = {
   type: 'string',
   placeholder: 'FORMAT',
@@ -278,17 +321,19 @@ const FORMAT_OPTION = {
 const COMMANDS = {
   'collection:check': {
     run: collectionCheck,
-    summary: 'Validate both collection exports and summarize them',
+    summary: 'Validate every collection export and summarize it',
+    options: COLLECTION_OPTIONS,
   },
   'collection:search': {
     run: collectionSearch,
     summary: 'Search owned cards by color identity, type, rules text and mana value',
-    details: 'Searches Organized; Precons copies are shown as protected. Filters combine with AND.',
-    options: SEARCH_OPTIONS,
+    details:
+      'Searches every collections/*.csv except protected ones, whose copies are shown alongside. Filters combine with AND.',
+    options: { ...SEARCH_OPTIONS, ...COLLECTION_OPTIONS },
   },
   'cards:refresh': {
     run: cardsRefresh,
-    summary: 'Fetch Scryfall card data and prices for the collection and every deck (network)',
+    summary: 'Fetch Scryfall card data and prices for every collection and deck (network)',
     options: { missing: { type: 'boolean', description: 'Fetch only cards not already cached' } },
   },
   'deck:new': {
@@ -310,6 +355,7 @@ const COMMANDS = {
     run: deckCheck,
     takesSlug: true,
     summary: 'Check size, commander rules, color identity, bans, copy limits and ownership',
+    options: COLLECTION_OPTIONS,
   },
   'deck:stats': {
     run: deckStatsCommand,
@@ -321,7 +367,7 @@ const COMMANDS = {
     takesSlug: true,
     summary: 'Print a paste-ready decklist for another site, or copy it to the clipboard',
     details:
-      'Does not validate the deck. Moxfield and Archidekt lines carry set and collector number: the pinned scryfall_id, else the printing owned in Organized, else a cached printing.',
+      'Does not validate the deck. Moxfield and Archidekt lines carry set and collector number: the pinned scryfall_id, else the printing owned in an available collection, else a cached printing.',
     options: {
       format: FORMAT_OPTION,
       upgrades: {
@@ -331,6 +377,7 @@ const COMMANDS = {
           'apply: make every upgrade swap, e.g. for playtesting; split: keep the deck, listing cuts under Swap Out and adds in the sideboard',
       },
       copy: { type: 'boolean', description: 'Copy to the clipboard instead of printing' },
+      ...COLLECTION_OPTIONS,
     },
   },
   'deck:files': {
@@ -338,16 +385,18 @@ const COMMANDS = {
     takesSlug: true,
     summary: 'Write the decklist files kept beside deck.yaml',
     details: `Writes ${DECKLIST_FILE} (upgrade cuts under Swap Out, adds in the sideboard) and, if the deck has upgrades, ${UPGRADED_DECKLIST_FILE} (every swap made). Overwrites both; rerun after every deck edit. Does not validate the deck.`,
-    options: { format: FORMAT_OPTION },
+    options: { format: FORMAT_OPTION, ...COLLECTION_OPTIONS },
   },
   'deck:upgrades': {
     run: deckUpgrades,
     takesSlug: true,
     summary: 'Price the upgrade package and any shortfalls against the budget',
+    options: COLLECTION_OPTIONS,
   },
   'decks:check': {
     run: decksCheck,
     summary: 'Check every deck independently; the example is schema-checked only',
+    options: COLLECTION_OPTIONS,
   },
 };
 
@@ -386,7 +435,8 @@ export async function runCli(
     write(helpText);
     return EXIT_CODES.pass;
   }
-  const outcome = await command.run({ workspace: openWorkspace(root), options, slug, env, write, warn, copyText });
+  const workspace = scopedWorkspace(openWorkspace(root), collectionScope(options, env), warn);
+  const outcome = await command.run({ workspace, options, slug, env, write, warn, copyText });
   return EXIT_CODES[outcome];
 }
 

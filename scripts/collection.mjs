@@ -72,6 +72,28 @@ export function ownedCounts(rows, index, { allowProxies = false } = {}) {
   return { counts, unresolvedRows };
 }
 
+// Protected copies per card and collection: oracle ID -> [{ name, copies }], in collection order.
+// Rows carry the name of the collection they came from.
+export function protectedHoldings(rows, index, { allowProxies = false } = {}) {
+  const holdings = new Map();
+  for (const row of rows) {
+    const card = row.isProxy && !allowProxies ? null : index.byId.get(row.scryfallId);
+    if (!card) continue;
+    const byCollection = holdings.get(card.oracleId) ?? new Map();
+    byCollection.set(row.collection, (byCollection.get(row.collection) ?? 0) + row.quantity);
+    holdings.set(card.oracleId, byCollection);
+  }
+  return new Map(
+    [...holdings].map(([oracleId, byCollection]) => [
+      oracleId,
+      [...byCollection].map(([name, copies]) => ({ name, copies })),
+    ]),
+  );
+}
+
+// e.g. "3 in Precons, 1 in Cube".
+export const holdingsNote = (holdings = []) => holdings.map(({ name, copies }) => `${copies} in ${name}`).join(', ');
+
 export function availableCopies(owned, card, { unlimitedBasics = false } = {}) {
   if (unlimitedBasics && isBasic(card)) return Infinity;
   return owned.counts.get(card.oracleId) ?? 0;

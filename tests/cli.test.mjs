@@ -109,8 +109,12 @@ test('collection:search --json prints machine-readable results', () =>
   inWorkspace(async ({ cli, stdout }) => {
     assert.equal(await cli('collection:search', '--type', 'land', '--json'), 0);
     assert.deepEqual(
-      JSON.parse(stdout.at(-1)).map(({ name, organized }) => [name, organized]),
-      [['Forest', 60]],
+      JSON.parse(stdout.at(-1)).map(({ name, available, protected: protectedCopies }) => [
+        name,
+        available,
+        protectedCopies,
+      ]),
+      [['Forest', 60, 60]],
     );
   }));
 
@@ -207,6 +211,55 @@ test('deck:files writes the split decklist, plus the upgraded one only when the 
     assert.equal(await cliWithEnv(env, 'deck:files', 'fixture', '--format', 'text'), 0);
     assert.equal(await readFile(join(folder, 'decklist.txt'), 'utf8'), '60 Forest\n');
     await assert.rejects(readFile(join(folder, 'decklist-upgraded.txt')), { code: 'ENOENT' });
+  }));
+
+test('every collections/*.csv counts unless protected by --protect or MTG_PROTECTED_COLLECTIONS', () =>
+  inWorkspace(async ({ root, cli, cliWithEnv, stdout, stderr }) => {
+    await writeFile(join(root, 'collections', 'Bulk Box.csv'), CSV.replace(',60,', ',5,'));
+    assert.equal(await cli('collection:search', '--count'), 0);
+    assert.equal(stdout.pop(), '1 cards, 65 copies in Bulk Box, Organized');
+    const env = { MTG_PROTECTED_COLLECTIONS: 'precons, Bulk Box' };
+    assert.equal(await cliWithEnv(env, 'collection:search', '--count'), 0);
+    assert.equal(stdout.pop(), '1 cards, 60 copies in Organized');
+    assert.equal(await cliWithEnv(env, 'collection:search', '--count', '--protect', ''), 0);
+    assert.equal(stdout.pop(), '1 cards, 125 copies in Bulk Box, Organized, Precons');
+    assert.equal(await cliWithEnv(env, 'collection:search', '--protect', 'Bulk Box,Binder'), 0);
+    assert.match(stdout.pop(), /^1 cards$/);
+    assert.match(stdout.pop(), /^120x Forest .*\(\+5 in Bulk Box, protected\)$/);
+    assert.match(stderr.join(), /No collections\/Binder.csv to protect/);
+    assert.equal(await cliWithEnv(env, 'collection:check'), 0);
+    assert.deepEqual(
+      stdout.splice(-3).map((line) => line.split(':')[0]),
+      ['Bulk Box (protected)', 'Organized', 'Precons (protected)'],
+    );
+  }));
+
+test('--collections or MTG_COLLECTIONS limits which collections are read', () =>
+  inWorkspace(async ({ root, cli, cliWithEnv, stdout, stderr }) => {
+    await writeFile(join(root, 'collections', 'Bulk Box.csv'), CSV.replace(',60,', ',5,'));
+    assert.equal(await cliWithEnv({ MTG_COLLECTIONS: 'bulk box' }, 'collection:search', '--count'), 0);
+    assert.equal(stdout.pop(), '1 cards, 5 copies in Bulk Box');
+    const env = { MTG_COLLECTIONS: 'Bulk Box' };
+    assert.equal(await cliWithEnv(env, 'collection:search', '--count', '--collections', 'Organized, Precons'), 0);
+    assert.equal(stdout.pop(), '1 cards, 60 copies in Organized');
+    assert.equal(await cliWithEnv(env, 'collection:search', '--count', '--collections', ''), 0);
+    assert.equal(stdout.pop(), '1 cards, 65 copies in Bulk Box, Organized');
+    assert.equal(await cli('collection:check', '--collections', 'Organized,Binder'), 0);
+    assert.deepEqual(
+      stdout.splice(-1).map((line) => line.split(':')[0]),
+      ['Organized'],
+    );
+    assert.match(stderr.join(), /No collections\/Binder.csv to read/);
+  }));
+
+test('cards:refresh covers every collection, whatever MTG_COLLECTIONS says', () =>
+  inWorkspace(async ({ root, cliWithEnv }) => {
+    const uncachedId = '00000000-0000-4000-8000-000000000002';
+    await writeFile(join(root, 'collections', 'Bulk Box.csv'), CSV.replace(FOREST_ID, uncachedId));
+    await assert.rejects(
+      cliWithEnv({ MTG_COLLECTIONS: 'Organized' }, 'cards:refresh', '--missing'),
+      /Unexpected network access/,
+    );
   }));
 
 test('--help prints the command overview, and with a command, its options', () =>

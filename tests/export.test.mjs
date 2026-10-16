@@ -42,14 +42,14 @@ test('copying fails clearly on a platform with no known clipboard command', asyn
   await assert.rejects(copyToClipboard('text', 'plan9'), /No clipboard command found for plan9/);
 });
 
-test('printingChooser prefers the pin, then an owned non-proxy printing, then any cached printing', () => {
+test('printingChooser prefers the pin, then the most-owned non-proxy printing, then any cached printing', () => {
   const ownedForest = { ...forest, id: 'owned-forest', set: 'ltr', collectorNumber: '280' };
   const proxyForest = { ...forest, id: 'proxy-forest', set: 'pxy' };
   const index = indexOf(forest, ownedForest, proxyForest, ring);
   const missing = new Set();
   const printingOf = printingChooser(
     index,
-    [row(proxyForest, 1, { isProxy: true }), row(ownedForest, 4), row(forest, 2)],
+    [row(proxyForest, 9, { isProxy: true }), row(forest, 3), row(ownedForest, 5), row(forest, 1)],
     missing,
   );
   assert.equal(printingOf(entry('Forest')), ownedForest);

@@ -22,8 +22,12 @@ const ghoul = card('Grave Ghoul', {
 const banned = card('Banned Thing', { typeLine: 'Artifact', manaValue: 1, legalities: { commander: 'banned' } });
 const index = indexOf(forest, leader, spell, elf, ghoul, banned);
 const collections = {
-  organized: [row(elf, 2), row(ghoul, 1), row(banned, 1), row(spell, 1)],
-  precons: [row(elf, 3), row(leader, 1)],
+  available: [row(elf, 2), row(ghoul, 1), row(banned, 1), row(spell, 1)],
+  protected: [
+    row(elf, 2, { collection: 'Precons' }),
+    row(elf, 1, { collection: 'Cube' }),
+    row(leader, 1, { collection: 'Precons' }),
+  ],
 };
 const namesFor = (options) =>
   searchCollection(collections, index, searchFilters(options, index)).results.map((result) => result.card.name);
@@ -54,11 +58,15 @@ test('--commander applies the commander color identity and Commander legality', 
   assert.throws(() => namesFor({ commander: 'Nobody' }), /not in card cache/);
 });
 
-test('results show protected Precons copies; Precons-only cards need --precons', () => {
+test('results show protected copies by collection; protected-only cards need --include-protected', () => {
   const [elves] = searchCollection(collections, index, searchFilters({ name: 'elves' }, index)).results;
-  assert.deepEqual([elves.organized, elves.precons], [2, 3]);
+  assert.deepEqual([elves.available, elves.protected], [2, 3]);
+  assert.deepEqual(elves.protectedIn, [
+    { name: 'Precons', copies: 2 },
+    { name: 'Cube', copies: 1 },
+  ]);
   assert.ok(!namesFor({}).includes(leader.name));
-  assert.ok(namesFor({ precons: true }).includes(leader.name));
+  assert.ok(namesFor({ 'include-protected': true }).includes(leader.name));
 });
 
 test('deckStats summarizes the mainboard curve, types, pips, land sources and roles', () => {
@@ -97,7 +105,7 @@ const planeswalker = card('Lead Walker', {
 const kindred = card('Elf Rite', { typeLine: 'Kindred Instant — Elf', colorIdentity: ['G'] });
 const groupIndex = indexOf(leader, elf, ghoul, banned, background, planeswalker, kindred);
 const groupCollections = {
-  organized: [
+  available: [
     row(leader, 1),
     row(elf, 2),
     row(ghoul, 1),
@@ -106,7 +114,7 @@ const groupCollections = {
     row(planeswalker, 1),
     row(kindred, 3),
   ],
-  precons: [],
+  protected: [],
 };
 const search = (options) => searchCollection(groupCollections, groupIndex, searchFilters(options, groupIndex)).results;
 
@@ -117,7 +125,7 @@ test('--commanders keeps legendary creatures, Backgrounds and "can be your comma
   );
 });
 
-test('countResults counts distinct cards and Organized copies', () => {
+test('countResults counts distinct cards and available copies', () => {
   assert.deepEqual(countResults(search({ type: ['creature'] })), { cards: 3, copies: 4 });
 });
 
@@ -149,7 +157,7 @@ test('unknown --group-by keys are rejected with the valid choices', () => {
 test('--nonland drops lands', () => {
   const land = card('Some Land', { typeLine: 'Land', oracleText: '{T}: Add {C}.' });
   const index = indexOf(land, elf);
-  const owned = { organized: [row(land, 1), row(elf, 1)], precons: [] };
+  const owned = { available: [row(land, 1), row(elf, 1)], protected: [] };
   const names = (options) =>
     searchCollection(owned, index, searchFilters(options, index)).results.map((result) => result.card.name);
   assert.deepEqual(names({ text: ['add \\{'] }), ['Some Land', 'Llanowar Elves']);
@@ -166,7 +174,7 @@ test('identity helpers order colors WUBRG regardless of Scryfall order', () => {
 test('--game-changers keeps only Game Changers', () => {
   const study = card('Study Card', { gameChanger: true });
   const index = indexOf(study, elf);
-  const owned = { organized: [row(study, 1), row(elf, 1)], precons: [] };
+  const owned = { available: [row(study, 1), row(elf, 1)], protected: [] };
   const { results } = searchCollection(owned, index, searchFilters({ 'game-changers': true }, index));
   assert.deepEqual(
     results.map((result) => result.card.name),

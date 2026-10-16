@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { checkDeck, worstOutcome } from '../scripts/rules.mjs';
 import { DAY_MS, NOW, card, entry, forest, indexOf, leader, messages, row, spell } from './fixtures.mjs';
 
-const owned = () => ({ organized: [row(forest, 100), row(leader, 1), row(spell, 4)], precons: [] });
+const owned = () => ({ available: [row(forest, 100), row(leader, 1), row(spell, 4)], protected: [] });
 const commanderDeck = (fields = {}) => ({
   schema_version: 1,
   name: 'Fixture',
@@ -67,12 +67,12 @@ test('copy limits are one in Commander and four in casual, with basics exempt', 
   assert.deepEqual(messages(check(twoSpells), 'error'), ['Example Spell: 2 copies exceeds limit 1']);
   assert.deepEqual(messages(check(casualDeck([entry(forest.name, 55), entry(spell.name, 5)])), 'error'), [
     'Example Spell: 5 copies exceeds limit 4',
-    'Example Spell: need 5, Organized has 4 (short 1)',
+    'Example Spell: need 5, 4 available (short 1)',
   ]);
 });
 
 test('printed copy-limit exceptions are honored', () => {
-  const collections = { organized: [row(forest, 60), row(spell, 20)], precons: [] };
+  const collections = { available: [row(forest, 60), row(spell, 20)], protected: [] };
   const deck = casualDeck([entry(forest.name, 51), entry(spell.name, 9)]);
   const nine = { ...spell, oracleText: 'A deck can have up to nine cards named Example Spell.' };
   const any = { ...spell, oracleText: 'A deck can have any number of cards named Example Spell.' };
@@ -84,21 +84,24 @@ test('printed copy-limit exceptions are honored', () => {
   ]);
 });
 
-test('shortfalls fail and mention protected Precons copies', () => {
-  const collections = { organized: [row(leader, 1)], precons: [row(forest, 99)] };
+test('shortfalls fail and mention protected copies by collection', () => {
+  const collections = {
+    available: [row(leader, 1)],
+    protected: [row(forest, 90, { collection: 'Precons' }), row(forest, 9, { collection: 'Cube' })],
+  };
   assert.deepEqual(messages(check(commanderDeck(), { collections }), 'error'), [
-    'Forest: need 99, Organized has 0 (short 99); 99 in Precons (protected)',
+    'Forest: need 99, 0 available (short 99); 90 in Precons, 9 in Cube (protected)',
   ]);
 });
 
 test('proxy copies count only when the deck allows proxies', () => {
-  const collections = { organized: [row(leader, 1), row(forest, 99, { isProxy: true })], precons: [] };
+  const collections = { available: [row(leader, 1), row(forest, 99, { isProxy: true })], protected: [] };
   assert.equal(check(commanderDeck(), { collections }).outcome, 'fail');
   assert.equal(check(commanderDeck({ allow_proxies: true }), { collections }).outcome, 'pass');
 });
 
 test('unlimited_basics removes basic land shortfalls', () => {
-  const collections = { organized: [row(leader, 1)], precons: [] };
+  const collections = { available: [row(leader, 1)], protected: [] };
   assert.equal(check(commanderDeck({ unlimited_basics: true }), { collections }).outcome, 'pass');
 });
 
@@ -141,7 +144,7 @@ function checkPair(first, other) {
     commanders: [entry(first.name), entry(other.name)],
     mainboard: [entry(forest.name, 98)],
   });
-  const collections = { organized: [row(forest, 98), row(first, 1), row(other, 1)], precons: [] };
+  const collections = { available: [row(forest, 98), row(first, 1), row(other, 1)], protected: [] };
   return check(deck, { collections, cards: [forest, first, other] }).outcome;
 }
 
@@ -189,8 +192,8 @@ function checkWithChangers(count, fields = {}) {
     ...fields,
   });
   const collections = {
-    organized: [row(forest, 99), row(leader, 1), ...used.map((value) => row(value, 1))],
-    precons: [],
+    available: [row(forest, 99), row(leader, 1), ...used.map((value) => row(value, 1))],
+    protected: [],
   };
   return check(deck, { collections, cards: [forest, leader, ...used] });
 }

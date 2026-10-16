@@ -17,7 +17,7 @@ const deck = (fields = {}) => ({
   ...fields,
 });
 const swapSpellForForest = { add: entry(spell.name), cut: entry(forest.name), reason: 'Interaction' };
-const withoutSpell = { organized: [row(forest, 100), row(leader, 1)], precons: [] };
+const withoutSpell = { available: [row(forest, 100), row(leader, 1)], protected: [] };
 const report = (value, collections = withoutSpell, now = NOW) => upgradeReport(value, collections, index, { now });
 const purchased = ({ purchases }) =>
   purchases.map(({ card: value, quantity, unitCents }) => [value.name, quantity, unitCents]);
@@ -54,7 +54,7 @@ test('cheapestQuote reports missing currencies and stale prices instead of guess
 });
 
 test('owned spare copies make an upgrade free', () => {
-  const owned = { organized: [...withoutSpell.organized, row(spell, 1)], precons: [] };
+  const owned = { available: [...withoutSpell.available, row(spell, 1)], protected: [] };
   const result = report(deck({ upgrades: [swapSpellForForest] }), owned);
   assert.deepEqual(result.purchases, []);
   assert.equal(result.outcome, 'pass');
@@ -77,7 +77,7 @@ test('upgradeReport never mutates the deck', () => {
 });
 
 test('baseline basic land shortfalls are priced unless basics are unlimited', () => {
-  const fewBasics = { organized: [row(forest, 10), row(leader, 1)], precons: [] };
+  const fewBasics = { available: [row(forest, 10), row(leader, 1)], protected: [] };
   assert.deepEqual(purchased(report(deck({ budget: { amount: 30, currency: 'USD' } }), fewBasics)), [
     ['Forest', 89, 20],
   ]);

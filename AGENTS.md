@@ -4,13 +4,13 @@ Read [README.md](README.md) first, and the deck's `decks/<slug>/deck.yaml` when 
 
 ## Collection
 
-- Only `collections/Organized.csv` supplies cards. Mention useful `Precons.csv` copies, but never put them in a deck.
+- Every `collections/*.csv` supplies cards except protected collections (`MTG_PROTECTED_COLLECTIONS` in `.env`, default `Precons`). Mention useful protected copies, but never put them in a deck. `MTG_COLLECTIONS` can limit which collections are read at all. Don't pass `--protect` or `--collections` unless the user asks.
 - Never edit the CSV exports. Collection changes come from fresh ManaBox exports.
 - Decks are independent. Don't reserve cards across decks, and don't claim several decks can be assembled at once.
 
 ## Brewing
 
-- Before building, settle the format, the commander or theme, playgroup power level, budget, proxy policy and whether basics are unlimited. Ask only about what's missing. Organized holds very few basic lands, so ask whether the user has untracked basics (`unlimited_basics: true`) rather than letting every deck fail ownership.
+- Before building, settle the format, the commander or theme, playgroup power level, budget, proxy policy and whether basics are unlimited. Ask only about what's missing. The collections hold very few basic lands, so ask whether the user has untracked basics (`unlimited_basics: true`) rather than letting every deck fail ownership.
 - For open-ended requests, survey with `collection:search` (`--commanders`, `--count`, `--group-by`) and propose two or three directions the collection supports. Let the user choose before running `deck:new` or writing a list.
 - Explain the game plan, mana base, key inclusions and weaknesses. Use `deck:stats` to back up claims about curve and color sources.
 - `deck.yaml` is the only decklist. Commanders go in `commanders`, not `mainboard`.

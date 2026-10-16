@@ -1,5 +1,5 @@
 import { canBeCommander, creatureTypes, identityLabel, isLand } from './card.mjs';
-import { ownedCounts } from './collection.mjs';
+import { ownedCounts, protectedHoldings } from './collection.mjs';
 
 const COLORS = 'WUBRG';
 const IDENTITY_PATTERN = /^[WUBRGC]+$/i;
@@ -41,7 +41,7 @@ export function searchFilters(options, index) {
     commandersOnly: Boolean(options.commanders),
     nonlandOnly: Boolean(options.nonland),
     gameChangersOnly: Boolean(options['game-changers']),
-    includePreconOnly: Boolean(options.precons),
+    includeProtectedOnly: Boolean(options['include-protected']),
     allowProxies: Boolean(options.proxies),
   };
   if (!options.commander) return filters;
@@ -67,42 +67,44 @@ const matches = (card, filters) => FILTER_PREDICATES.every((predicate) => predic
 const byManaValueThenName = (first, second) =>
   first.card.manaValue - second.card.manaValue || first.card.name.localeCompare(second.card.name);
 
-// One result per card (oracle ID), with Organized copies and protected Precons copies.
+// One result per card (oracle ID): copies in available collections, and protected copies by collection.
 export function searchCollection(collections, index, filters = {}) {
   const policy = { allowProxies: filters.allowProxies };
-  const organized = ownedCounts(collections.organized, index, policy);
-  const precons = ownedCounts(collections.precons, index, policy);
-  const oracleIds = new Set(organized.counts.keys());
-  if (filters.includePreconOnly) for (const oracleId of precons.counts.keys()) oracleIds.add(oracleId);
+  const owned = ownedCounts(collections.available, index, policy);
+  const protectedOwned = ownedCounts(collections.protected, index, policy);
+  const holdings = protectedHoldings(collections.protected, index, policy);
+  const oracleIds = new Set(owned.counts.keys());
+  if (filters.includeProtectedOnly) for (const oracleId of holdings.keys()) oracleIds.add(oracleId);
   const results = [...oracleIds]
     .map((oracleId) => ({
       card: index.printingsOf(oracleId)[0],
-      organized: organized.counts.get(oracleId) ?? 0,
-      precons: precons.counts.get(oracleId) ?? 0,
+      available: owned.counts.get(oracleId) ?? 0,
+      protected: protectedOwned.counts.get(oracleId) ?? 0,
+      protectedIn: holdings.get(oracleId) ?? [],
     }))
     .filter(({ card }) => matches(card, filters))
     .sort(byManaValueThenName);
-  const unresolvedRows = organized.unresolvedRows + (filters.includePreconOnly ? precons.unresolvedRows : 0);
+  const unresolvedRows = owned.unresolvedRows + (filters.includeProtectedOnly ? protectedOwned.unresolvedRows : 0);
   return { results, unresolvedRows };
 }
 
 export const countResults = (results) => ({
   cards: results.length,
-  copies: results.reduce((sum, result) => sum + result.organized, 0),
+  copies: results.reduce((sum, result) => sum + result.available, 0),
 });
 
 const GROUP_KEYS = { identity: (card) => [identityLabel(card)], 'creature-type': creatureTypes };
 export const GROUP_BY_CHOICES = Object.keys(GROUP_KEYS);
 
-// Distinct cards and Organized copies per group, largest first. A card counts once in each of its groups.
+// Distinct cards and available copies per group, largest first. A card counts once in each of its groups.
 export function groupResults(results, by) {
   if (!Object.hasOwn(GROUP_KEYS, by)) throw new Error(`--group-by must be one of: ${GROUP_BY_CHOICES.join(', ')}`);
   const groups = new Map();
-  for (const { card, organized } of results) {
+  for (const { card, available } of results) {
     for (const key of GROUP_KEYS[by](card)) {
       const group = groups.get(key) ?? { key, cards: 0, copies: 0 };
       group.cards += 1;
-      group.copies += organized;
+      group.copies += available;
       groups.set(key, group);
     }
   }

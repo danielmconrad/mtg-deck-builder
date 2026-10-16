@@ -8,7 +8,7 @@ import { parseDeck, serializeDeck } from './deck.mjs';
 
 const PROJECT_ROOT = fileURLToPath(new URL('..', import.meta.url));
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const COLLECTION_NAMES = ['Organized', 'Precons'];
+const COLLECTION_EXTENSION = '.csv';
 
 // The project's on-disk layout: every path the tools read or write is defined here.
 export function openWorkspace(root = PROJECT_ROOT) {
@@ -58,11 +58,36 @@ export function openWorkspace(root = PROJECT_ROOT) {
 
   const removeDeckFile = (slug, fileName) => rm(join(deckPath(slug), '..', fileName), { force: true });
 
-  async function loadCollections() {
-    const load = async (name) =>
-      parseCollection(await readFile(join(root, 'collections', `${name}.csv`), 'utf8'), name);
-    const [organized, precons] = await Promise.all(COLLECTION_NAMES.map(load));
-    return { organized, precons };
+  // Every collections/*.csv is a collection named after its file; a non-empty only limits loading to
+  // those names. Names in protect are protected: reported, but never available to decks. Names match
+  // without regard to case, and each row records the collection it came from.
+  async function loadCollections({ protect = [], only = [] } = {}) {
+    const folder = join(root, 'collections');
+    const allNames = (await readdir(folder))
+      .filter((file) => file.toLowerCase().endsWith(COLLECTION_EXTENSION))
+      .map((file) => file.slice(0, -COLLECTION_EXTENSION.length))
+      .sort((first, second) => first.localeCompare(second));
+    const onlyKeys = new Set(only.map((name) => name.toLowerCase()));
+    const names = onlyKeys.size ? allNames.filter((name) => onlyKeys.has(name.toLowerCase())) : allNames;
+    const protectedKeys = new Set(protect.map((name) => name.toLowerCase()));
+    const sources = await Promise.all(
+      names.map(async (name) => {
+        const text = await readFile(join(folder, `${name}${COLLECTION_EXTENSION}`), 'utf8');
+        const rows = parseCollection(text, name).map((row) => ({ ...row, collection: name }));
+        return { name, isProtected: protectedKeys.has(name.toLowerCase()), rows };
+      }),
+    );
+    const rowsWhere = (isProtected) =>
+      sources.filter((source) => source.isProtected === isProtected).flatMap((source) => source.rows);
+    const knownKeys = new Set(allNames.map((name) => name.toLowerCase()));
+    return {
+      sources,
+      available: rowsWhere(false),
+      protected: rowsWhere(true),
+      availableNames: sources.filter((source) => !source.isProtected).map((source) => source.name),
+      unknownProtected: protect.filter((name) => !knownKeys.has(name.toLowerCase())),
+      unknownOnly: only.filter((name) => !knownKeys.has(name.toLowerCase())),
+    };
   }
 
   const loadCache = () => readCache(cachePath);

@@ -1,5 +1,6 @@
 // Turns reports into the text the CLI prints. Nothing here decides an outcome.
 import { identityLabel, orderedIdentity } from './card.mjs';
+import { holdingsNote } from './collection.mjs';
 import { CARD_TYPES, CHEAP_MANA_VALUE, CURVE_TOP_BUCKET, MANA_SYMBOLS } from './stats.mjs';
 import { CENTS_PER_UNIT, PRICE_MAX_AGE_DAYS } from './upgrades.mjs';
 
@@ -10,8 +11,8 @@ const BUDGET_LABELS = { pass: 'WITHIN BUDGET', fail: 'OVER BUDGET', incomplete: 
 const money = (cents, currency) => `${(cents / CENTS_PER_UNIT).toFixed(2)} ${currency}`;
 const indent = (line) => `  ${line}`;
 
-export const collectionSummaryLine = (name, { rowCount, copies, distinctNames, proxyCopies }) =>
-  `${name}: ${rowCount} rows, ${copies} copies, ${distinctNames} distinct names, ${proxyCopies} proxy copies`;
+export const collectionSummaryLine = (name, isProtected, { rowCount, copies, distinctNames, proxyCopies }) =>
+  `${name}${isProtected ? ' (protected)' : ''}: ${rowCount} rows, ${copies} copies, ${distinctNames} distinct names, ${proxyCopies} proxy copies`;
 
 export function checkLines(slug, { total, findings, outcome }) {
   const ordered = Object.keys(LEVEL_LABELS).flatMap((level) => findings.filter((item) => item.level === level));
@@ -22,9 +23,9 @@ export function checkLines(slug, { total, findings, outcome }) {
 }
 
 export function searchLines(results, { withOracleText = false } = {}) {
-  const lines = results.flatMap(({ card, organized, precons }) => {
-    const preconNote = precons ? ` (+${precons} in Precons)` : '';
-    const summary = `${organized}x ${card.name} ${card.manaCost} — ${card.typeLine} [${identityLabel(card)}]${preconNote}`;
+  const lines = results.flatMap(({ card, available, protectedIn }) => {
+    const protectedNote = protectedIn.length ? ` (+${holdingsNote(protectedIn)}, protected)` : '';
+    const summary = `${available}x ${card.name} ${card.manaCost} — ${card.typeLine} [${identityLabel(card)}]${protectedNote}`;
     const rulesText = withOracleText ? card.oracleText.split('\n').map((line) => `    ${line}`) : [];
     return [summary, ...rulesText];
   });
@@ -34,10 +35,11 @@ export function searchLines(results, { withOracleText = false } = {}) {
 // JSON keeps snake_case to match the deck YAML that assistants read and write.
 export const searchJson = (results) =>
   JSON.stringify(
-    results.map(({ card, organized, precons }) => ({
+    results.map(({ card, available, protected: protectedCopies, protectedIn }) => ({
       name: card.name,
-      organized,
-      precons,
+      available,
+      protected: protectedCopies,
+      protected_in: protectedIn,
       mana_cost: card.manaCost,
       mana_value: card.manaValue,
       type_line: card.typeLine,
@@ -89,16 +91,17 @@ function purchaseLine({ card, quantity, unitCents, printing, problem }, currency
 
 export function upgradeLines({ currency, purchases, problems, unresolvedRows, totalCents, budgetCents, outcome }) {
   const unresolvedNote = unresolvedRows
-    ? [`${unresolvedRows} Organized rows have no cached card data; purchase quantities may be overstated`]
+    ? [`${unresolvedRows} available collection rows have no cached card data; purchase quantities may be overstated`]
     : [];
   return [
-    `Cards Organized cannot supply, priced at the cheapest cached Scryfall nonfoil ${currency} quote under ${PRICE_MAX_AGE_DAYS} days old. Excludes shipping and tax.`,
+    `Cards the available collections cannot supply, priced at the cheapest cached Scryfall nonfoil ${currency} quote under ${PRICE_MAX_AGE_DAYS} days old. Excludes shipping and tax.`,
     ...[...problems, ...unresolvedNote, ...purchases.map((purchase) => purchaseLine(purchase, currency))].map(indent),
     `${BUDGET_LABELS[outcome]}: ${money(totalCents, currency)} of ${money(budgetCents, currency)} budget`,
   ];
 }
 
-export const countLine = ({ cards, copies }) => `${cards} cards, ${copies} copies in Organized`;
+export const countLine = ({ cards, copies }, availableNames) =>
+  `${cards} cards, ${copies} copies in ${availableNames.join(', ') || 'no available collections'}`;
 
 export function groupLines(groups) {
   const width = Math.max(0, ...groups.map(({ cards }) => String(cards).length));
