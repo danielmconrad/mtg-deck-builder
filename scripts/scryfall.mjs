@@ -33,6 +33,7 @@ export function toCard(scryfallCard, fetchedAt) {
     colorIdentity: scryfallCard.color_identity ?? [],
     producedMana: scryfallCard.produced_mana ?? [],
     legalities: scryfallCard.legalities ?? {},
+    gameChanger: scryfallCard.game_changer === true,
     prices: { usd: scryfallCard.prices?.usd ?? null, eur: scryfallCard.prices?.eur ?? null },
     fetchedAt,
   };

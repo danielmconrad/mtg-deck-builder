@@ -1,6 +1,6 @@
 // Turns reports into the text the CLI prints. Nothing here decides an outcome.
 import { identityLabel, orderedIdentity } from './card.mjs';
-import { CARD_TYPES, CURVE_TOP_BUCKET, MANA_SYMBOLS } from './stats.mjs';
+import { CARD_TYPES, CHEAP_MANA_VALUE, CURVE_TOP_BUCKET, MANA_SYMBOLS } from './stats.mjs';
 import { CENTS_PER_UNIT, PRICE_MAX_AGE_DAYS } from './upgrades.mjs';
 
 const OUTCOME_LABELS = { pass: 'PASS', incomplete: 'INCOMPLETE', fail: 'FAIL' };
@@ -66,6 +66,12 @@ export function statsLines(deck, stats) {
   return [
     `${deck.name}: ${stats.cards} mainboard cards${commanders ? ` + commander ${commanders}` : ''}`,
     `Lands: ${stats.lands}; nonland average mana value: ${averageManaValue}`,
+    ...(stats.suggestedLands === null
+      ? []
+      : [
+          `Karsten suggests ~${stats.suggestedLands.toFixed(1)} lands, counting ${stats.cheapRampAndDraw} cheap ramp/draw ` +
+            `(role ramp or draw, mana value ${CHEAP_MANA_VALUE} or less)`,
+        ]),
     `Curve (nonland): ${curve.join(' ')}`,
     `Types: ${countList(stats.types, CARD_TYPES)}`,
     `Color pips (nonland): ${countList(stats.pips, MANA_SYMBOLS)}`,

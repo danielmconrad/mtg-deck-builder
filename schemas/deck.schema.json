@@ -11,6 +11,7 @@
     "status": { "enum": ["example", "draft", "ready"] },
     "allow_proxies": { "type": "boolean" },
     "unlimited_basics": { "type": "boolean" },
+    "bracket": { "enum": [1, 2, 3, 4, 5] },
     "strategy": { "$ref": "#/definitions/text" },
     "power_notes": { "type": "string" },
     "notes": { "type": "string" },

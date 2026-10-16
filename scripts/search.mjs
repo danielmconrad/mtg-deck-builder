@@ -40,6 +40,7 @@ export function searchFilters(options, index) {
     maxManaValue: parseNumber(options['max-mv'], '--max-mv'),
     commandersOnly: Boolean(options.commanders),
     nonlandOnly: Boolean(options.nonland),
+    gameChangersOnly: Boolean(options['game-changers']),
     includePreconOnly: Boolean(options.precons),
     allowProxies: Boolean(options.proxies),
   };
@@ -52,6 +53,7 @@ const FILTER_PREDICATES = [
   (card, { identity }) => !identity || card.colorIdentity.every((color) => identity.has(color)),
   (card, { commandersOnly }) => !commandersOnly || canBeCommander(card),
   (card, { nonlandOnly }) => !nonlandOnly || !isLand(card),
+  (card, { gameChangersOnly }) => !gameChangersOnly || card.gameChanger,
   (card, { legalIn }) => !legalIn || card.legalities[legalIn] === 'legal',
   (card, { minManaValue }) => minManaValue === undefined || card.manaValue >= minManaValue,
   (card, { maxManaValue }) => maxManaValue === undefined || card.manaValue <= maxManaValue,

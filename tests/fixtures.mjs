@@ -24,6 +24,7 @@ export function card(name, fields = {}) {
     colorIdentity: [],
     producedMana: [],
     legalities: { commander: 'legal' },
+    gameChanger: false,
     prices: { usd: '1.00', eur: null },
     fetchedAt: new Date(NOW).toISOString(),
     ...fields,

@@ -189,6 +189,7 @@ const SEARCH_OPTIONS = {
     type: 'boolean',
     description: 'Only cards that can be a commander: legendary creatures, Backgrounds, "can be your commander"',
   },
+  'game-changers': { type: 'boolean', description: 'Only cards on the Commander Game Changers list' },
   nonland: { type: 'boolean', description: 'Exclude lands (modal spell/land cards count as spells)' },
   identity: { type: 'string', placeholder: 'WUBRG', description: 'Limit to a color identity; C means colorless only' },
   type: {

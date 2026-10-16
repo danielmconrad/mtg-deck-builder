@@ -13,7 +13,7 @@ Ask only about what the user hasn't already said. Don't fill gaps with defaults.
 
 - **Format:** Commander or casual-60.
 - **Commander or theme:** or "open to anything from my collection".
-- **Power level:** what the playgroup expects (casual, mid, high).
+- **Power level:** a Commander Bracket (1–5) or the playgroup's own terms. The bracket table is in the `deckbuilding-strategy` skill.
 - **Budget:** amount and currency for optional upgrades.
 - **Proxies:** allowed or not.
 - **Basic lands:** run `mise run collection:search -- --type basic --count`. Organized usually holds very few basics, so every deck fails ownership unless the user has untracked basics. Ask, and set `unlimited_basics: true` if they do.
@@ -74,33 +74,22 @@ Then **wait for the user to choose.** Don't run `deck:new` or write a list befor
 mise run deck:new -- <slug> --commander "Name"     # repeat --commander for partners
 ```
 
-- **Header fields:** fill `strategy`, `power_notes`, `budget`, `allow_proxies` and `unlimited_basics` in `decks/<slug>/deck.yaml`.
+- **Header fields:** fill `strategy`, `power_notes`, `bracket`, `budget`, `allow_proxies` and `unlimited_basics` in `decks/<slug>/deck.yaml`.
 - **Mainboard:** owned cards only. Give each entry a `role` from the vocabulary below.
 - **Size:** reach exactly 100 cards including commanders, or at least 60 for casual.
 
 Role vocabulary (comma-separate several): `land`, `ramp`, `draw`, `removal`, `wipe`, `protection`, `wincon`, `synergy`. `deck:stats` counts them, and the Archidekt export turns them into categories.
 
-Starting targets for Commander. These are community rules of thumb, not rules; adjust for the commander and the curve:
-
-| Role       | Count | Note                                          |
-| ---------- | ----- | --------------------------------------------- |
-| land       | 35–38 | fewer with heavy ramp or a low curve          |
-| ramp       | 8–12  | mostly 2–3 mana value                         |
-| draw       | 8–12  | repeatable sources count most                 |
-| removal    | 6–10  | include answers to artifacts and enchantments |
-| wipe       | 2–4   | fewer in go-wide creature decks               |
-| protection | 2–5   | for commander-dependent decks                 |
-
-For casual-60, aim for 22–26 lands and four copies of key cards.
+Use the `deckbuilding-strategy` skill for the plan, role counts, land count and bracket fit. It has the Command Zone template, 8x8, Karsten's land math and the Rule of 9 for casual-60.
 
 ## 5. Check and critique
 
 ```sh
 mise run deck:check -- <slug>    # fix every ERROR; explain every INCOMPLETE. Exit 2 is not a pass.
-mise run deck:stats -- <slug>    # compare curve, color sources and roles against the targets
+mise run deck:stats -- <slug>    # curve, roles, color sources and Karsten's suggested land count
 ```
 
-Then explain the deck to the user: the game plan, the mana base, key inclusions, hard cuts and known weaknesses. Point to the stats when you talk about curve or color sources.
+Then review it with the checklist in `deckbuilding-strategy`, and explain the deck to the user: the game plan, the mana base, key inclusions, hard cuts and known weaknesses. Point to the stats when you talk about curve or color sources.
 
 ## 6. Upgrades (optional)
 

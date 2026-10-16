@@ -129,6 +129,24 @@ function ownershipFindings(tallies, collections, index, deck) {
   return findings;
 }
 
+// Wizards' Commander Brackets (beta; definitions from October 2025): Game Changers allowed per bracket.
+const GAME_CHANGER_LIMITS = { 1: 0, 2: 0, 3: 3, 4: Infinity, 5: Infinity };
+
+function gameChangerFindings(tallies, bracket) {
+  const names = [...tallies.values()].filter(({ card }) => card.gameChanger).map(({ card }) => card.name);
+  const list = `${names.length} Game Changers${names.length ? `: ${names.join(', ')}` : ''}`;
+  if (bracket === undefined) {
+    return names.length ? [note(`${list} (Brackets 1-2 allow none, Bracket 3 up to 3; set bracket to enforce)`)] : [];
+  }
+  const limit = GAME_CHANGER_LIMITS[bracket];
+  if (names.length <= limit) return [];
+  // Bracket 1 lets a playgroup agree on thematic exceptions before the game, so it's a judgment call.
+  if (bracket === 1) {
+    return [incomplete(`${list}; Bracket 1 allows none unless your playgroup agrees to a thematic exception`)];
+  }
+  return [error(`${list}; Bracket ${bracket} allows ${limit === 0 ? 'none' : `up to ${limit}`}`)];
+}
+
 function freshnessFindings(tallies, now) {
   const oldestDays = Math.max(0, ...[...tallies.values()].map(({ card }) => ageInDays(card, now)));
   if (oldestDays <= RULES_WARN_AGE_DAYS) return [];
@@ -159,6 +177,7 @@ export function checkDeck(deck, collections, index, { now = Date.now() } = {}) {
     ...commanderFindings(commanders),
     ...cardFindings,
     ...ownershipFindings(tallies, collections, index, deck),
+    ...(isCommanderFormat ? gameChangerFindings(tallies, deck.bracket) : []),
     ...freshnessFindings(tallies, now),
   ]);
   return { total, findings, outcome: outcomeOf(findings) };

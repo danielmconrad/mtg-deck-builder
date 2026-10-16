@@ -13,6 +13,18 @@ export const CARD_TYPES = [
 ];
 export const MANA_SYMBOLS = ['W', 'U', 'B', 'R', 'G', 'C'];
 export const CURVE_TOP_BUCKET = 7;
+export const CHEAP_MANA_VALUE = 2;
+const CHEAP_ROLES = ['ramp', 'draw'];
+
+// Frank Karsten's regression on winning decklists ("How Many Lands Do You Need in Your Deck? An Updated
+// Analysis", ChannelFireball). Each cheap ramp or draw spell replaces about 0.28 lands; the Commander
+// version scales the 60-card fit to 99 cards and credits the free mulligan and the commander.
+export function suggestedLands({ format, commanderCount, averageManaValue, cheapRampAndDraw }) {
+  const cheapCredit = 0.28 * cheapRampAndDraw;
+  if (format !== 'commander') return 19.59 + 1.9 * averageManaValue - cheapCredit;
+  const scale = (100 - commanderCount) / 60;
+  return scale * (19.59 + 1.9 * averageManaValue + 0.27 * commanderCount) - cheapCredit - 1.35;
+}
 
 const increment = (counts, key, amount) => counts.set(key, (counts.get(key) ?? 0) + amount);
 
@@ -23,6 +35,17 @@ function pips(manaCost) {
     for (const color of MANA_SYMBOLS) if (symbol.split('/').includes(color)) increment(counts, color, 1);
   }
   return counts;
+}
+
+// Nonland mainboard cards with role ramp or draw at mana value 2 or less: Karsten's "cheap" spells.
+function countCheapRampAndDraw(entries, index) {
+  let count = 0;
+  for (const entry of entries) {
+    const { card } = index.lookup(entry);
+    const isCheapSpell = card && !isLand(card) && card.manaValue <= CHEAP_MANA_VALUE;
+    if (isCheapSpell && roleLabels(entry).some((role) => CHEAP_ROLES.includes(role))) count += entry.quantity;
+  }
+  return count;
 }
 
 // Mainboard shape only; commanders sit in the command zone and are reported separately.
@@ -54,5 +77,11 @@ export function deckStats(deck, index) {
   for (const entry of deck.mainboard) {
     for (const role of roleLabels(entry)) increment(stats.roles, role, entry.quantity);
   }
+  stats.cheapRampAndDraw = countCheapRampAndDraw(deck.mainboard, index);
+  const nonlandCards = stats.cards - stats.lands;
+  stats.averageManaValue = nonlandCards ? stats.nonlandManaValue / nonlandCards : 0;
+  stats.suggestedLands = nonlandCards
+    ? suggestedLands({ ...stats, format: deck.format, commanderCount: deck.commanders.length })
+    : null;
   return stats;
 }

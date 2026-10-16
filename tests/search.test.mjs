@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { countResults, groupResults, parseIdentity, searchCollection, searchFilters } from '../scripts/search.mjs';
-import { deckStats } from '../scripts/stats.mjs';
+import { deckStats, suggestedLands } from '../scripts/stats.mjs';
 import { identityLabel, orderedIdentity } from '../scripts/card.mjs';
 import { card, entry, forest, indexOf, leader, row, spell } from './fixtures.mjs';
 
@@ -161,4 +161,47 @@ test('identity helpers order colors WUBRG regardless of Scryfall order', () => {
   assert.deepEqual(orderedIdentity(golgari), ['B', 'G']);
   assert.equal(identityLabel(golgari), 'BG');
   assert.equal(identityLabel(card('Colorless Card')), 'C');
+});
+
+test('--game-changers keeps only Game Changers', () => {
+  const study = card('Study Card', { gameChanger: true });
+  const index = indexOf(study, elf);
+  const owned = { organized: [row(study, 1), row(elf, 1)], precons: [] };
+  const { results } = searchCollection(owned, index, searchFilters({ 'game-changers': true }, index));
+  assert.deepEqual(
+    results.map((result) => result.card.name),
+    ['Study Card'],
+  );
+});
+
+test("suggestedLands matches Karsten's worked examples", () => {
+  const commander = (averageManaValue, cheapRampAndDraw) =>
+    suggestedLands({ format: 'commander', commanderCount: 1, averageManaValue, cheapRampAndDraw });
+  assert.equal(commander(3.51, 13).toFixed(1), '38.8');
+  assert.equal(commander(3.0, 10).toFixed(1), '38.0');
+  const casual = suggestedLands({ format: 'casual-60', commanderCount: 0, averageManaValue: 2.5, cheapRampAndDraw: 4 });
+  assert.equal(casual.toFixed(2), '23.22');
+});
+
+test('deckStats counts cheap ramp and draw by role and mana value, then suggests lands', () => {
+  const signet = card('Cheap Rock', { typeLine: 'Artifact', manaValue: 2, manaCost: '{2}' });
+  const bigDraw = card('Big Draw', { manaValue: 5, manaCost: '{4}{U}' });
+  const index = indexOf(forest, signet, bigDraw, elf);
+  const deck = {
+    format: 'commander',
+    commanders: [entry(leader.name)],
+    mainboard: [
+      entry(forest.name, 37, { role: 'land' }),
+      entry(signet.name, 1, { role: 'ramp' }),
+      entry(elf.name, 1, { role: 'ramp, synergy' }),
+      entry(bigDraw.name, 1, { role: 'draw' }),
+    ],
+  };
+  const stats = deckStats(deck, index);
+  assert.equal(stats.cheapRampAndDraw, 2);
+  assert.equal(stats.averageManaValue.toFixed(2), '2.67');
+  assert.equal(
+    stats.suggestedLands.toFixed(2),
+    suggestedLands({ format: 'commander', commanderCount: 1, averageManaValue: 8 / 3, cheapRampAndDraw: 2 }).toFixed(2),
+  );
 });

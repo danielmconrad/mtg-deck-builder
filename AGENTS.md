@@ -1,6 +1,6 @@
 # Agent Instructions
 
-Read [README.md](README.md) first, and the deck's `decks/<slug>/deck.yaml` when working on an existing deck. For a new deck, follow the `new-deck` skill in [.claude/skills/new-deck/SKILL.md](.claude/skills/new-deck/SKILL.md). Every command documents its options with `mise run <task> -- --help`. Ask before adding infrastructure such as a database, server or frontend.
+Read [README.md](README.md) first, and the deck's `decks/<slug>/deck.yaml` when working on an existing deck. For a new deck, follow the `new-deck` skill in [.claude/skills/new-deck/SKILL.md](.claude/skills/new-deck/SKILL.md). For plans, role counts, land counts, brackets or reviewing a deck, use [deckbuilding-strategy](.claude/skills/deckbuilding-strategy/SKILL.md). Every command documents its options with `mise run <task> -- --help`. Ask before adding infrastructure such as a database, server or frontend.
 
 ## Collection
 

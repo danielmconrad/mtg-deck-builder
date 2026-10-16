@@ -71,6 +71,11 @@ test('toCard reads face data for double-faced cards', () => {
   assert.equal(result.typeLine, 'Legendary Creature — Elf // Legendary Planeswalker');
 });
 
+test('toCard records Game Changer status, defaulting to false', () => {
+  assert.equal(toCard({ id: 'gc', oracle_id: 'o', name: 'GC', game_changer: true }, 'fetched').gameChanger, true);
+  assert.equal(toCard({ id: 'plain', oracle_id: 'o', name: 'Plain' }, 'fetched').gameChanger, false);
+});
+
 test('toCard takes the oracle ID from the face of reversible cards', () => {
   const result = toCard(
     { id: 'rev', name: 'Card // Card', card_faces: [{ name: 'Card', oracle_id: 'rev-oracle' }] },

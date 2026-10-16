@@ -2,7 +2,7 @@ import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 
 // Bump whenever the card model in scryfall.mjs changes shape, so stale caches are rejected.
-export const CACHE_VERSION = 3;
+export const CACHE_VERSION = 4;
 
 export const emptyCache = () => ({ version: CACHE_VERSION, cards: {} });
 

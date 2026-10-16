@@ -178,3 +178,40 @@ test('unrecognized commander pairings need manual review', () => {
     assert.equal(checkPair(first, other), 'incomplete', label);
   }
 });
+
+const gameChanger = (name) => card(name, { gameChanger: true, colorIdentity: ['G'] });
+const changers = ['Changer One', 'Changer Two', 'Changer Three', 'Changer Four'].map(gameChanger);
+
+function checkWithChangers(count, fields = {}) {
+  const used = changers.slice(0, count);
+  const deck = commanderDeck({
+    mainboard: [entry(forest.name, 99 - count), ...used.map((value) => entry(value.name))],
+    ...fields,
+  });
+  const collections = {
+    organized: [row(forest, 99), row(leader, 1), ...used.map((value) => row(value, 1))],
+    precons: [],
+  };
+  return check(deck, { collections, cards: [forest, leader, ...used] });
+}
+
+test('Game Changers are listed as a note when the deck sets no bracket', () => {
+  const report = checkWithChangers(2);
+  assert.equal(report.outcome, 'pass');
+  assert.match(messages(report, 'note').join(), /2 Game Changers: Changer One, Changer Two \(Brackets 1-2 allow none/);
+});
+
+test('a bracket enforces its Game Changer limit', () => {
+  assert.equal(checkWithChangers(3, { bracket: 3 }).outcome, 'pass');
+  assert.deepEqual(messages(checkWithChangers(4, { bracket: 3 }), 'error'), [
+    '4 Game Changers: Changer One, Changer Two, Changer Three, Changer Four; Bracket 3 allows up to 3',
+  ]);
+  assert.match(messages(checkWithChangers(1, { bracket: 2 }), 'error').join(), /Bracket 2 allows none/);
+  assert.equal(checkWithChangers(4, { bracket: 4 }).outcome, 'pass');
+});
+
+test('Bracket 1 Game Changers need a playgroup decision rather than failing', () => {
+  const report = checkWithChangers(1, { bracket: 1 });
+  assert.equal(report.outcome, 'incomplete');
+  assert.match(messages(report, 'incomplete').join(), /thematic exception/);
+});

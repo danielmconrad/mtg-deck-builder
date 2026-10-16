@@ -108,6 +108,7 @@ See [the example](decks/example/deck.yaml) and [the schema](schemas/deck.schema.
 | `commanders`                        | One or two entries with quantity 1; `[]` for casual                                                                 |
 | `mainboard`                         | Everything else, including lands                                                                                    |
 | card entry                          | `name`, `quantity`, optional `role` (comma-separated labels) and `scryfall_id` (pins the printing used for pricing) |
+| `bracket`                           | Optional Commander Bracket (1–5); `deck:check` enforces its Game Changer limit                                      |
 | `allow_proxies`, `unlimited_basics` | Ownership policy, see above                                                                                         |
 | `budget`                            | `amount` and `currency` (`USD`/`EUR`), needed for `deck:upgrades`                                                   |
 | `upgrades`                          | Paired `add`/`cut`/`reason` swaps; never applied automatically                                                      |
@@ -121,11 +122,13 @@ Use exact Scryfall names. You can give a double-faced card by its front-face nam
 - **Refresh.** `cards:refresh` batches requests to Scryfall's collection endpoint (75 cards per request, 550ms apart) and keeps only the fields the tools use. A failed refresh leaves the old cache in place.
 - **Old card data.** Card data older than 30 days adds a note to `deck:check` output but doesn't fail the check. Refresh to pick up new bans.
 - **Prices.** `deck:upgrades` uses the cheapest cached Scryfall nonfoil quote less than 7 days old, or the printing set by `scryfall_id`. Older or missing quotes count as unknown, never zero. Shipping and tax aren't included. Cuts aren't resold.
+- **Game Changers.** Scryfall marks each card on Wizards' Game Changers list, so `deck:check` lists a Commander deck's Game Changers and enforces the limit when `bracket` is set. `collection:search -- --game-changers` shows which ones you own. Refresh card data when the list changes.
+- **Land count.** `deck:stats` prints Frank Karsten's suggested land count from the deck's average mana value and its cheap `ramp`/`draw` cards (mana value 2 or less).
 - **Commander pairings.** Partner, Partner with, Friends forever, Choose a Background and Doctor's companion are recognized. Any other pair is reported for manual review.
 - **Limits.** Casual checks only enforce deck size and copy limits, not a sanctioned format.
 
 ## Working with an assistant
 
-Point the assistant at [AGENTS.md](AGENTS.md) (Claude Code and Copilot load it automatically). In Claude Code, the [`new-deck` skill](.claude/skills/new-deck/SKILL.md) holds the step-by-step brewing process; it loads when you ask for a new deck, or run `/new-deck`. A good opening brief:
+Point the assistant at [AGENTS.md](AGENTS.md) (Claude Code and Copilot load it automatically). In Claude Code, two skills load when relevant, or run them as slash commands: [`new-deck`](.claude/skills/new-deck/SKILL.md) holds the step-by-step brewing process, and [`deckbuilding-strategy`](.claude/skills/deckbuilding-strategy/SKILL.md) holds established frameworks (Commander Brackets, the Command Zone template, Karsten's land math) for building and reviewing decks. A good opening brief:
 
 > Find three Commander directions my Organized collection supports. Keep precons intact, aim for casual interactive games, and suggest up to $30 of upgrades. Let me pick a direction before you build the list.
