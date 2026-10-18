@@ -1,0 +1,58 @@
+Commander
+1 Maralen, Fae Ascendant (ECL) 233
+
+Deck
+1 Woodland Weavemaster (HOB) 143
+1 Aftermath Analyst (EOC) 91
+1 Carnivorous Cultivator (FRA) 100
+1 Iron-Shield Elf (ECL) 108
+1 Silhana Ledgewalker (RVR) 156
+1 Vitu-Ghazi Inspector (MKM) 183
+1 Hypnotic Sprite (FIC) 264
+1 Wood Elves (HOB) 142
+1 Elven Raft-Steerer (HOB) 37
+1 Mirkwood Nurturer (HOB) 160
+1 Mirkwood Pathmaker (HOB) 129
+1 Dawn's Light Archer (ECL) 174
+1 Alphinaud Leveilleur (FIC) 33
+1 Dawnhand Eulogist (ECL) 99
+1 Dream Seizer (ECL) 101
+1 Galadhrim Guide (LTR) 168
+1 Silvan Reveler (HOB) 163
+1 Thranduil, Sindarin Liege (HOB) 166
+1 Thranduil's Company (HOB) 168
+1 Cantankerous Keepers (HOB) 122
+1 Boughside Wanderers (HOB) 121
+1 Morcant's Eyes (ECL) 185
+1 Sprouting Renewal (GRN) 145
+1 Arcane Signet (FIC) 335
+1 Goobbue Gardener (FIN) 188
+1 Down in the Valley (HOB) 124
+1 Many Partings (LTR) 445
+1 Fatal Push (FCA) 9
+1 Bilbo's Deadly Slice (HOB) 62
+1 Tainted Treats (TMT) 170
+1 Murderous Rider // Swift End (FIC) 279
+1 Binding the Old Gods (EOC) 52
+1 Lethal Scheme (FIC) 277
+1 Scorpion's Sting (SPM) 65
+1 Night's Whisper (EOC) 85
+1 Confusticate and Bebother (HOB) 35
+1 Command Tower (FIC) 382
+1 Path of Ancestry (FIC) 411
+1 Eclipsed Realms (ECL) 263
+1 Elvenking's Halls (HOB) 182
+1 Darkwater Catacombs (FIC) 384
+1 Choked Estuary (FIC) 379
+1 Contaminated Aquifer (FIC) 383
+1 Dismal Backwater (DFT) 254
+1 Sunken Hollow (FIC) 429
+1 Formidable Commons (FRA) 178
+1 Jungle Hollow (DFT) 256
+1 Subterranean Cavern (MSH) 273
+1 Thornwood Falls (DFT) 266
+1 Transformative Commons (FRA) 193
+1 Evolving Wilds (FIC) 389
+6 Forest (CLB) 468
+1 Island (FIN) 297
+1 Swamp (FIN) 300

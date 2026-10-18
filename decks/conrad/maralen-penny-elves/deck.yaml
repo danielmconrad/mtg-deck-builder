@@ -1,0 +1,178 @@
+# yaml-language-server: $schema=../../schemas/deck.schema.json
+schema_version: 1
+name: Maralen Penny Elves
+format: commander-60
+status: draft
+allow_proxies: false
+unlimited_basics: true
+bracket: 2
+primer: 60-card Commander with every card at $1 or less (cheapest printing). Flood the board with cheap Elves; each one entering makes Maralen exile two cards from an opponent's library, and once a turn you cast one of them free if its mana value is at most your Elf and Faerie count. Thranduil's anthem and landfall tokens plus Thranduil's Company turn the wide board into the win.
+power_notes: Bracket 2. No Game Changers, no tutors beyond basic lands, no infinite combos. Price cap enforced by hand against Scryfall prices; deck:check does not check it.
+commanders:
+  - name: Maralen, Fae Ascendant
+    quantity: 1
+mainboard:
+  - name: 'Woodland Weavemaster'
+    quantity: 1
+    role: ramp, synergy
+  - name: 'Aftermath Analyst'
+    quantity: 1
+    role: synergy
+  - name: 'Carnivorous Cultivator'
+    quantity: 1
+    role: ramp, synergy
+  - name: 'Iron-Shield Elf'
+    quantity: 1
+    role: synergy
+  - name: 'Silhana Ledgewalker'
+    quantity: 1
+    role: synergy
+  - name: 'Vitu-Ghazi Inspector'
+    quantity: 1
+    role: synergy
+  - name: 'Hypnotic Sprite'
+    quantity: 1
+    role: removal, synergy
+  - name: 'Wood Elves'
+    quantity: 1
+    role: ramp, synergy
+  - name: 'Elven Raft-Steerer'
+    quantity: 1
+    role: synergy
+  - name: 'Mirkwood Nurturer'
+    quantity: 1
+    role: synergy
+  - name: 'Mirkwood Pathmaker'
+    quantity: 1
+    role: synergy
+  - name: "Dawn's Light Archer"
+    quantity: 1
+    role: synergy
+  - name: 'Alphinaud Leveilleur'
+    quantity: 1
+    role: draw, synergy
+  - name: 'Dawnhand Eulogist'
+    quantity: 1
+    role: synergy
+  - name: 'Dream Seizer'
+    quantity: 1
+    role: synergy
+  - name: 'Galadhrim Guide'
+    quantity: 1
+    role: synergy
+  - name: 'Silvan Reveler'
+    quantity: 1
+    role: draw, ramp, synergy
+  - name: 'Thranduil, Sindarin Liege'
+    quantity: 1
+    role: wincon, synergy
+  - name: "Thranduil's Company"
+    quantity: 1
+    role: ramp, wincon, synergy
+  - name: 'Cantankerous Keepers'
+    quantity: 1
+    role: draw, synergy
+  - name: 'Boughside Wanderers'
+    quantity: 1
+    role: draw, synergy
+  - name: "Morcant's Eyes"
+    quantity: 1
+    role: synergy
+  - name: 'Sprouting Renewal'
+    quantity: 1
+    role: removal, synergy
+  - name: 'Arcane Signet'
+    quantity: 1
+    role: ramp
+  - name: 'Goobbue Gardener'
+    quantity: 1
+    role: ramp
+  - name: 'Down in the Valley'
+    quantity: 1
+    role: ramp, synergy
+  - name: 'Many Partings'
+    quantity: 1
+    role: ramp
+  - name: 'Fatal Push'
+    quantity: 1
+    role: removal
+  - name: "Bilbo's Deadly Slice"
+    quantity: 1
+    role: removal
+  - name: 'Tainted Treats'
+    quantity: 1
+    role: removal
+  - name: 'Murderous Rider // Swift End'
+    quantity: 1
+    role: removal
+  - name: 'Binding the Old Gods'
+    quantity: 1
+    role: removal, ramp
+  - name: 'Lethal Scheme'
+    quantity: 1
+    role: removal
+  - name: "Scorpion's Sting"
+    quantity: 1
+    role: removal
+  - name: "Night's Whisper"
+    quantity: 1
+    role: draw
+  - name: 'Confusticate and Bebother'
+    quantity: 1
+    role: draw, removal
+  - name: 'Command Tower'
+    quantity: 1
+    role: land
+  - name: 'Path of Ancestry'
+    quantity: 1
+    role: land
+  - name: 'Eclipsed Realms'
+    quantity: 1
+    role: land
+  - name: "Elvenking's Halls"
+    quantity: 1
+    role: land
+  - name: 'Darkwater Catacombs'
+    quantity: 1
+    role: land
+  - name: 'Choked Estuary'
+    quantity: 1
+    role: land
+  - name: 'Contaminated Aquifer'
+    quantity: 1
+    role: land
+  - name: 'Dismal Backwater'
+    quantity: 1
+    role: land
+  - name: 'Sunken Hollow'
+    quantity: 1
+    role: land
+  - name: 'Formidable Commons'
+    quantity: 1
+    role: land
+  - name: 'Jungle Hollow'
+    quantity: 1
+    role: land
+  - name: 'Subterranean Cavern'
+    quantity: 1
+    role: land
+  - name: 'Thornwood Falls'
+    quantity: 1
+    role: land
+  - name: 'Transformative Commons'
+    quantity: 1
+    role: land
+  - name: 'Evolving Wilds'
+    quantity: 1
+    role: land
+  - name: Forest
+    quantity: 6
+    role: land
+  - name: Island
+    quantity: 1
+    role: land
+  - name: Swamp
+    quantity: 1
+    role: land
+upgrades: []
+playtests: []
