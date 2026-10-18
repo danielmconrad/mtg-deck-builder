@@ -7,7 +7,7 @@
   "properties": {
     "schema_version": { "const": 1 },
     "name": { "$ref": "#/definitions/text" },
-    "format": { "enum": ["commander", "casual-60"] },
+    "format": { "enum": ["commander", "commander-60", "casual-60"] },
     "status": { "enum": ["example", "draft", "ready"] },
     "allow_proxies": { "type": "boolean" },
     "unlimited_basics": { "type": "boolean" },
@@ -61,7 +61,7 @@
   },
   "allOf": [
     {
-      "if": { "properties": { "format": { "const": "commander" } } },
+      "if": { "properties": { "format": { "enum": ["commander", "commander-60"] } } },
       "then": {
         "properties": { "commanders": { "minItems": 1, "items": { "properties": { "quantity": { "const": 1 } } } } }
       },

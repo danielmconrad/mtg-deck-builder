@@ -32,6 +32,20 @@ test('Commander deck size counts the commander', () => {
   ]);
 });
 
+test('60-card Commander needs exactly 60 cards and keeps Commander rules', () => {
+  const sixty = (mainboard) => commanderDeck({ format: 'commander-60', mainboard });
+  assert.equal(check(sixty([entry(forest.name, 59)])).outcome, 'pass');
+  assert.deepEqual(messages(check(sixty([entry(forest.name, 60)])), 'error'), [
+    '60-card Commander requires 60 cards including commanders; found 61',
+  ]);
+  const blue = { ...spell, colorIdentity: ['U'] };
+  const report = check(sixty([entry(forest.name, 57), entry(spell.name, 2)]), { cards: [forest, leader, blue] });
+  assert.deepEqual(messages(report, 'error'), [
+    'Example Spell: 2 copies exceeds limit 1',
+    'Example Spell: outside commander color identity',
+  ]);
+});
+
 test('casual decks need at least 60 cards', () => {
   assert.equal(check(casualDeck([entry(forest.name, 60)])).outcome, 'pass');
   assert.deepEqual(messages(check(casualDeck([entry(forest.name, 59)])), 'error'), [

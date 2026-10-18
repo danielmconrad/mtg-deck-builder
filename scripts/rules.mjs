@@ -1,11 +1,10 @@
 import { ageInDays, hasCommanderText, isBackground, isBasic, isLegendaryCreature } from './card.mjs';
 import { availableCopies, holdingsNote, ownedCounts, protectedHoldings } from './collection.mjs';
-import { deckEntries, resolveEntries } from './deck.mjs';
+import { COMMANDER_DECK_SIZES, deckEntries, isCommanderFormat, resolveEntries } from './deck.mjs';
 
 const RULES_WARN_AGE_DAYS = 30;
-const COMMANDER_DECK_SIZE = 100;
 const CASUAL_MIN_DECK_SIZE = 60;
-const DEFAULT_COPY_LIMIT = { commander: 1, 'casual-60': 4 };
+const DEFAULT_COPY_LIMIT = { commander: 1, 'commander-60': 1, 'casual-60': 4 };
 const NUMBER_WORDS = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10 };
 const ANY_NUMBER_TEXT = /A deck can have any number of cards named /i;
 const UP_TO_TEXT = /A deck can have up to (\w+) cards named /i;
@@ -41,9 +40,12 @@ function copyLimit(card, format) {
   return DEFAULT_COPY_LIMIT[format];
 }
 
+const FORMAT_LABELS = { commander: 'Commander', 'commander-60': '60-card Commander' };
+
 function sizeFindings(format, total) {
-  if (format === 'commander' && total !== COMMANDER_DECK_SIZE) {
-    return [error(`Commander requires ${COMMANDER_DECK_SIZE} cards including commanders; found ${total}`)];
+  const commanderSize = COMMANDER_DECK_SIZES[format];
+  if (commanderSize !== undefined && total !== commanderSize) {
+    return [error(`${FORMAT_LABELS[format]} requires ${commanderSize} cards including commanders; found ${total}`)];
   }
   if (format === 'casual-60' && total < CASUAL_MIN_DECK_SIZE) {
     return [error(`Casual requires at least ${CASUAL_MIN_DECK_SIZE} cards; found ${total}`)];
@@ -163,14 +165,14 @@ export function checkDeck(deck, collections, index, { now = Date.now() } = {}) {
   const total = entries.reduce((sum, entry) => sum + entry.quantity, 0);
   const { tallies, problems } = resolveEntries(entries, index);
   const commanders = deck.commanders.map((entry) => index.lookup(entry).card).filter(Boolean);
-  const isCommanderFormat = deck.format === 'commander';
+  const commanderRules = isCommanderFormat(deck.format);
   const identity =
-    isCommanderFormat && commanders.length === deck.commanders.length
+    commanderRules && commanders.length === deck.commanders.length
       ? new Set(commanders.flatMap((card) => card.colorIdentity))
       : null;
   const cardFindings = [...tallies.values()].flatMap((tally) => [
     ...copyLimitFindings(tally, deck.format),
-    ...(isCommanderFormat ? commanderLegalityFindings(tally.card, identity) : []),
+    ...(commanderRules ? commanderLegalityFindings(tally.card, identity) : []),
   ]);
   const findings = uniqueFindings([
     ...problems.map(incomplete),
@@ -178,7 +180,7 @@ export function checkDeck(deck, collections, index, { now = Date.now() } = {}) {
     ...commanderFindings(commanders),
     ...cardFindings,
     ...ownershipFindings(tallies, collections, index, deck),
-    ...(isCommanderFormat ? gameChangerFindings(tallies, deck.bracket) : []),
+    ...(commanderRules ? gameChangerFindings(tallies, deck.bracket) : []),
     ...freshnessFindings(tallies, now),
   ]);
   return { total, findings, outcome: outcomeOf(findings) };

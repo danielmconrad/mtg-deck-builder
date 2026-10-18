@@ -133,20 +133,20 @@ Prettier formats, ESLint lints ([eslint.config.js](eslint.config.js)). Two thing
 
 See [the example](decks/example/deck.yaml) and [the schema](schemas/deck.schema.json). The example is a 40-card structural template, not a real deck.
 
-| Field                               | Meaning                                                                                                             |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `format`                            | `commander` (exactly 100 including commanders) or `casual-60` (at least 60)                                         |
-| `status`                            | `draft` or `ready`; `example` is for the template only                                                              |
-| `commanders`                        | One or two entries with quantity 1; `[]` for casual                                                                 |
-| `mainboard`                         | Everything else, including lands                                                                                    |
-| card entry                          | `name`, `quantity`, optional `role` (comma-separated labels) and `scryfall_id` (pins the printing used for pricing) |
-| `bracket`                           | Optional Commander Bracket (1–5); `deck:check` enforces its Game Changer limit                                      |
-| `allow_proxies`, `unlimited_basics` | Ownership policy, see above                                                                                         |
-| `collections`                       | Optional path globs of the collections the deck is built from, e.g. `['collections/brad/*']`                        |
-| `budget`                            | `amount` and `currency` (`USD`/`EUR`), needed for `deck:upgrades`                                                   |
-| `upgrades`                          | Paired `add`/`cut`/`reason` swaps; never applied automatically                                                      |
-| `playtests`                         | `date` (`"YYYY-MM-DD"`), `notes`, optional `changes`                                                                |
-| `primer`, `power_notes`, `notes`    | Free text                                                                                                           |
+| Field                               | Meaning                                                                                                                   |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `format`                            | `commander` (exactly 100 including commanders), `commander-60` (exactly 60, Commander rules) or `casual-60` (at least 60) |
+| `status`                            | `draft` or `ready`; `example` is for the template only                                                                    |
+| `commanders`                        | One or two entries with quantity 1; `[]` for casual                                                                       |
+| `mainboard`                         | Everything else, including lands                                                                                          |
+| card entry                          | `name`, `quantity`, optional `role` (comma-separated labels) and `scryfall_id` (pins the printing used for pricing)       |
+| `bracket`                           | Optional Commander Bracket (1–5); `deck:check` enforces its Game Changer limit                                            |
+| `allow_proxies`, `unlimited_basics` | Ownership policy, see above                                                                                               |
+| `collections`                       | Optional path globs of the collections the deck is built from, e.g. `['collections/brad/*']`                              |
+| `budget`                            | `amount` and `currency` (`USD`/`EUR`), needed for `deck:upgrades`                                                         |
+| `upgrades`                          | Paired `add`/`cut`/`reason` swaps; never applied automatically                                                            |
+| `playtests`                         | `date` (`"YYYY-MM-DD"`), `notes`, optional `changes`                                                                      |
+| `primer`, `power_notes`, `notes`    | Free text                                                                                                                 |
 
 Use exact Scryfall names. You can give a double-faced card by its front-face name.
 

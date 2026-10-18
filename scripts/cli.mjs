@@ -364,7 +364,7 @@ const COMMANDS = {
         placeholder: 'NAME',
         description: 'Commander card; required for Commander, repeat for partners',
       },
-      format: { type: 'string', placeholder: 'FORMAT', description: 'commander (default) or casual-60' },
+      format: { type: 'string', placeholder: 'FORMAT', description: 'commander (default), commander-60 or casual-60' },
       name: { type: 'string', placeholder: 'TEXT', description: 'Deck name; defaults to the slug in title case' },
     },
   },

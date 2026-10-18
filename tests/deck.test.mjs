@@ -37,6 +37,7 @@ test('parseDeck rejects schema violations', () => {
     'zero quantity': deck({ mainboard: [entry(forest.name, 0)] }),
     'string boolean': deck({ allow_proxies: 'false' }),
     'casual deck with commanders': deck({ format: 'casual-60' }),
+    '60-card Commander without a commander': deck({ format: 'commander-60', commanders: [] }),
   };
   for (const [label, invalid] of Object.entries(invalidDecks)) {
     assert.throws(() => parseDeck(stringify(invalid)), /deck:/, label);
@@ -56,6 +57,7 @@ test('newDeck builds a schema-valid draft named after the slug', () => {
 
 test('newDeck requires a commander for Commander decks only', () => {
   assert.throws(() => newDeck('green-value'), /--commander/);
+  assert.throws(() => newDeck('green-sixty', { format: 'commander-60' }), /--commander/);
   assert.equal(newDeck('mono-g', { format: 'casual-60' }).commanders.length, 0);
 });
 

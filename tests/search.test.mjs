@@ -189,6 +189,13 @@ test("suggestedLands matches Karsten's worked examples", () => {
   assert.equal(commander(3.0, 10).toFixed(1), '38.0');
   const casual = suggestedLands({ format: 'casual-60', commanderCount: 0, averageManaValue: 2.5, cheapRampAndDraw: 4 });
   assert.equal(casual.toFixed(2), '23.22');
+  const sixty = suggestedLands({
+    format: 'commander-60',
+    commanderCount: 1,
+    averageManaValue: 3,
+    cheapRampAndDraw: 10,
+  });
+  assert.equal(sixty.toFixed(2), ((59 / 60) * (19.59 + 5.7 + 0.27) - 2.8 - 1.35).toFixed(2));
 });
 
 test('deckStats counts cheap ramp and draw by role and mana value, then suggests lands', () => {

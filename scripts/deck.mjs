@@ -11,6 +11,10 @@ const MAX_YAML_ALIASES = 50;
 const DEFAULT_SCHEMA_PATH = '../../schemas/deck.schema.json';
 const PRIMER_PLACEHOLDER = 'Describe the game plan.';
 
+// Formats played with commanders, and their exact deck size including the commanders.
+export const COMMANDER_DECK_SIZES = { commander: 100, 'commander-60': 60 };
+export const isCommanderFormat = (format) => Object.hasOwn(COMMANDER_DECK_SIZES, format);
+
 export const deckEntries = (deck) => [...deck.commanders, ...deck.mainboard];
 
 export function parseDeck(text, source = 'deck') {
@@ -38,7 +42,7 @@ const titleFromSlug = (slug) =>
     .join(' ');
 
 export function newDeck(slug, { format = 'commander', commanderNames = [], name = titleFromSlug(slug) } = {}) {
-  if (format === 'commander' && !commanderNames.length) {
+  if (isCommanderFormat(format) && !commanderNames.length) {
     throw new Error('Commander decks need --commander "<name>" (repeat it for a partner pair)');
   }
   const deck = {

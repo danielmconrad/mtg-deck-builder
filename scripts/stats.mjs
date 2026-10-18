@@ -1,5 +1,5 @@
 import { isLand } from './card.mjs';
-import { resolveEntries, roleLabels } from './deck.mjs';
+import { COMMANDER_DECK_SIZES, resolveEntries, roleLabels } from './deck.mjs';
 
 export const CARD_TYPES = [
   'Creature',
@@ -18,11 +18,13 @@ const CHEAP_ROLES = ['ramp', 'draw'];
 
 // Frank Karsten's regression on winning decklists ("How Many Lands Do You Need in Your Deck? An Updated
 // Analysis", ChannelFireball). Each cheap ramp or draw spell replaces about 0.28 lands; the Commander
-// version scales the 60-card fit to 99 cards and credits the free mulligan and the commander.
+// version scales the 60-card fit to the library size and credits the free mulligan and the commander.
+// For 60-card Commander the same adjustment is an extrapolation, not one of Karsten's fits.
 export function suggestedLands({ format, commanderCount, averageManaValue, cheapRampAndDraw }) {
   const cheapCredit = 0.28 * cheapRampAndDraw;
-  if (format !== 'commander') return 19.59 + 1.9 * averageManaValue - cheapCredit;
-  const scale = (100 - commanderCount) / 60;
+  const deckSize = COMMANDER_DECK_SIZES[format];
+  if (deckSize === undefined) return 19.59 + 1.9 * averageManaValue - cheapCredit;
+  const scale = (deckSize - commanderCount) / 60;
   return scale * (19.59 + 1.9 * averageManaValue + 0.27 * commanderCount) - cheapCredit - 1.35;
 }
 
