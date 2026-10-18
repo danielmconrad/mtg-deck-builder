@@ -1,0 +1,154 @@
+# yaml-language-server: $schema=../../../schemas/deck.schema.json
+schema_version: 1
+name: Green Goblin Penny Villains
+format: commander-60
+status: draft
+allow_proxies: false
+unlimited_basics: true
+bracket: 2
+max_card_price:
+  amount: 1
+  currency: USD
+primer: '60-card Commander with every card at $1 or less (cheapest printing). Ultimate Green Goblin makes you discard every upkeep and pays you a Treasure; the deck turns those discards into value with mayhem and madness cards cast from the graveyard and discard payoffs (Marauding Mako, Magmakin Artillerist, Cryptcaller Chariot, Hobgoblin). Treasure sacrifices feed Mayhem Devil, and a Villain sub-theme (Tombstone, Crossbones, Shriek) adds reach.'
+power_notes: 'Bracket 2. No Game Changers, tutors or combos. The upkeep discard is mandatory, so keep cheap draw flowing.'
+commanders:
+  - name: Ultimate Green Goblin
+    quantity: 1
+mainboard:
+  - name: 'Marauding Mako'
+    quantity: 1
+    role: synergy
+  - name: 'Hobgoblin, Mantled Marauder'
+    quantity: 1
+    role: synergy
+  - name: 'Scarlet Spider, Kaine'
+    quantity: 1
+    role: synergy
+  - name: 'Magmakin Artillerist'
+    quantity: 1
+    role: synergy
+  - name: 'Swarm, Being of Bees'
+    quantity: 1
+    role: synergy
+  - name: 'Spider-Islanders'
+    quantity: 1
+    role: synergy
+  - name: 'Cryptcaller Chariot'
+    quantity: 1
+    role: synergy
+  - name: 'Green Goblin, Revenant'
+    quantity: 1
+    role: synergy
+  - name: 'Shriek, Treblemaker'
+    quantity: 1
+    role: synergy
+  - name: 'Crossbones, Malicious Mercenary'
+    quantity: 1
+    role: synergy
+  - name: 'Merciless Enforcers'
+    quantity: 1
+    role: synergy
+  - name: 'Venom, Evil Unleashed'
+    quantity: 1
+    role: synergy
+  - name: 'Tombstone, Career Criminal'
+    quantity: 1
+    role: draw, synergy
+  - name: 'Gristle Glutton'
+    quantity: 1
+    role: draw, synergy
+  - name: 'Hallway Heckler'
+    quantity: 1
+    role: draw, synergy
+  - name: 'Common Crook'
+    quantity: 1
+    role: ramp, synergy
+  - name: 'Bullseye, Death Dealer'
+    quantity: 1
+    role: removal, synergy
+  - name: 'Mayhem Devil'
+    quantity: 1
+    role: removal, synergy
+  - name: 'Tether Technician'
+    quantity: 1
+    role: removal, synergy
+  - name: 'Murderous Rider'
+    quantity: 1
+    role: removal
+  - name: 'Flametongue Kavu'
+    quantity: 1
+    role: removal
+  - name: 'Arcane Signet'
+    quantity: 1
+    role: ramp
+  - name: "Electro's Bolt"
+    quantity: 1
+    role: removal, synergy
+  - name: 'Terminal Agony'
+    quantity: 1
+    role: removal, synergy
+  - name: 'Dark Withering'
+    quantity: 1
+    role: removal, synergy
+  - name: 'Ichor Slick'
+    quantity: 1
+    role: removal, synergy
+  - name: 'Pumpkin Bombardment'
+    quantity: 1
+    role: removal, synergy
+  - name: 'Lightning Strike'
+    quantity: 1
+    role: removal
+  - name: "Bilbo's Deadly Slice"
+    quantity: 1
+    role: removal
+  - name: 'Heated Debate'
+    quantity: 1
+    role: removal
+  - name: 'Fatal Push'
+    quantity: 1
+    role: removal
+  - name: "Sandman's Quicksand"
+    quantity: 1
+    role: wipe, synergy
+  - name: 'Laughing Mad'
+    quantity: 1
+    role: draw, synergy
+  - name: 'Romantic Rendezvous'
+    quantity: 1
+    role: draw, synergy
+  - name: 'Vision of Love'
+    quantity: 1
+    role: draw, synergy
+  - name: "Night's Whisper"
+    quantity: 1
+    role: draw
+  - name: "Racers' Scoreboard"
+    quantity: 1
+    role: draw
+  - name: 'Command Tower'
+    quantity: 1
+    role: land
+  - name: 'Path of Ancestry'
+    quantity: 1
+    role: land
+  - name: 'Goblin-town'
+    quantity: 1
+    role: land
+  - name: 'Ominous Asylum'
+    quantity: 1
+    role: land
+  - name: 'Stingerquill Annex'
+    quantity: 1
+    role: land
+  - name: 'Villainous Hideout'
+    quantity: 1
+    role: land
+  - name: 'Swamp'
+    quantity: 9
+    role: land
+  - name: 'Mountain'
+    quantity: 7
+    role: land
+upgrades: []
+playtests: []

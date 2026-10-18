@@ -1,6 +1,7 @@
 import { ageInDays, hasCommanderText, isBackground, isBasic, isLegendaryCreature } from './card.mjs';
 import { availableCopies, holdingsNote, ownedCounts, protectedHoldings } from './collection.mjs';
 import { COMMANDER_DECK_SIZES, deckEntries, isCommanderFormat, resolveEntries } from './deck.mjs';
+import { CENTS_PER_UNIT, cheapestQuote } from './upgrades.mjs';
 
 const RULES_WARN_AGE_DAYS = 30;
 const CASUAL_MIN_DECK_SIZE = 60;
@@ -150,6 +151,31 @@ function gameChangerFindings(tallies, bracket) {
   return [error(`${list}; Bracket ${bracket} allows ${limit === 0 ? 'none' : `up to ${limit}`}`)];
 }
 
+const formatMoney = (cents, currency) => `${(cents / CENTS_PER_UNIT).toFixed(2)} ${currency}`;
+
+// Judges each card by its cheapest printing, so a pricey printing in the collection doesn't break the cap.
+// Upgrade adds are checked too, since applying them must keep the deck under the cap.
+function priceCapFindings(deck, tallies, index, now) {
+  if (!deck.max_card_price) return [];
+  const { amount, currency } = deck.max_card_price;
+  const capCents = Math.round(amount * CENTS_PER_UNIT);
+  const upgradeCards = (deck.upgrades ?? []).map(({ add }) => index.lookup(add).card).filter(Boolean);
+  const cards = new Map([...tallies.values()].map(({ card }) => [card.oracleId, card]));
+  for (const card of upgradeCards) cards.set(card.oracleId, card);
+  return [...cards.values()]
+    .filter((card) => !isBasic(card))
+    .flatMap((card) => {
+      const quote = cheapestQuote(index, { card }, { currency, now });
+      if (quote.problem) return [incomplete(`${card.name}: price cap unchecked; ${quote.problem}`)];
+      if (quote.unitCents <= capCents) return [];
+      return [
+        error(
+          `${card.name}: cheapest printing ${formatMoney(quote.unitCents, currency)} exceeds max_card_price ${formatMoney(capCents, currency)}`,
+        ),
+      ];
+    });
+}
+
 function freshnessFindings(tallies, now) {
   const oldestDays = Math.max(0, ...[...tallies.values()].map(({ card }) => ageInDays(card, now)));
   if (oldestDays <= RULES_WARN_AGE_DAYS) return [];
@@ -181,6 +207,7 @@ export function checkDeck(deck, collections, index, { now = Date.now() } = {}) {
     ...cardFindings,
     ...ownershipFindings(tallies, collections, index, deck),
     ...(commanderRules ? gameChangerFindings(tallies, deck.bracket) : []),
+    ...priceCapFindings(deck, tallies, index, now),
     ...freshnessFindings(tallies, now),
   ]);
   return { total, findings, outcome: outcomeOf(findings) };

@@ -15,14 +15,10 @@
     "primer": { "$ref": "#/definitions/text" },
     "power_notes": { "type": "string" },
     "notes": { "type": "string" },
-    "budget": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["amount", "currency"],
-      "properties": {
-        "amount": { "type": "number", "minimum": 0 },
-        "currency": { "enum": ["USD", "EUR"] }
-      }
+    "budget": { "$ref": "#/definitions/money" },
+    "max_card_price": {
+      "description": "Most any one card may cost, judged by its cheapest cached printing. Basic lands are exempt.",
+      "$ref": "#/definitions/money"
     },
     "collections": {
       "description": "Path globs of the collections this deck is built from, e.g. collections/brad/*. Overrides MTG_COLLECTIONS; --collections overrides it.",
@@ -69,6 +65,15 @@
     }
   ],
   "definitions": {
+    "money": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["amount", "currency"],
+      "properties": {
+        "amount": { "type": "number", "minimum": 0 },
+        "currency": { "enum": ["USD", "EUR"] }
+      }
+    },
     "text": { "type": "string", "minLength": 1, "pattern": "\\S" },
     "card": {
       "type": "object",

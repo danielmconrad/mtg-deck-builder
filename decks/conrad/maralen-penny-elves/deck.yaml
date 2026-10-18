@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../../schemas/deck.schema.json
+# yaml-language-server: $schema=../../../schemas/deck.schema.json
 schema_version: 1
 name: Maralen Penny Elves
 format: commander-60
@@ -6,8 +6,11 @@ status: draft
 allow_proxies: false
 unlimited_basics: true
 bracket: 2
+max_card_price:
+  amount: 1
+  currency: USD
 primer: 60-card Commander with every card at $1 or less (cheapest printing). Flood the board with cheap Elves; each one entering makes Maralen exile two cards from an opponent's library, and once a turn you cast one of them free if its mana value is at most your Elf and Faerie count. Thranduil's anthem and landfall tokens plus Thranduil's Company turn the wide board into the win.
-power_notes: Bracket 2. No Game Changers, no tutors beyond basic lands, no infinite combos. Price cap enforced by hand against Scryfall prices; deck:check does not check it.
+power_notes: Bracket 2. No Game Changers, no tutors beyond basic lands, no infinite combos.
 commanders:
   - name: Maralen, Fae Ascendant
     quantity: 1

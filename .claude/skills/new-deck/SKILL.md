@@ -14,7 +14,7 @@ Ask only about what the user hasn't already said. Don't fill gaps with defaults.
 - **Format:** Commander, 60-card Commander (`commander-60`: Commander rules at exactly 60 cards) or casual-60.
 - **Commander or theme:** or "open to anything from my collection".
 - **Power level:** a Commander Bracket (1–5) or the playgroup's own terms. The bracket table is in the `deckbuilding-strategy` skill.
-- **Budget:** amount and currency for optional upgrades.
+- **Budget:** amount and currency for optional upgrades, and any per-card price cap (set `max_card_price` so `deck:check` enforces it).
 - **Proxies:** allowed or not.
 - **Collections:** whose cards to build from, if not every unprotected collection (e.g. a friend's deck from `collections/brad/*`). Record the patterns in the deck's `collections` field so every command reads the right cards without flags.
 - **Basic lands:** run `mise run collection:search -- --type basic --count`. The collections usually hold very few basics, so every deck fails ownership unless the user has untracked basics. Ask, and set `unlimited_basics: true` if they do.

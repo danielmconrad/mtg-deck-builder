@@ -1,0 +1,47 @@
+Commander
+1 Dwalin, Weaponmaster (HOB) 154
+
+Deck
+1 Bofur, Reliable Guardian (HOB) 215
+1 Dwarven Mauler (HOB) 95
+1 Dáin's Company (HOB) 212
+1 Iron Hills Blacksmith (HOB) 16
+1 Nori, Teller of Tales (HOB) 161
+1 Óin the Brave (HOB) 106
+1 Thorin Oakenshield (HOB) 165
+1 Dáin Ironfoot (HOB) 91
+1 Valduk, Keeper of the Flame (DMR) 147
+1 Fíli the Pathfinder (HOB) 14
+1 Iron Hills Stalwart (HOB) 102
+1 Bifur, Melodic Rider (HOB) 147
+1 Danitha, Sword of Hope (FRA) 196
+1 Ragged Short Spear (HOB) 108
+1 Dori, Bearer of Friends (HOB) 94
+1 Glóin the Mighty (HOB) 99
+1 Purple Dragon Punks (TMT) 100
+1 Flametongue Kavu (DMR) 120
+1 Well-Worn Spatula (HOB) 180
+1 Hawkeye's Bow (MSH) 132
+1 Quintessential Katana (TMT) 23
+1 Dwarven Mattock (HOB) 172
+1 Medic's Kitesail (FRA) 173
+1 Web-Shooters (SPM) 22
+1 Dwarven Shortsword (HOB) 10
+1 Hexgold Hoverwings (ONE) 14
+1 Sting, Bilbo's Sword (HOB) 178
+1 Arcane Signet (FIC) 335
+1 Thrór's Map (HOB) 179
+1 Lightning Strike (MSH) 142
+1 Heated Debate (STX) 106
+1 Banishing Light (FDN) 138
+1 Your Fate Ends Here (FRA) 24
+1 Burn, Burn, Tree and Fern (HOB) 90
+1 Fate of the Sun-Cryst (FIN) 19
+1 Fulminous Forte (FRA) 84
+1 Vision of Love (MSH) 158
+1 Command Tower (FIC) 382
+1 Path of Ancestry (FIC) 411
+1 Dedicated Commons (FRA) 175
+1 Wind-Scarred Crag (TDM) 271
+10 Mountain (FRA) 392
+8 Plains (FIN) 294

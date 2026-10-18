@@ -46,6 +46,33 @@ test('60-card Commander needs exactly 60 cards and keeps Commander rules', () =>
   ]);
 });
 
+test('max_card_price fails cards whose cheapest printing costs more, including upgrade adds', () => {
+  const capped = (fields) => commanderDeck({ max_card_price: { amount: 1, currency: 'USD' }, ...fields });
+  const cheapPrinting = { ...spell, id: 'spell-cheap', prices: { usd: '0.50', eur: null } };
+  const pricey = card('Pricey Spell', { colorIdentity: ['G'], prices: { usd: '3.00', eur: null } });
+  const cards = [forest, leader, spell, pricey];
+  assert.equal(check(capped()).outcome, 'pass');
+  assert.deepEqual(messages(check(capped({ mainboard: [entry(forest.name, 98), entry(spell.name)] })), 'error'), [
+    'Example Spell: cheapest printing 2.50 USD exceeds max_card_price 1.00 USD',
+  ]);
+  const withCheapPrinting = check(capped({ mainboard: [entry(forest.name, 98), entry(spell.name)] }), {
+    cards: [forest, leader, spell, cheapPrinting],
+  });
+  assert.equal(withCheapPrinting.outcome, 'pass');
+  const upgrade = { add: entry(pricey.name), cut: entry(forest.name), reason: 'Test' };
+  assert.deepEqual(messages(check(capped({ upgrades: [upgrade] }), { cards }), 'error'), [
+    'Pricey Spell: cheapest printing 3.00 USD exceeds max_card_price 1.00 USD',
+  ]);
+});
+
+test('max_card_price is incomplete when a price is unknown', () => {
+  const unpriced = { ...leader, prices: { usd: null, eur: null } };
+  const report = check(commanderDeck({ max_card_price: { amount: 1, currency: 'USD' } }), {
+    cards: [forest, unpriced, spell],
+  });
+  assert.deepEqual(messages(report, 'incomplete'), ['Example Leader: price cap unchecked; no USD quote on Scryfall']);
+});
+
 test('casual decks need at least 60 cards', () => {
   assert.equal(check(casualDeck([entry(forest.name, 60)])).outcome, 'pass');
   assert.deepEqual(messages(check(casualDeck([entry(forest.name, 59)])), 'error'), [
