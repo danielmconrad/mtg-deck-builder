@@ -116,7 +116,7 @@ function ownershipFindings(tallies, collections, index, deck) {
   const findings = owned.unresolvedRows
     ? [
         incomplete(
-          `${owned.unresolvedRows} available collection rows have no cached card data; ownership may be understated (run cards:refresh)`,
+          `${owned.unresolvedRows} available collection rows have no cached card data; ownership may be understated (run scryfall:refresh)`,
         ),
       ]
     : [];
@@ -179,7 +179,9 @@ function priceCapFindings(deck, tallies, index, now) {
 function freshnessFindings(tallies, now) {
   const oldestDays = Math.max(0, ...[...tallies.values()].map(({ card }) => ageInDays(card, now)));
   if (oldestDays <= RULES_WARN_AGE_DAYS) return [];
-  return [note(`Card data is ${Math.floor(oldestDays)} days old; run cards:refresh to pick up recent bans and errata`)];
+  return [
+    note(`Card data is ${Math.floor(oldestDays)} days old; run scryfall:refresh to pick up recent bans and errata`),
+  ];
 }
 
 const uniqueFindings = (findings) => [

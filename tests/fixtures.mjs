@@ -19,6 +19,7 @@ export function card(name, fields = {}) {
     manaValue: 0,
     typeLine,
     frontType: typeLine,
+    flavorName: null,
     oracleText: '',
     keywords: [],
     colorIdentity: [],
@@ -26,6 +27,7 @@ export function card(name, fields = {}) {
     legalities: { commander: 'legal' },
     gameChanger: false,
     prices: { usd: '1.00', eur: null },
+    defaultPrinting: false,
     fetchedAt: new Date(NOW).toISOString(),
     ...fields,
   };

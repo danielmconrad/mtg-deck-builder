@@ -17,7 +17,7 @@ import {
   upgradeLines,
 } from './format.mjs';
 import { checkDeck, worstOutcome } from './rules.mjs';
-import { fetchCards } from './scryfall.mjs';
+import { fetchBulkCards, fetchCards } from './scryfall.mjs';
 import { GROUP_BY_CHOICES, countResults, groupResults, searchCollection, searchFilters } from './search.mjs';
 import { deckStats } from './stats.mjs';
 import { commandHelp, overviewHelp, parseArgsOptions, withHelpOption } from './help.mjs';
@@ -30,11 +30,17 @@ const printAll = (write, lines) => {
   for (const line of lines) write(line);
 };
 
-async function collectionCheck({ workspace, write }) {
+// Text list lines whose printing isn't cached yet are listed, since they count toward nothing.
+async function collectionCheck({ workspace, write, warn }) {
+  let unmatched = 0;
   for (const { name, isProtected, rows } of (await workspace.loadCollections()).sources) {
     write(collectionSummaryLine(name, isProtected, summarize(rows)));
+    for (const row of rows.filter((candidate) => !candidate.scryfallId)) {
+      warn(`  NOT CACHED: ${row.location}: ${row.name}; run scryfall:refresh -- --missing`);
+      unmatched += 1;
+    }
   }
-  return 'pass';
+  return unmatched ? 'incomplete' : 'pass';
 }
 
 async function collectionSearch({ workspace, options, write, warn }) {
@@ -42,7 +48,7 @@ async function collectionSearch({ workspace, options, write, warn }) {
   const [collections, index] = await Promise.all([workspace.loadCollections(), workspace.loadCardIndex()]);
   const { results, unresolvedRows } = searchCollection(collections, index, searchFilters(options, index));
   if (unresolvedRows) {
-    warn(`${unresolvedRows} collection rows have no cached card data and were skipped; run cards:refresh`);
+    warn(`${unresolvedRows} collection rows have no cached card data and were skipped; run scryfall:refresh`);
   }
   printAll(write, searchOutput(results, options, collections.availableNames));
   return 'pass';
@@ -61,9 +67,15 @@ function searchOutput(results, options, availableNames) {
   return options.json ? [searchJson(results)] : searchLines(results, { withOracleText: options.oracle });
 }
 
-// Scryfall identifiers for every collection row and every card a deck or upgrade names.
+// Scryfall identifiers for every collection row and every card a deck or upgrade names. Text list rows
+// name a printing by set and collector number, or just a card name.
+const rowIdentifier = (row) => {
+  if (row.scryfallId) return { id: row.scryfallId };
+  return row.set ? { set: row.set, collector_number: row.collectorNumber } : { name: row.name };
+};
+
 function refreshIdentifiers(collections, decks) {
-  const rowIdentifiers = collections.sources.flatMap(({ rows }) => rows).map((row) => ({ id: row.scryfallId }));
+  const rowIdentifiers = collections.sources.flatMap(({ rows }) => rows).map(rowIdentifier);
   const entries = decks.flatMap((deck) => [
     ...deckEntries(deck),
     ...(deck.upgrades ?? []).flatMap((swap) => [swap.add, swap.cut]),
@@ -74,22 +86,36 @@ function refreshIdentifiers(collections, decks) {
   return [...rowIdentifiers, ...entryIdentifiers];
 }
 
+// --bulk starts from every printing in Scryfall's bulk data, --missing from the current cache, and a
+// plain refresh from nothing, so it fetches fresh data for just the collections and decks.
+async function startingCache(workspace, options, write) {
+  if (options.bulk && options.missing) throw new Error('Use --bulk or --missing, not both');
+  if (!options.bulk) return options.missing ? workspace.loadCache() : emptyCache();
+  write('Downloading Scryfall bulk data (about 105 MB)...');
+  const onProgress = (file, read) => write(`Read ${read} printings from ${file}`);
+  const { cards, fetchedAt } = await fetchBulkCards({ onProgress });
+  write(`Read ${Object.keys(cards).length} printings from bulk data built ${fetchedAt}.`);
+  return { ...emptyCache(), cards };
+}
+
 async function cardsRefresh({ workspace, options, write, warn }) {
   const [collections, loadedDecks] = await Promise.all([workspace.loadEveryCollection(), workspace.loadAllDecks()]);
   const skipped = loadedDecks.filter(({ error }) => error);
   for (const { slug, error } of skipped) warn(`SKIPPED ${slug}: ${error.message}`);
-  const previous = options.missing ? await workspace.loadCache() : emptyCache();
+  const previous = await startingCache(workspace, options, write);
   const index = cardIndex(previous);
   const decks = loadedDecks.filter(({ deck }) => deck).map(({ deck }) => deck);
   const wanted = refreshIdentifiers(collections, decks).filter((identifier) => !index.isCached(identifier));
   const notFound = [];
-  if (wanted.length) {
-    const fetched = await fetchCards(wanted, { onProgress: (done, total) => write(`Fetched ${done}/${total}`) });
+  if (wanted.length || options.bulk) {
+    const fetched = wanted.length
+      ? await fetchCards(wanted, { onProgress: (done, total) => write(`Fetched ${done}/${total}`) })
+      : { cards: {}, notFound: [] };
     notFound.push(...fetched.notFound);
     const cache = { ...previous, cards: { ...previous.cards, ...fetched.cards } };
     await workspace.saveCache(cache);
     write(
-      `Cached ${Object.keys(cache.cards).length} printings (${Object.keys(fetched.cards).length} fetched from Scryfall).`,
+      `Cached ${Object.keys(cache.cards).length} printings (${Object.keys(fetched.cards).length} fetched from Scryfall's card API).`,
     );
   } else {
     write('Card cache already covers every collection row and deck entry.');
@@ -148,7 +174,7 @@ async function exporter(workspace, slug, warn) {
   const render = (format, upgradesMode) => exportDeck(withUpgrades(deck, upgradesMode), { format, printingOf });
   const warnUncached = () => {
     if (uncached.size) {
-      warn(`Printings not cached, exported by name only: ${[...uncached].join(', ')} (run cards:refresh)`);
+      warn(`Printings not cached, exported by name only: ${[...uncached].join(', ')} (run scryfall:refresh)`);
     }
   };
   const warnApplied = () =>
@@ -277,8 +303,8 @@ const SEARCH_OPTIONS = {
 
 // Which collections to read and which not to dismantle. Each option wins over its .env variable
 // (see .env.example). Both take comma-separated glob patterns relative to the project root, such as
-// collections/conrad* or collections/**/Precons.csv. --collections defaults to every collection, and
-// --protect to any Precons.csv; an empty value means every collection, or none protected.
+// collections/conrad* or collections/**/precons. --collections defaults to every collection, and
+// --protect to any precons collection; an empty value means every collection, or none protected.
 const COLLECTION_OPTIONS = {
   collections: {
     type: 'string',
@@ -290,10 +316,10 @@ const COLLECTION_OPTIONS = {
     type: 'string',
     placeholder: 'PATTERNS',
     description:
-      'Comma-separated path globs of collections to protect; defaults to MTG_PROTECTED_COLLECTIONS in .env, else collections/**/Precons.csv',
+      'Comma-separated path globs of collections to protect; defaults to MTG_PROTECTED_COLLECTIONS in .env, else collections/**/precons',
   },
 };
-const DEFAULT_PROTECTED = 'collections/**/Precons.csv';
+const DEFAULT_PROTECTED = 'collections/**/precons';
 
 const patternList = (value) =>
   value
@@ -310,7 +336,8 @@ const collectionScope = (options, env) => ({
 // The workspace with the collection scope applied, so commands just call loadCollections(), passing
 // the deck when there is one. The collections read come from --collections, else the deck's own
 // collections field, else MTG_COLLECTIONS. Each distinct scope is loaded, and warned about, once.
-// loadEveryCollection ignores the scope, so cards:refresh caches every collection.
+// loadEveryCollection ignores the scope, so scryfall:refresh caches every collection, and leaves text
+// lists unmatched, so a missing or outdated cache can't stop the refresh that replaces it.
 function scopedWorkspace(workspace, scope, warn) {
   const loaded = new Map();
   async function load(only) {
@@ -325,7 +352,7 @@ function scopedWorkspace(workspace, scope, warn) {
     if (!loaded.has(key)) loaded.set(key, load(only));
     return loaded.get(key);
   }
-  return { ...workspace, loadCollections, loadEveryCollection: () => workspace.loadCollections() };
+  return { ...workspace, loadCollections, loadEveryCollection: () => workspace.loadCollections({ resolve: false }) };
 }
 
 const FORMAT_OPTION = {
@@ -337,7 +364,7 @@ const FORMAT_OPTION = {
 const COMMANDS = {
   'collection:check': {
     run: collectionCheck,
-    summary: 'Validate every collection export and summarize it',
+    summary: 'Validate every collection (ManaBox CSV or text list) and summarize it',
     options: COLLECTION_OPTIONS,
   },
   'collection:search': {
@@ -347,16 +374,21 @@ const COMMANDS = {
       'Searches every collections/*.csv except protected ones, whose copies are shown alongside. Filters combine with AND.',
     options: { ...SEARCH_OPTIONS, ...COLLECTION_OPTIONS },
   },
-  'cards:refresh': {
+  'scryfall:refresh': {
     run: cardsRefresh,
     summary: 'Fetch Scryfall card data and prices for every collection and deck (network)',
-    options: { missing: { type: 'boolean', description: 'Fetch only cards not already cached' } },
+    details:
+      "A plain refresh replaces the cache with fresh data for just the collections' and decks' cards. --bulk caches every printing on Scryfall from its daily bulk data (about 105 MB of downloads), then fetches only what that lacks, such as non-English printings; --missing then keeps it all.",
+    options: {
+      missing: { type: 'boolean', description: 'Fetch only cards not already cached' },
+      bulk: { type: 'boolean', description: "Cache every printing from Scryfall's bulk data, not just owned cards" },
+    },
   },
   'deck:new': {
     run: deckNew,
     takesSlug: true,
     summary:
-      'Create a draft deck at decks/<deck-slug>/deck.yaml (slug may be nested, e.g. brad/elves); never overwrites',
+      'Create a draft deck at builds/<deck-slug>/deck.yaml (slug may be nested, e.g. brad/elves); never overwrites',
     options: {
       commander: {
         type: 'string',

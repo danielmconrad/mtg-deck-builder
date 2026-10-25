@@ -1,0 +1,105 @@
+1 Hearthhull, the Worldseed (EOC) 1
+1 Retreat to Kazandu (CMR) 435
+1 Lord Windgrace (C18) 43 *F*
+1 Evolution Witness (MH3) 151
+1 Zuran Orb (ICE) 350
+1 Ramunap Excavator (M3C) 241
+1 Nahiri's Lithoforming (ZNR) 151
+1 Lotus Cobra (ZNR) 307
+1 Hammer of Purphoros (EOC) 88
+1 Baloth Prime (EOC) 13
+1 Tear Asunder (EOC) 109
+1 Omnath, Locus of Rage (ECC) 129
+1 Escape to the Wilds (EOC) 115
+1 Evendo Brushrazer (EOC) 10
+1 Mazirek, Kraul Death Priest (SOC) 319
+1 Arcane Signet (EOC) 53
+1 Command Tower (EOC) 59
+1 Sol Ring (EOC) 57
+1 Swamp (EOE) 272
+1 Dakmor Salvage (EOC) 156
+1 Bojuka Bog (SOC) 363
+1 Rocky Tar Pit (EOC) 173
+1 Eumidian Hatchery (EOC) 20
+1 Moraug, Fury of Akoum (EOC) 89
+1 Infernal Grasp (SOC) 216
+1 Worldsoul's Rage (EOC) 130
+1 Soul of Windgrace (EOC) 126
+1 Planetary Annihilation (EOC) 12
+1 Vernal Fen (SOC) 419
+1 Nature's Lore (SOC) 278
+1 Tireless Tracker (EOC) 110
+1 The Gitrog Monster (EOC) 117
+1 Maestros Theater (EOC) 167
+1 Llanowar Wastes (SOC) 383
+1 Skyshroud Claim (EOC) 107
+1 Sulfurous Springs (FRC) 85
+1 Beast Within (EOC) 93
+1 Korvold, Fae-Cursed King (EOC) 120
+1 Harrow (EOC) 98
+1 Canyon Slough (ECC) 145
+1 Escape Tunnel (EOC) 157
+1 Putrefy (EOC) 124
+1 Karplusan Forest (EOC) 164
+1 Viridescent Bog (SOC) 421
+1 Twilight Mire (SOC) 418
+1 Terramorphic Expanse (EOC) 62
+1 Rampaging Baloths (EOC) 104
+1 Wastes (EOC) 191
+1 Myriad Landscape (EOC) 169
+1 Formless Genesis (EOC) 96
+1 Cultivate (ECC) 103
+1 Uurg, Spawn of Turg (EOC) 127
+1 Chorale of the Void (EOE) 91
+1 Mountain Valley (EOC) 61
+1 Multani, Yavimaya's Avatar (EOC) 100
+1 Swamp (EOE) 264
+1 Cinder Glade (ECC) 146
+1 Farseek (EOC) 50
+1 Roiling Regrowth (EOC) 105
+1 World Breaker (EOC) 112
+1 Szarel, Genesis Shepherd (EOC) 4
+1 Titania, Protector of Argoth (EOC) 111
+1 Augur of Autumn (EOC) 92
+1 Eumidian Wastewaker (EOC) 8
+1 Evolving Wilds (EOC) 158
+1 Gaze of Granite (EOC) 116
+1 God-Eternal Bontu (EOC) 83
+1 Oracle of Mul Daya (EOC) 102
+1 Horizon Explorer (EOC) 15
+1 Riveteers Overlook (ECC) 162
+1 Sakura-Tribe Elder (SOC) 285
+1 Blasphemous Act (ECC) 89
+1 Smoldering Marsh (ECC) 168
+1 Splendid Reclamation (EOC) 108
+1 Scouring Swarm (EOC) 16
+1 Groundskeeper (EOC) 97
+1 Windgrace's Judgment (EOC) 129
+1 Decode Transmissions (EOE) 94
+1 Loamcrafter Faun (EOC) 99
+1 Mountain (EOE) 274
+1 Exploration Broodship (EOC) 14
+1 Centaur Vinecrasher (EOC) 94
+1 Springbloom Druid (SOC) 287
+1 Fabled Passage (EOC) 60
+1 Cabaretti Courtyard (EOC) 151
+1 Sheltered Thicket (ECC) 167
+1 Festering Thicket (SOC) 371
+4 Forest (EOE) 275
+4 Forest (EOE) 276
+2 Mountain (EOE) 273
+3 Swamp (EOE) 271
+2 Elemental (TECC) 9
+1 Clue (TEOC) 10
+1 Beast (TEOC) 5
+1 Golem (TEOC) 13
+2 Copy (TEOC) 1
+4 Beast (TEOC) 6
+4 Insect (TEOC) 4
+2 Pest (TEOC) 9
+2 Elemental (TEOC) 7
+1 Lander (TEOE) 7
+1 Robot (TEOE) 10
+1 Human Soldier (TEOE) 2
+1 Lander (TEOE) 4
+1 Lander (TEOE) 8

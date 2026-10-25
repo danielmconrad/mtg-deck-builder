@@ -1,0 +1,240 @@
+# yaml-language-server: $schema=../../../schemas/deck.schema.json
+schema_version: 1
+name: Great Goblin Penny Horde
+format: commander-60
+status: draft
+bracket: 2
+allow_proxies: false
+unlimited_basics: true
+collections:
+  - 'collections/brad/**/*'
+max_card_price:
+  amount: 1
+  currency: USD
+budget:
+  amount: 20
+  currency: USD
+primer: '60-card Commander with every card at $1 or less (cheapest printing). Amass Goblins and Orcs every turn and blight your own Goblins, since every time counters go on a Goblin, Orc or Army, The Great Goblin deals 2 damage to an opponent; when they die, he exiles cards to play. Win by stacking those triggers with a growing Army, Sting-Slinger, Boggart Cursecrafter and Misty Mountains Raider while cheap removal clears the way.'
+power_notes: 'Bracket 2. No Game Changers, tutors, extra turns or combos. Grindy aggro-burn; the damage engine is the commander, so losing him slows the deck badly.'
+commanders:
+  - name: The Great Goblin
+    quantity: 1
+mainboard:
+  # Amass and counters engine
+  - name: Goblin-town Flunkies
+    quantity: 1
+    role: synergy
+  - name: Tidings of War
+    quantity: 1
+    role: synergy
+  - name: Bothersome Noisemaker
+    quantity: 1
+    role: synergy
+  - name: Goblin Plate Mail
+    quantity: 1
+    role: synergy
+  - name: March from the Black Gate
+    quantity: 1
+    role: synergy
+  - name: Misty Mountains Raider
+    quantity: 1
+    role: synergy,wincon
+  - name: Fearsome Goblin Pair
+    quantity: 1
+    role: synergy
+  - name: Great Ugly-Looking Goblin // Clap! Snap!
+    quantity: 1
+    role: synergy
+  - name: Gathering of Darkness
+    quantity: 1
+    role: synergy
+  - name: Down, Down to Goblin-town
+    quantity: 1
+    role: synergy
+  # Blight outlets (each blight on a Goblin triggers The Great Goblin)
+  - name: Sting-Slinger
+    quantity: 1
+    role: synergy,wincon
+  - name: Chaos Spewer
+    quantity: 1
+    role: synergy
+  - name: Boggart Mischief
+    quantity: 1
+    role: synergy
+  # Goblin payoffs
+  - name: Boggart Cursecrafter
+    quantity: 1
+    role: synergy,wincon
+  - name: Battle Cry Goblin
+    quantity: 1
+    role: synergy
+  - name: Gristle Glutton
+    quantity: 1
+    role: draw,synergy
+  # Ramp
+  - name: Bolg's Company
+    quantity: 1
+    role: ramp,synergy
+  - name: Kalain, Reclusive Painter
+    quantity: 1
+    role: ramp,synergy
+  - name: Swarming of Moria
+    quantity: 1
+    role: ramp,synergy
+  - name: Thrór's Map
+    quantity: 1
+    role: ramp,draw
+  - name: Skullport Merchant
+    quantity: 1
+    role: ramp,draw
+  - name: Magic Pot
+    quantity: 1
+    role: ramp,synergy
+  # Draw
+  - name: Rage into the Valley
+    quantity: 1
+    role: draw,synergy
+  - name: Burning Curiosity
+    quantity: 1
+    role: draw
+  - name: Gundabad Opportunist
+    quantity: 1
+    role: draw,synergy
+  - name: Snowslope Hunter
+    quantity: 1
+    role: draw,synergy
+  - name: Cruel Truths
+    quantity: 1
+    role: draw
+  # Removal
+  - name: Cinder Strike
+    quantity: 1
+    role: removal
+  - name: Requiting Hex
+    quantity: 1
+    role: removal
+  - name: Bogslither's Embrace
+    quantity: 1
+    role: removal
+  - name: Stingerquill Charm
+    quantity: 1
+    role: removal
+  - name: Bilbo's Deadly Slice
+    quantity: 1
+    role: removal
+  - name: Foray of Orcs
+    quantity: 1
+    role: removal,synergy
+  - name: Azog, Moria's Ruin
+    quantity: 1
+    role: removal,synergy
+  - name: Bolg of the North
+    quantity: 1
+    role: removal,synergy
+  - name: Fulminous Forte
+    quantity: 1
+    role: removal,wipe
+  # Lands
+  - name: Goblin-town
+    quantity: 1
+    role: land
+  - name: Boiling Rock Prison
+    quantity: 1
+    role: land
+  - name: Ominous Asylum
+    quantity: 1
+    role: land
+  - name: Sulfurous Mire
+    quantity: 1
+    role: land
+  - name: Hell's Kitchen
+    quantity: 1
+    role: land
+  - name: Mountain
+    quantity: 9
+    role: land
+  - name: Swamp
+    quantity: 9
+    role: land
+upgrades:
+  - add:
+      name: 'Dreadhorde Invasion'
+      quantity: 1
+      role: synergy,wincon
+    cut:
+      name: 'Chaos Spewer'
+      quantity: 1
+    reason: 'Amasses every upkeep, so The Great Goblin deals 2 damage every turn from a two-mana enchantment.'
+  - add:
+      name: 'Krenko, Baron of Tin Street'
+      quantity: 1
+      role: synergy,wincon
+    cut:
+      name: 'Battle Cry Goblin'
+      quantity: 1
+    reason: 'Sacrificing a Treasure or Magic Pot puts a counter on each Goblin, and The Great Goblin triggers once per Goblin: 2 damage each.'
+  - add:
+      name: 'Siege-Gang Commander'
+      quantity: 1
+      role: synergy,removal
+    cut:
+      name: 'Great Ugly-Looking Goblin // Clap! Snap!'
+      quantity: 1
+    reason: "Four Goblins for five mana, and a sacrifice outlet that shoots for 2 and feeds the commander's exile-and-play trigger."
+  - add:
+      name: 'Sling-Gang Lieutenant'
+      quantity: 1
+      role: synergy,wincon
+    cut:
+      name: 'Down, Down to Goblin-town'
+      quantity: 1
+    reason: 'Three Goblins and a free sacrifice outlet that drains; every sacrifice also exiles a card to play.'
+  - add:
+      name: 'Scuzzback Scrounger'
+      quantity: 1
+      role: ramp,synergy
+    cut:
+      name: 'Kalain, Reclusive Painter'
+      quantity: 1
+    reason: 'Blights a Goblin each turn for a Treasure, which is 2 damage plus mana every turn.'
+  - add:
+      name: 'Warren Torchmaster'
+      quantity: 1
+      role: synergy
+    cut:
+      name: 'Goblin Plate Mail'
+      quantity: 1
+    reason: "Blights at every combat for 2 damage and gives haste; Plate Mail's equip cost is too high."
+  - add:
+      name: 'Mordor Muster'
+      quantity: 1
+      role: draw,synergy
+    cut:
+      name: 'Cruel Truths'
+      quantity: 1
+    reason: 'Cheaper draw that also amasses, so it triggers the commander.'
+  - add:
+      name: 'Dunland Crebain'
+      quantity: 1
+      role: synergy
+    cut:
+      name: 'Tidings of War'
+      quantity: 1
+    reason: 'Amass 2 on a flying body instead of amass 1 with an expensive flashback.'
+  - add:
+      name: 'Sourbread Auntie'
+      quantity: 1
+      role: synergy
+    cut:
+      name: 'Bothersome Noisemaker'
+      quantity: 1
+    reason: 'Blight 2 triggers the commander and makes two Goblins at once.'
+  - add:
+      name: 'Grishnákh, Brash Instigator'
+      quantity: 1
+      role: synergy,removal
+    cut:
+      name: 'Fearsome Goblin Pair'
+      quantity: 1
+    reason: "Amass 2 now and steal a blocker; sacrifice it to Bolg's Company, Siege-Gang or Sling-Gang afterwards."
+playtests: []

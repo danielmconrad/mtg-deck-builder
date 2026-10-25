@@ -21,7 +21,7 @@
 1 Cultivate (TMC) 50
 1 Dimension X Pizzasaur (TMC) 16
 1 Donatello, the Brains (TMC) 2 *F*
-1 Double Jump / Flying Kick (TMC) 35
+1 Double Jump // Flying Kick (TMC) 35
 1 Dragonskull Summit (TMC) 64
 1 Electric Seaweed (TMC) 23
 1 Endless Foot Assault (TMC) 8

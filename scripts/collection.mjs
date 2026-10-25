@@ -1,5 +1,5 @@
 import { parse } from 'csv-parse/sync';
-import { isBasic } from './card.mjs';
+import { hasName, isBasic, normalizeName } from './card.mjs';
 
 const REQUIRED_HEADERS = ['Name', 'Quantity', 'Scryfall ID', 'Set code', 'Collector number', 'Foil'];
 const UUID_PATTERN = /^[a-f\d]{8}(?:-[a-f\d]{4}){3}-[a-f\d]{12}$/i;
@@ -47,6 +47,75 @@ export function parseCollection(text, source = 'collection') {
   });
   if (!records.length) throw new Error(`${source}: no card rows`);
   return records.map((record, index) => toRow(record, `${source}: record ${index + HEADER_ROWS + 1}`));
+}
+
+// A card line in the plain-text lists Moxfield, Archidekt and MTG Arena export: a quantity (optionally
+// with x), the name, optionally the printing as (SET) NUMBER, and *F* for foil or *E* for etched.
+// Archidekt's trailing [Category] and ^tag^ annotations are ignored.
+const TEXT_LINE = /^(\d+)x?\s+(.+?)(?:\s+\(([a-z\d]+)\)\s+(\S+))?(?:\s+\*([FE])\*)?$/i;
+const ANNOTATIONS = /(?:\s+(?:\[[^\]]*\]|\^[^^]*\^))+$/;
+// Section headings and comments carry no cards.
+const SKIPPED_LINE = /^(?:(?:commander|companion|deck|mainboard|sideboard|maybeboard|considering):?|\/\/.*|#.*)?$/i;
+const TEXT_FINISHES = { F: 'foil', E: 'etched' };
+
+// Parses a plain-text list into rows like parseCollection's, without Scryfall IDs: resolveTextRows
+// finds each row's printing in the card cache by set and collector number, or by name.
+export function parseTextCollection(text, source = 'collection') {
+  const rows = [];
+  for (const [index, rawLine] of text
+    .replace(/^\uFEFF/, '')
+    .split(/\r?\n/)
+    .entries()) {
+    const line = rawLine.trim().replace(ANNOTATIONS, '');
+    if (SKIPPED_LINE.test(line)) continue;
+    const location = `${source}: line ${index + 1}`;
+    const match = line.match(TEXT_LINE);
+    if (!match) throw new Error(`${location}: expected "QUANTITY NAME (SET) NUMBER", got "${rawLine.trim()}"`);
+    const [, quantity, name, set, collectorNumber, finish] = match;
+    if (!Number.isSafeInteger(Number(quantity)) || Number(quantity) < 1) {
+      throw new Error(`${location}: quantity must be a positive integer`);
+    }
+    rows.push({
+      name,
+      quantity: Number(quantity),
+      ...(set ? { set: set.toLowerCase(), collectorNumber } : {}),
+      finish: TEXT_FINISHES[finish?.toUpperCase()] ?? 'normal',
+      isProxy: false,
+      inDeckBinder: false,
+      location,
+    });
+  }
+  if (!rows.length) throw new Error(`${source}: no card lines`);
+  return rows;
+}
+
+// Moxfield writes split and double-faced names with one slash ("Dusk / Dawn"), and some printings
+// carry another name, such as the Turtles' "Aggro Amalgam" for Voracious Hydra.
+const namesPrinting = (card, name) =>
+  hasName(card, name.replace(/\s+\/\s+/g, ' // ')) ||
+  (card.flavorName && normalizeName(card.flavorName) === normalizeName(name));
+
+// Gives text rows the Scryfall ID and name of their cached printing. A row whose printing or name is
+// not cached keeps no ID, so it counts as unresolved until scryfall:refresh fetches it. A cached
+// printing that doesn't match the row's name is a typo in the list and throws.
+export function resolveTextRows(rows, index) {
+  return rows.map((row) => {
+    if (row.scryfallId) return row;
+    if (!row.set) {
+      const { card } = index.lookup({ name: row.name });
+      if (!card && index.isCached({ name: row.name })) {
+        throw new Error(`${row.location}: ${row.name} names more than one card; add (SET) NUMBER`);
+      }
+      return card ? { ...row, name: card.name, scryfallId: card.id } : row;
+    }
+    const card = index.printing(row.set, row.collectorNumber);
+    if (!card) return row;
+    if (!namesPrinting(card, row.name)) {
+      const printing = `${row.set.toUpperCase()} ${row.collectorNumber}`;
+      throw new Error(`${row.location}: ${printing} is ${card.name}, not ${row.name}`);
+    }
+    return { ...row, name: card.name, scryfallId: card.id };
+  });
 }
 
 // Binder exports list built decks as deck binders. A card named in any of them is in use, so every copy
@@ -105,7 +174,7 @@ export function protectedHoldings(rows, index, { allowProxies = false } = {}) {
   );
 }
 
-// e.g. "3 in Precons, 1 in Cube".
+// e.g. "3 in precons, 1 in Cube".
 export const holdingsNote = (holdings = []) => holdings.map(({ name, copies }) => `${copies} in ${name}`).join(', ');
 
 export function availableCopies(owned, card, { unlimitedBasics = false } = {}) {

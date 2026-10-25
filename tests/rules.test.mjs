@@ -128,10 +128,10 @@ test('printed copy-limit exceptions are honored', () => {
 test('shortfalls fail and mention protected copies by collection', () => {
   const collections = {
     available: [row(leader, 1)],
-    protected: [row(forest, 90, { collection: 'Precons' }), row(forest, 9, { collection: 'Cube' })],
+    protected: [row(forest, 90, { collection: 'precons' }), row(forest, 9, { collection: 'Cube' })],
   };
   assert.deepEqual(messages(check(commanderDeck(), { collections }), 'error'), [
-    'Forest: need 99, 0 available (short 99); 90 in Precons, 9 in Cube (protected)',
+    'Forest: need 99, 0 available (short 99); 90 in precons, 9 in Cube (protected)',
   ]);
 });
 
@@ -162,7 +162,7 @@ test('card data older than 30 days adds a note without changing the outcome', ()
   const report = check(commanderDeck(), { now: NOW + 31 * DAY_MS });
   assert.equal(report.outcome, 'pass');
   assert.deepEqual(messages(report, 'note'), [
-    'Card data is 31 days old; run cards:refresh to pick up recent bans and errata',
+    'Card data is 31 days old; run scryfall:refresh to pick up recent bans and errata',
   ]);
 });
 

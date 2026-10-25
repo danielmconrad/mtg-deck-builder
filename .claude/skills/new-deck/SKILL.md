@@ -5,7 +5,7 @@ description: Step-by-step workflow for brewing a new Commander or casual-60 deck
 
 # Brewing a new deck
 
-The rules in AGENTS.md still apply: only unprotected collections supply cards, protected copies are only mentioned, never invent card data. This skill is the order of work. Every command here is read-only and offline except `deck:new` (writes one file) and `cards:refresh` (network). `mise run <task> -- --help` documents every option.
+The rules in AGENTS.md still apply: only unprotected collections supply cards, protected copies are only mentioned, never invent card data. This skill is the order of work. Every command here is read-only and offline except `deck:new` (writes one file) and `scryfall:refresh` (network). `mise run <task> -- --help` documents every option.
 
 ## 1. Settle the brief
 
@@ -95,7 +95,7 @@ Then review it with the checklist in `deckbuilding-strategy`, and explain the de
 ## 6. Upgrades (optional)
 
 1. Add paired swaps under `upgrades` (`add`, `cut`, `reason`). Never edit the baseline to apply them.
-2. Unowned cards have no card data yet. **Ask before** running `mise run cards:refresh -- --missing`, since it uses the network.
+2. Unowned cards have no card data yet. **Ask before** running `mise run scryfall:refresh -- --missing`, since it uses the network.
 3. Run `mise run deck:upgrades -- <slug>` and report the total against the budget. Unknown prices stay unknown, never zero.
 4. Run `mise run deck:check -- <slug>`, then `mise run deck:files -- <slug>` right away, so `decklist-upgraded.archidekt.txt` and `decklist-upgraded.moxfield.txt` exist with every swap made (the added cards in their own Upgrade category in Archidekt, and only in the Sideboard section in Moxfield, not in Deck). Do this whenever upgrades are added or changed, not only at hand-off.
 

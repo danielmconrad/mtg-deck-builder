@@ -1,7 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { availableCopies, holdDeckCards, ownedCounts, parseCollection, summarize } from '../scripts/collection.mjs';
-import { forest, indexOf, row, spell } from './fixtures.mjs';
+import {
+  availableCopies,
+  holdDeckCards,
+  ownedCounts,
+  parseCollection,
+  parseTextCollection,
+  resolveTextRows,
+  summarize,
+} from '../scripts/collection.mjs';
+import { card, forest, indexOf, row, spell } from './fixtures.mjs';
 
 const HEADER = 'Name,Quantity,Scryfall ID,Set code,Collector number,Foil,Proxy';
 const SCRYFALL_ID = 'b3988120-ebbe-4d24-9bb4-8c5331a14034';
@@ -69,4 +77,64 @@ test('availableCopies treats basics as unlimited only when the deck says so', ()
   assert.equal(availableCopies(owned, forest), 5);
   assert.equal(availableCopies(owned, forest, { unlimitedBasics: true }), Infinity);
   assert.equal(availableCopies(owned, spell, { unlimitedBasics: true }), 1);
+});
+
+test('parseTextCollection reads Moxfield, Archidekt and Arena lines, skipping headings and comments', () => {
+  const text = [
+    '\uFEFFCommander',
+    '1 Leonardo, the Balance (TMC) 1 *F*',
+    '',
+    'Deck',
+    '// a comment',
+    '4x Forest (tmt) 319',
+    '1x Sol Ring (FDC) 286 *E* [Upgrade,Ramp] ^Buy,#00ff00^',
+    '2 Arcane Signet',
+    'SIDEBOARD:',
+    '1 Dusk / Dawn (LTC) 166\r',
+  ].join('\n');
+  const rows = parseTextCollection(text, 'Box');
+  assert.deepEqual(
+    rows.map(({ name, quantity, set, collectorNumber, finish }) => [name, quantity, set, collectorNumber, finish]),
+    [
+      ['Leonardo, the Balance', 1, 'tmc', '1', 'foil'],
+      ['Forest', 4, 'tmt', '319', 'normal'],
+      ['Sol Ring', 1, 'fdc', '286', 'etched'],
+      ['Arcane Signet', 2, undefined, undefined, 'normal'],
+      ['Dusk / Dawn', 1, 'ltc', '166', 'normal'],
+    ],
+  );
+  assert.equal(rows[1].location, 'Box: line 6');
+  assert.deepEqual(summarize(rows), { rowCount: 5, copies: 9, distinctNames: 5, proxyCopies: 0 });
+});
+
+test('parseTextCollection rejects lines it cannot read, zero quantities and empty lists', () => {
+  assert.throws(() => parseTextCollection('1 Forest\nForest (TST) 1', 'Box'), /Box: line 2: expected/);
+  assert.throws(() => parseTextCollection('0 Forest'), /positive integer/);
+  assert.throws(() => parseTextCollection('Deck\n\n'), /no card lines/);
+});
+
+test('resolveTextRows matches printings by set and number, accepting single slashes and flavor names', () => {
+  const split = card('Dusk // Dawn', { set: 'ltc', collectorNumber: '166', frontName: 'Dusk' });
+  const hydra = card('Voracious Hydra', { set: 'tmc', collectorNumber: '54', flavorName: 'Aggro Amalgam' });
+  const index = indexOf(split, hydra, spell);
+  const rows = parseTextCollection('1 Dusk / Dawn (LTC) 166\n1 Aggro Amalgam (TMC) 54\n2 example spell');
+  assert.deepEqual(
+    resolveTextRows(rows, index).map(({ name, scryfallId }) => [name, scryfallId]),
+    [
+      ['Dusk // Dawn', split.id],
+      ['Voracious Hydra', hydra.id],
+      ['Example Spell', spell.id],
+    ],
+  );
+});
+
+test('resolveTextRows leaves uncached lines unmatched and rejects wrong names and ambiguous names', () => {
+  const index = indexOf(forest, card('Twin', { id: 'a', oracleId: 'a' }), card('Twin', { id: 'b', oracleId: 'b' }));
+  const [uncached] = resolveTextRows(parseTextCollection('1 Island (TST) 2'), index);
+  assert.equal(uncached.scryfallId, undefined);
+  assert.throws(
+    () => resolveTextRows(parseTextCollection('1 Island (TST) 1', 'Box'), index),
+    /Box: line 1: TST 1 is Forest, not Island/,
+  );
+  assert.throws(() => resolveTextRows(parseTextCollection('1 Twin'), index), /more than one card/);
 });

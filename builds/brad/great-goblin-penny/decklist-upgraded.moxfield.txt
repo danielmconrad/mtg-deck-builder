@@ -1,0 +1,49 @@
+Commander
+1 The Great Goblin (HOB) 158
+
+Deck
+1 Goblin-town Flunkies (HOB) 100
+1 March from the Black Gate (LTR) 94
+1 Misty Mountains Raider (HOB) 105
+1 Gathering of Darkness (HOB) 68
+1 Sting-Slinger (ECL) 161
+1 Boggart Mischief (ECL) 92
+1 Boggart Cursecrafter (ECL) 331
+1 Gristle Glutton (ECL) 144
+1 Bolg's Company (HOB) 211
+1 Swarming of Moria (LTR) 150
+1 Thrór's Map (HOB) 179
+1 Skullport Merchant (AFR) 120
+1 Magic Pot (FIN) 263
+1 Rage into the Valley (HOB) 79
+1 Burning Curiosity (ECL) 129
+1 Gundabad Opportunist (HOB) 101
+1 Snowslope Hunter (HOB) 112
+1 Cinder Strike (ECL) 131
+1 Requiting Hex (ECL) 116
+1 Bogslither's Embrace (ECL) 94
+1 Stingerquill Charm (FRA) 150
+1 Bilbo's Deadly Slice (HOB) 62
+1 Foray of Orcs (LTR) 128
+1 Azog, Moria's Ruin (HOB) 61
+1 Bolg of the North (HOB) 148
+1 Fulminous Forte (FRA) 84
+1 Goblin-town (HOB) 183
+1 Boiling Rock Prison (TLA) 267
+1 Ominous Asylum (SPM) 181
+1 Sulfurous Mire (KHM) 270
+1 Hell's Kitchen (MSH) 268
+9 Mountain (MDD) 298
+9 Swamp (MDD) 296
+
+Sideboard
+1 Dreadhorde Invasion (FRC) 48
+1 Krenko, Baron of Tin Street (MKM) 135
+1 Siege-Gang Commander (PLST) DMR-136
+1 Sling-Gang Lieutenant (MH1) 108
+1 Scuzzback Scrounger (ECL) 153
+1 Warren Torchmaster (ECL) 163
+1 Mordor Muster (LTR) 96
+1 Dunland Crebain (LTR) 82
+1 Sourbread Auntie (ECL) 158
+1 Grishnákh, Brash Instigator (LTR) 134

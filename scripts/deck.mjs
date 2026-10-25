@@ -7,7 +7,7 @@ import { normalizeName } from './card.mjs';
 
 const validateSchema = new Ajv({ allErrors: true, strict: false }).compile(schema);
 const MAX_YAML_ALIASES = 50;
-// The editor schema path is relative to the deck file; the default fits decks/<slug>/deck.yaml.
+// The editor schema path is relative to the deck file; the default fits builds/<slug>/deck.yaml.
 const DEFAULT_SCHEMA_PATH = '../../schemas/deck.schema.json';
 const PRIMER_PLACEHOLDER = 'Describe the game plan.';
 

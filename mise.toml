@@ -17,9 +17,9 @@ run = "node scripts/cli.mjs collection:check"
 description = "Search owned cards by color identity, type, rules text and mana value (-- --help for filters)"
 run = "node scripts/cli.mjs collection:search"
 
-[tasks."cards:refresh"]
+[tasks."scryfall:refresh"]
 description = "Fetch Scryfall card data and prices for every collection and deck (network; -- --help)"
-run = "node scripts/cli.mjs cards:refresh"
+run = "node scripts/cli.mjs scryfall:refresh"
 
 [tasks."deck:new"]
 description = "Create a draft deck: -- <slug> --commander NAME (-- --help for options)"

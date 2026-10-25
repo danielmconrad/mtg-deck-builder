@@ -12,7 +12,7 @@ const toCents = (amount) => Math.round(amount * CENTS_PER_UNIT);
 export function cheapestQuote(index, { card, printingId }, { currency, now }) {
   const candidates = printingId ? [index.byId.get(printingId)] : index.printingsOf(card.oracleId);
   const fresh = candidates.filter((printing) => ageInDays(printing, now) <= PRICE_MAX_AGE_DAYS);
-  if (!fresh.length) return { problem: `price data older than ${PRICE_MAX_AGE_DAYS} days; run cards:refresh` };
+  if (!fresh.length) return { problem: `price data older than ${PRICE_MAX_AGE_DAYS} days; run scryfall:refresh` };
   const quotes = fresh
     .map((printing) => ({ printing, price: printing.prices[currency.toLowerCase()] }))
     .filter(({ price }) => PRICE_PATTERN.test(price ?? ''))

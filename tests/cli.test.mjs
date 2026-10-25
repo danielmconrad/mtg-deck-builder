@@ -2,9 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { gzipSync } from 'node:zlib';
 import { tmpdir } from 'node:os';
 import { stringify } from 'yaml';
-import { writeCache } from '../scripts/card-cache.mjs';
+import { readCache, writeCache } from '../scripts/card-cache.mjs';
 import { runCli } from '../scripts/cli.mjs';
 import { cacheOf, card } from './fixtures.mjs';
 
@@ -38,16 +39,16 @@ async function inWorkspace(run) {
   };
   try {
     await mkdir(join(root, 'collections'));
-    await mkdir(join(root, 'decks', 'fixture'), { recursive: true });
+    await mkdir(join(root, 'builds', 'fixture'), { recursive: true });
     await writeFile(join(root, 'collections', 'Organized.csv'), CSV);
-    await writeFile(join(root, 'collections', 'Precons.csv'), CSV);
-    await writeFile(join(root, 'decks', 'fixture', 'deck.yaml'), stringify(casualDeck()));
+    await writeFile(join(root, 'collections', 'precons.csv'), CSV);
+    await writeFile(join(root, 'builds', 'fixture', 'deck.yaml'), stringify(casualDeck()));
     await writeCache(join(root, '.cache', 'cards.json'), cacheOf(forest));
     // An empty env by default, so a developer's shell or .env cannot change test results.
     const cliWithEnv = (env, ...args) =>
       runCli(args, { root, env, write: (line) => stdout.push(line), warn: (line) => stderr.push(line) });
     const cli = (...args) => cliWithEnv({}, ...args);
-    const writeDeck = (deck) => writeFile(join(root, 'decks', 'fixture', 'deck.yaml'), stringify(deck));
+    const writeDeck = (deck) => writeFile(join(root, 'builds', 'fixture', 'deck.yaml'), stringify(deck));
     await run({ root, cli, cliWithEnv, writeDeck, stdout, stderr });
   } finally {
     globalThis.fetch = originalFetch;
@@ -60,7 +61,7 @@ test('a passing deck check exits 0 and leaves inputs untouched', () =>
     assert.equal(await cli('deck:check', 'fixture'), 0);
     assert.equal(await cli('decks:check'), 0);
     assert.equal(await readFile(join(root, 'collections', 'Organized.csv'), 'utf8'), CSV);
-    assert.equal(await readFile(join(root, 'decks', 'fixture', 'deck.yaml'), 'utf8'), stringify(casualDeck()));
+    assert.equal(await readFile(join(root, 'builds', 'fixture', 'deck.yaml'), 'utf8'), stringify(casualDeck()));
   }));
 
 test('deck check exits 1 on failure, 2 when only incomplete, and 1 when both', () =>
@@ -85,8 +86,8 @@ test('deck check exits 1 on failure, 2 when only incomplete, and 1 when both', (
 
 test('decks:check reports a broken deck file and still checks the others', () =>
   inWorkspace(async ({ root, cli, stdout }) => {
-    await mkdir(join(root, 'decks', 'broken'));
-    await writeFile(join(root, 'decks', 'broken', 'deck.yaml'), 'name: [unterminated');
+    await mkdir(join(root, 'builds', 'broken'));
+    await writeFile(join(root, 'builds', 'broken', 'deck.yaml'), 'name: [unterminated');
     assert.equal(await cli('decks:check'), 1);
     assert.match(stdout.join('\n'), /FAIL: broken/);
     assert.match(stdout.join('\n'), /PASS: fixture/);
@@ -95,26 +96,26 @@ test('decks:check reports a broken deck file and still checks the others', () =>
 test('deck:new writes the chosen commander into a new draft', () =>
   inWorkspace(async ({ root, cli }) => {
     assert.equal(await cli('deck:new', 'green-value', '--commander', 'Example Leader'), 0);
-    const text = await readFile(join(root, 'decks', 'green-value', 'deck.yaml'), 'utf8');
+    const text = await readFile(join(root, 'builds', 'green-value', 'deck.yaml'), 'utf8');
     assert.match(text, /^# yaml-language-server/);
     assert.match(text, /- name: Example Leader/);
   }));
 
 test('decks nest under subfolders and are found by full path or a unique bare slug', () =>
   inWorkspace(async ({ root, cli, stdout }) => {
-    const deckText = await readFile(join(root, 'decks', 'fixture', 'deck.yaml'), 'utf8');
+    const deckText = await readFile(join(root, 'builds', 'fixture', 'deck.yaml'), 'utf8');
     for (const folder of ['brad/elves', 'conrad/elves', 'brad/goblins']) {
-      await mkdir(join(root, 'decks', folder), { recursive: true });
-      await writeFile(join(root, 'decks', folder, 'deck.yaml'), deckText);
+      await mkdir(join(root, 'builds', folder), { recursive: true });
+      await writeFile(join(root, 'builds', folder, 'deck.yaml'), deckText);
     }
-    await mkdir(join(root, 'decks', 'brad', 'empty'));
+    await mkdir(join(root, 'builds', 'brad', 'empty'));
     assert.equal(await cli('decks:check'), 1);
     assert.deepEqual(
       stdout.splice(0).map((line) => line.split(' (')[0]),
       [
         'PASS: brad/elves',
         'FAIL: brad/empty: ENOENT: no such file or directory, open '.concat(
-          `'${join(root, 'decks', 'brad', 'empty', 'deck.yaml')}'`,
+          `'${join(root, 'builds', 'brad', 'empty', 'deck.yaml')}'`,
         ),
         'PASS: brad/goblins',
         'PASS: conrad/elves',
@@ -125,10 +126,10 @@ test('decks nest under subfolders and are found by full path or a unique bare sl
     assert.equal(await cli('deck:check', 'conrad/elves'), 0);
     await assert.rejects(cli('deck:check', 'elves'), /matches brad\/elves, conrad\/elves; give the full path/);
     assert.equal(await cli('deck:files', 'goblins'), 0);
-    assert.match(await readFile(join(root, 'decks', 'brad', 'goblins', 'decklist.moxfield.txt'), 'utf8'), /Forest/);
+    assert.match(await readFile(join(root, 'builds', 'brad', 'goblins', 'decklist.moxfield.txt'), 'utf8'), /Forest/);
 
     assert.equal(await cli('deck:new', 'brad/green-value', '--commander', 'Example Leader'), 0);
-    const text = await readFile(join(root, 'decks', 'brad', 'green-value', 'deck.yaml'), 'utf8');
+    const text = await readFile(join(root, 'builds', 'brad', 'green-value', 'deck.yaml'), 'utf8');
     assert.match(
       text,
       /^# yaml-language-server: \$schema=\.\.\/\.\.\/\.\.\/schemas\/deck\.schema\.json\nschema_version/,
@@ -229,7 +230,7 @@ test('MTG_EXPORT_FORMAT sets the default export format, and --format overrides i
 
 test('deck:files writes Archidekt and Moxfield lists, plus upgraded ones only when the deck has upgrades', () =>
   inWorkspace(async ({ root, cli, writeDeck, stdout }) => {
-    const folder = join(root, 'decks', 'fixture');
+    const folder = join(root, 'builds', 'fixture');
     const read = (file) => readFile(join(folder, file), 'utf8');
     const swap = { add: { name: 'Sol Ring', quantity: 1 }, cut: { name: 'Forest', quantity: 1 }, reason: 'Fixture' };
     await writeFile(join(folder, 'decklist.txt'), 'stale');
@@ -248,7 +249,7 @@ test('deck:files writes Archidekt and Moxfield lists, plus upgraded ones only wh
     assert.equal(await read('decklist-upgraded.moxfield.txt'), 'Deck\n59 Forest (TST) 1\n\nSideboard\n1 Sol Ring\n');
     await assert.rejects(read('decklist.txt'), { code: 'ENOENT' });
     await assert.rejects(read('decklist-moxfield.txt'), { code: 'ENOENT' });
-    assert.match(stdout.pop(), /Wrote decks\/fixture\/decklist.archidekt.txt, .*decklist-upgraded.moxfield.txt\.$/);
+    assert.match(stdout.pop(), /Wrote builds\/fixture\/decklist.archidekt.txt, .*decklist-upgraded.moxfield.txt\.$/);
 
     await writeDeck(casualDeck());
     assert.equal(await cli('deck:files', 'fixture'), 0);
@@ -262,11 +263,11 @@ test('every collection counts unless a --protect or MTG_PROTECTED_COLLECTIONS pa
     await writeFile(join(root, 'collections', 'Bulk Box.csv'), CSV.replace(',60,', ',5,'));
     assert.equal(await cli('collection:search', '--count'), 0);
     assert.equal(stdout.pop(), '1 cards, 65 copies in Bulk Box, Organized');
-    const env = { MTG_PROTECTED_COLLECTIONS: 'collections/Precons.csv, collections/Bulk*' };
+    const env = { MTG_PROTECTED_COLLECTIONS: 'collections/precons.csv, collections/Bulk*' };
     assert.equal(await cliWithEnv(env, 'collection:search', '--count'), 0);
     assert.equal(stdout.pop(), '1 cards, 60 copies in Organized');
     assert.equal(await cliWithEnv(env, 'collection:search', '--count', '--protect', ''), 0);
-    assert.equal(stdout.pop(), '1 cards, 125 copies in Bulk Box, Organized, Precons');
+    assert.equal(stdout.pop(), '1 cards, 125 copies in Bulk Box, Organized, precons');
     assert.equal(await cliWithEnv(env, 'collection:search', '--protect', 'collections/Bulk Box,Binder'), 0);
     assert.match(stdout.pop(), /^1 cards$/);
     assert.match(stdout.pop(), /^120x Forest .*\(\+5 in Bulk Box, protected\)$/);
@@ -274,7 +275,7 @@ test('every collection counts unless a --protect or MTG_PROTECTED_COLLECTIONS pa
     assert.equal(await cliWithEnv(env, 'collection:check'), 0);
     assert.deepEqual(
       stdout.splice(-3).map((line) => line.split(':')[0]),
-      ['Bulk Box (protected)', 'Organized', 'Precons (protected)'],
+      ['Bulk Box (protected)', 'Organized', 'precons (protected)'],
     );
   }));
 
@@ -283,7 +284,7 @@ test('collections nest under subfolders, named by path and matched by folder or 
     await mkdir(join(root, 'collections', 'conrad', 'boxes'), { recursive: true });
     await mkdir(join(root, 'collections', 'other'));
     await writeFile(join(root, 'collections', 'conrad', 'boxes', 'Bulk.csv'), CSV.replace(',60,', ',5,'));
-    await writeFile(join(root, 'collections', 'conrad', 'Precons.csv'), CSV.replace(',60,', ',7,'));
+    await writeFile(join(root, 'collections', 'conrad', 'precons.csv'), CSV.replace(',60,', ',7,'));
     await writeFile(join(root, 'collections', 'other', 'Trades.csv'), CSV.replace(',60,', ',3,'));
     const env = { MTG_COLLECTIONS: 'collections/conrad*,collections/other*' };
     assert.equal(await cliWithEnv(env, 'collection:search', '--count'), 0);
@@ -293,7 +294,7 @@ test('collections nest under subfolders, named by path and matched by folder or 
     assert.equal(await cli('collection:check'), 0);
     assert.deepEqual(
       stdout.splice(-5).map((line) => line.split(':')[0]),
-      ['conrad/boxes/Bulk', 'conrad/Precons (protected)', 'Organized', 'other/Trades', 'Precons (protected)'],
+      ['conrad/boxes/Bulk', 'conrad/precons (protected)', 'Organized', 'other/Trades', 'precons (protected)'],
     );
   }));
 
@@ -315,7 +316,7 @@ test('--collections or MTG_COLLECTIONS limits which collections are read', () =>
     assert.equal(await cliWithEnv({ MTG_COLLECTIONS: './collections/Bulk*' }, 'collection:search', '--count'), 0);
     assert.equal(stdout.pop(), '1 cards, 5 copies in Bulk Box');
     const env = { MTG_COLLECTIONS: 'collections/Bulk Box' };
-    const both = 'collections/Organized, collections/Precons.csv';
+    const both = 'collections/Organized, collections/precons.csv';
     assert.equal(await cliWithEnv(env, 'collection:search', '--count', '--collections', both), 0);
     assert.equal(stdout.pop(), '1 cards, 60 copies in Organized');
     assert.equal(await cliWithEnv(env, 'collection:search', '--count', '--collections', ''), 0);
@@ -343,14 +344,70 @@ test("a deck's collections field scopes it, between --collections and MTG_COLLEC
     assert.equal(await cliWithEnv(env, 'decks:check'), 0);
   }));
 
-test('cards:refresh covers every collection, whatever MTG_COLLECTIONS says', () =>
+test('scryfall:refresh covers every collection, whatever MTG_COLLECTIONS says', () =>
   inWorkspace(async ({ root, cliWithEnv }) => {
     const uncachedId = '00000000-0000-4000-8000-000000000002';
     await writeFile(join(root, 'collections', 'Bulk Box.csv'), CSV.replace(FOREST_ID, uncachedId));
     await assert.rejects(
-      cliWithEnv({ MTG_COLLECTIONS: 'collections/Organized.csv' }, 'cards:refresh', '--missing'),
+      cliWithEnv({ MTG_COLLECTIONS: 'collections/Organized.csv' }, 'scryfall:refresh', '--missing'),
       /Unexpected network access/,
     );
+  }));
+
+test('scryfall:refresh --bulk caches bulk data, then fetches only what it lacks from the card API', () =>
+  inWorkspace(async ({ root, cli, stdout }) => {
+    const uncachedId = '00000000-0000-4000-8000-000000000002';
+    await writeFile(join(root, 'collections', 'Bulk Box.csv'), CSV.replace(FOREST_ID, uncachedId));
+    const scryfallCard = (id, name) => ({ id, oracle_id: `oracle-${name}`, name, type_line: 'Sorcery' });
+    const requested = [];
+    globalThis.fetch = async (url, { body } = {}) => {
+      requested.push(body ? JSON.parse(body).identifiers : url);
+      const bulkFile = url.match(/\/bulk-data\/(\w+)$/)?.[1];
+      if (bulkFile) {
+        return Response.json({ jsonl_download_uri: `https://data.example/${bulkFile}`, updated_at: '2026-10-15' });
+      }
+      if (url.startsWith('https://data.example/')) {
+        return new Response(gzipSync(`${JSON.stringify(scryfallCard(FOREST_ID, 'Forest'))}\n`));
+      }
+      return Response.json({ data: [scryfallCard(uncachedId, 'Japanese Forest')] });
+    };
+    assert.equal(await cli('scryfall:refresh', '--bulk'), 0);
+    assert.deepEqual(requested.at(-1), [{ id: uncachedId }]);
+    assert.deepEqual(Object.keys((await readCache(join(root, '.cache', 'cards.json'))).cards).sort(), [
+      FOREST_ID,
+      uncachedId,
+    ]);
+    assert.match(stdout.at(-1), /Cached 2 printings \(1 fetched/);
+    await assert.rejects(cli('scryfall:refresh', '--bulk', '--missing'), /not both/);
+  }));
+
+test('text lists are collections, matched to cached printings', () =>
+  inWorkspace(async ({ root, cli, stdout, stderr }) => {
+    await rm(join(root, 'collections', 'Organized.csv'));
+    await mkdir(join(root, 'collections', 'conrad'));
+    await writeFile(join(root, 'collections', 'conrad', 'Binder.txt'), 'Deck\n60 Forest (TST) 1\n');
+    assert.equal(await cli('deck:check', 'fixture'), 0);
+    assert.equal(await cli('collection:check'), 0);
+    assert.match(stdout.join('\n'), /conrad\/Binder: 1 rows, 60 copies/);
+    await writeFile(join(root, 'collections', 'conrad', 'Binder.txt'), '60 Forest (TST) 1\n1 Island (TST) 2\n');
+    assert.equal(await cli('collection:check'), 2);
+    assert.match(stderr.at(-1), /NOT CACHED: conrad\/Binder: line 2: Island/);
+    await writeFile(join(root, 'collections', 'conrad', 'Binder.csv'), CSV);
+    await assert.rejects(cli('collection:check'), /are both collection conrad\/Binder; keep one/);
+  }));
+
+test('scryfall:refresh fetches text list lines by set and collector number, even with no usable cache', () =>
+  inWorkspace(async ({ root, cli }) => {
+    await writeFile(join(root, '.cache', 'cards.json'), '{"version":1}');
+    await writeFile(join(root, 'collections', 'Binder.txt'), '1 Island (TST) 2\n1 Plains\n');
+    const requested = [];
+    globalThis.fetch = async (url, { body }) => {
+      const { identifiers } = JSON.parse(body);
+      requested.push(...identifiers);
+      return Response.json({ data: [], not_found: identifiers });
+    };
+    assert.equal(await cli('scryfall:refresh'), 2);
+    assert.deepEqual(requested.slice(0, 2), [{ set: 'tst', collector_number: '2' }, { name: 'Plains' }]);
   }));
 
 test('--help prints the command overview, and with a command, its options', () =>

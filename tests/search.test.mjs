@@ -24,9 +24,9 @@ const index = indexOf(forest, leader, spell, elf, ghoul, banned);
 const collections = {
   available: [row(elf, 2), row(ghoul, 1), row(banned, 1), row(spell, 1)],
   protected: [
-    row(elf, 2, { collection: 'Precons' }),
+    row(elf, 2, { collection: 'precons' }),
     row(elf, 1, { collection: 'Cube' }),
-    row(leader, 1, { collection: 'Precons' }),
+    row(leader, 1, { collection: 'precons' }),
   ],
 };
 const namesFor = (options) =>
@@ -62,7 +62,7 @@ test('results show protected copies by collection; protected-only cards need --i
   const [elves] = searchCollection(collections, index, searchFilters({ name: 'elves' }, index)).results;
   assert.deepEqual([elves.available, elves.protected], [2, 3]);
   assert.deepEqual(elves.protectedIn, [
-    { name: 'Precons', copies: 2 },
+    { name: 'precons', copies: 2 },
     { name: 'Cube', copies: 1 },
   ]);
   assert.ok(!namesFor({}).includes(leader.name));

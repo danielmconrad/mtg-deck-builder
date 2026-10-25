@@ -3,8 +3,9 @@ import assert from 'node:assert/strict';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { gzipSync } from 'node:zlib';
 import { readCache, validateCache, writeCache } from '../scripts/card-cache.mjs';
-import { fetchCards, toCard } from '../scripts/scryfall.mjs';
+import { fetchBulkCards, fetchCards, toCard } from '../scripts/scryfall.mjs';
 import { cacheOf, card, entry, indexOf } from './fixtures.mjs';
 
 const scryfallCard = (id) => ({ id, oracle_id: `oracle-${id}`, name: id, type_line: 'Sorcery', color_identity: [] });
@@ -49,6 +50,40 @@ test('fetchCards rejects HTTP failures and paginated responses', async () => {
   await assert.rejects(fetchCards([{ id: 'x' }], { fetchFn: respondWith({ data: [], has_more: true }) }), /Unexpected/);
 });
 
+// A fake Scryfall serving each bulk file's listing and its gzipped JSON Lines download.
+const BULK_UPDATED_AT = '2026-10-15T09:00:00.000+00:00';
+const bulkFetch = (files, listing) => async (url) => {
+  const type = url.split('/').at(-1);
+  if (url.startsWith('https://data.example/')) return new Response(files[type]);
+  return Response.json(listing ?? { jsonl_download_uri: `https://data.example/${type}`, updated_at: BULK_UPDATED_AT });
+};
+const jsonLines = (...objects) => gzipSync(objects.map((object) => `${JSON.stringify(object)}\n`).join(''));
+
+test('fetchBulkCards caches every printing, marking Scryfall defaults, dated when Scryfall built the files', async () => {
+  const { cards, fetchedAt } = await fetchBulkCards({
+    fetchFn: bulkFetch({
+      oracle_cards: jsonLines(scryfallCard('a')),
+      default_cards: jsonLines(scryfallCard('a'), scryfallCard('b')),
+    }),
+  });
+  assert.deepEqual(Object.keys(cards), ['a', 'b']);
+  assert.deepEqual([cards.a.defaultPrinting, cards.b.defaultPrinting], [true, false]);
+  assert.equal(fetchedAt, '2026-10-15T09:00:00.000Z');
+  assert.equal(cards.b.fetchedAt, fetchedAt);
+});
+
+test('fetchBulkCards rejects failed, unexpected, empty and truncated downloads', async () => {
+  const whole = jsonLines(scryfallCard('a'), scryfallCard('b'));
+  const withDefaults = (defaultCards) => bulkFetch({ oracle_cards: whole, default_cards: defaultCards });
+  await assert.rejects(fetchBulkCards({ fetchFn: async () => ({ ok: false, status: 503 }) }), /HTTP 503/);
+  await assert.rejects(fetchBulkCards({ fetchFn: bulkFetch({}, {}) }), /Unexpected/);
+  await assert.rejects(fetchBulkCards({ fetchFn: withDefaults(gzipSync('')) }), /default_cards was empty/);
+  await assert.rejects(
+    fetchBulkCards({ fetchFn: withDefaults(whole.subarray(0, whole.length - 10)) }),
+    /download failed.*cache was not changed/,
+  );
+});
+
 test('toCard reads face data for double-faced cards', () => {
   const result = toCard(
     {
@@ -69,6 +104,13 @@ test('toCard reads face data for double-faced cards', () => {
   assert.equal(result.manaValue, 3);
   assert.equal(result.oracleText, 'Front text.\nBack text.');
   assert.equal(result.typeLine, 'Legendary Creature — Elf // Legendary Planeswalker');
+});
+
+test('toCard records flavor names, which some printings give a card', () => {
+  const named = (fields) =>
+    toCard({ id: 'x', oracle_id: 'o', name: 'Voracious Hydra', ...fields }, 'fetched').flavorName;
+  assert.equal(named({ flavor_name: 'Aggro Amalgam' }), 'Aggro Amalgam');
+  assert.equal(named({}), null);
 });
 
 test('toCard records Game Changer status, defaulting to false', () => {
@@ -116,9 +158,34 @@ test('lookup reports unknown names, ambiguous names and mismatched Scryfall IDs'
   assert.match(index.lookup(entry('Other', 1, { scryfall_id: 'twin-a' })).problem, /does not match/);
 });
 
+test('an ambiguous name means the one card legal in some format', () => {
+  const real = card('Pick Your Poison', { id: 'real', oracleId: 'real' });
+  const playtest = card('Pick Your Poison', {
+    id: 'playtest',
+    oracleId: 'playtest',
+    legalities: { commander: 'not_legal' },
+  });
+  assert.equal(indexOf(playtest, real).lookup(entry('Pick Your Poison')).card, real);
+});
+
+test("a name gives Scryfall's default printing, else the first cached", () => {
+  const [first, second] = [card('Bolt', { id: 'first' }), card('Bolt', { id: 'second' })];
+  assert.equal(indexOf(first, second).lookup(entry('Bolt')).card, first);
+  const preferred = { ...second, defaultPrinting: true };
+  const index = indexOf(first, preferred);
+  assert.equal(index.lookup(entry('Bolt')).card, preferred);
+  assert.deepEqual(
+    index.printingsOf('bolt').map(({ id }) => id),
+    ['second', 'first'],
+  );
+});
+
 test('isCached checks IDs by printing and names by any printing', () => {
   const index = indexOf(card('Bolt'));
   assert.equal(index.isCached({ id: 'bolt-print' }), true);
   assert.equal(index.isCached({ name: 'bolt' }), true);
   assert.equal(index.isCached({ id: 'other' }), false);
+  assert.equal(index.isCached({ set: 'TST', collector_number: '1' }), true);
+  assert.equal(index.isCached({ set: 'tst', collector_number: '2' }), false);
+  assert.equal(index.printing('TST', '1').name, 'Bolt');
 });

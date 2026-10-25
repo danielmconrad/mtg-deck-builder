@@ -9,7 +9,7 @@ Install [mise](https://mise.jdx.dev/getting-started.html), then:
 ```sh
 mise trust && mise install
 mise run setup          # npm ci (network) and the git pre-commit hook
-mise run cards:refresh  # fetch card data and prices (network)
+mise run scryfall:refresh  # fetch card data and prices (network); add -- --bulk for every card on Scryfall
 mise run check          # offline: collection, tests, every deck
 cp .env.example .env    # project defaults, e.g. the export format (ignored by Git)
 ```
@@ -17,13 +17,13 @@ cp .env.example .env    # project defaults, e.g. the export format (ignored by G
 ## Layout
 
 ```text
-collections/*.csv           ManaBox exports, one per collection, named after the file
+collections/*.csv, *.txt    ManaBox exports or text lists, one per collection, named after the file
                             (e.g. Organized.csv). Protected ones are reported but never used
-decks/<slug>/deck.yaml      One file per deck (see decks/example and schemas/); may be nested, e.g. decks/brad/<slug>/
-decks/<slug>/decklist*.txt  Generated Archidekt and Moxfield decklists, written by deck:files and committed
+builds/<slug>/deck.yaml      One file per deck (see builds/example and schemas/); may be nested, e.g. builds/brad/<slug>/
+builds/<slug>/decklist*.txt  Generated Archidekt and Moxfield decklists, written by deck:files and committed
 scripts/                    CLI (cli.mjs) and the modules behind it
 tests/                      Offline tests on synthetic fixtures
-.cache/cards.json           Scryfall data (ignored by Git)
+.cache/cards.json           Scryfall data, about 140 MB after a bulk refresh (ignored by Git)
 ```
 
 ## Commands
@@ -37,9 +37,9 @@ node scripts/cli.mjs --help         # every command, plus exit codes
 
 | Task                | What it does                                                        |
 | ------------------- | ------------------------------------------------------------------- |
-| `collection:check`  | Validate both CSVs and summarize them                               |
+| `collection:check`  | Validate every collection and summarize it                          |
 | `collection:search` | Find owned cards by color identity, type, rules text and mana value |
-| `cards:refresh`     | Fetch Scryfall card data and prices (network)                       |
+| `scryfall:refresh`  | Fetch Scryfall card data and prices (network); `--bulk` for all     |
 | `deck:new`          | Create a draft deck                                                 |
 | `deck:check`        | Check rules and ownership for one deck                              |
 | `deck:stats`        | Curve, card types, color pips, land sources and roles               |
@@ -82,7 +82,7 @@ mise run deck:export -- green-value --upgrades apply --copy   # every upgrade sw
 - **Default format:** `MTG_EXPORT_FORMAT` in `.env` (see [.env.example](.env.example)); `--format` overrides it, and without either the format is `text`.
 - **Moxfield:** create a deck and paste into Import, or replace an existing list with Bulk Edit. The export uses MTG Arena's `Commander`/`Deck`/`Sideboard` sections.
 - **Archidekt:** open a deck's Import menu, paste and save. Roles become Title Case categories and commanders get `[Commander{top}]`.
-- **Printings:** a pinned `scryfall_id` wins, then the printing you own in an available collection, then any cached printing. The plain `text` format lists names only.
+- **Printings:** a pinned `scryfall_id` wins, then the printing you own in an available collection, then Scryfall's default printing if the cache came from bulk data, else any cached printing. The plain `text` format lists names only.
 - **Upgrades:** `--upgrades apply` makes every swap and lists the added cards in their own Upgrades section (an `Upgrade` category in Archidekt), so they're easy to select for buying. Moxfield's import has no custom sections, so there the added cards go in the sideboard instead of Deck. `--upgrades split` keeps the deck, lists the cards it would cut under Swap Out (still in the deck) and the cards it would add in the sideboard. Moxfield has no Swap Out section, so those cards stay in Deck.
 
 ### Decklist files
@@ -110,20 +110,22 @@ Prettier formats, ESLint lints ([eslint.config.js](eslint.config.js)). Two thing
 
 ## Deck folders
 
-- Decks can be grouped in subfolders, such as `decks/brad/bruenor-forge/`. `decks:check` finds every `deck.yaml` at any depth.
+- Decks can be grouped in subfolders, such as `builds/brad/bruenor-forge/`. `decks:check` finds every `deck.yaml` at any depth.
 - Commands take the full path (`brad/bruenor-forge`) or just the deck's folder name (`bruenor-forge`) when no other deck shares it. A shared name asks for the full path.
 - `mise run deck:new -- brad/<slug>` creates a nested deck, with the editor `$schema` path adjusted for its depth. Moving a deck by hand means fixing that first line's `../` count yourself.
 
 ## Collection rules
 
-- Every `.csv` under `collections/`, at any depth, is a collection named by its path inside `collections/` without `.csv` (e.g. `conrad/Precons`). Every one counts as available unless it's protected. Add a collection by dropping in a new ManaBox export, in a subfolder if you like.
-- Both settings below take comma-separated glob patterns relative to the project root. `*` matches within one folder or file name and `**` across folders. A pattern matches a CSV's path, the path without `.csv`, or any folder it sits in, so `collections/conrad*` selects everything in `collections/conrad/`.
-- Protected collections are ones you don't want to dismantle, such as precons. Their copies are shown as e.g. "3 in conrad/Precons (protected)" but never fill a deck. List patterns for them in `MTG_PROTECTED_COLLECTIONS` in `.env`, e.g. `collections/**/Precons.csv`. `--protect PATTERNS` overrides it for one command, and `--protect ''` protects nothing. With neither set, every `Precons.csv` at any depth is protected.
+- Every `.csv` or `.txt` under `collections/`, at any depth, is a collection named by its path inside `collections/` without the extension (e.g. `conrad/precons`). Every one counts as available unless it's protected. Add a collection by dropping in a new ManaBox export or text list, in a subfolder if you like. A CSV and a text list with the same name are an error rather than counted twice.
+- A text list is what Moxfield, Archidekt and MTG Arena export: one card per line, like `1 Sol Ring (TMC) 59`, `4x Forest (tmt) 319 *F*` (`*F*` foil, `*E*` etched) or just `1 Sol Ring`. Section headings such as `Commander`, `Deck` and `Sideboard`, `//` comments and Archidekt's `[Category]` tags are ignored, and any other line is an error.
+- Text lists carry no Scryfall IDs, so each line is matched to the card cache by set code and collector number, or by name when it has no printing. The name must be that printing's, though a single slash (`Dusk / Dawn`) and a printing's alternate name (`Aggro Amalgam` for Voracious Hydra) are fine; a mismatch is reported as a typo. Lines not cached yet count toward nothing, and `collection:check` lists them until `scryfall:refresh -- --missing` fetches them. Text lists have no proxies, deck binders or purchase prices.
+- Both settings below take comma-separated glob patterns relative to the project root. `*` matches within one folder or file name and `**` across folders. A pattern matches a collection's path, the path without its extension, or any folder it sits in, so `collections/conrad*` selects everything in `collections/conrad/`.
+- Protected collections are ones you don't want to dismantle, such as precons. Their copies are shown as e.g. "3 in conrad/precons (protected)" but never fill a deck. List patterns for them in `MTG_PROTECTED_COLLECTIONS` in `.env`, e.g. `collections/**/precons` or `collections/**/decks/**`. `--protect PATTERNS` overrides it for one command, and `--protect ''` protects nothing. With neither set, every `precons.csv`, `precons.txt` and `precons/` folder at any depth is protected.
 - A deck can name its own collections with a `collections` list of patterns in `deck.yaml`, such as a friend's deck built only from `collections/brad/*`. Every deck command, `decks:check` included, then reads just those collections for it. `--collections` beats a deck's field, which beats `MTG_COLLECTIONS`.
-- To read only some collections, list patterns in `MTG_COLLECTIONS` in `.env`, e.g. `MTG_COLLECTIONS=collections/conrad*,collections/other*`, or pass `--collections PATTERNS` to one command. The rest are ignored entirely, and protection still applies to the ones read. Empty means every collection. `cards:refresh` always covers every collection, so changing the list never leaves card data missing.
+- To read only some collections, list patterns in `MTG_COLLECTIONS` in `.env`, e.g. `MTG_COLLECTIONS=collections/conrad*,collections/other*`, or pass `--collections PATTERNS` to one command. The rest are ignored entirely, and protection still applies to the ones read. Empty means every collection. `scryfall:refresh` always covers every collection, so changing the list never leaves card data missing.
 - ManaBox binder exports (with `Binder Name` and `Binder Type` columns) work too. A card named in any of the export's deck binders is in use: every copy of it, spares in other binders included, is shown as e.g. "3 in BradsCollection decks (protected)" and never fills a new deck.
 - `collection:check` lists the collections it reads and marks the protected ones. A pattern in either list that matches no collection gets a warning.
-- Never hand-edit the exports. Replace them with fresh exports when the collection changes.
+- Never hand-edit ManaBox exports; replace them with fresh exports when the collection changes. Text lists can be edited by hand.
 - Every deck is checked on its own. Two decks can both use your only copy of a card.
 - All printings and finishes of a card count together.
 - Proxy rows count only when the deck sets `allow_proxies: true`. An export without a `Proxy` column has no proxies.
@@ -131,7 +133,7 @@ Prettier formats, ESLint lints ([eslint.config.js](eslint.config.js)). Two thing
 
 ## Deck files
 
-See [the example](decks/example/deck.yaml) and [the schema](schemas/deck.schema.json). The example is a 40-card structural template, not a real deck.
+See [the example](builds/example/deck.yaml) and [the schema](schemas/deck.schema.json). The example is a 40-card structural template, not a real deck.
 
 | Field                               | Meaning                                                                                                                                     |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -153,7 +155,9 @@ Use exact Scryfall names. You can give a double-faced card by its front-face nam
 
 ## Card data and prices
 
-- **Refresh.** `cards:refresh` batches requests to Scryfall's collection endpoint (75 cards per request, 550ms apart) and keeps only the fields the tools use. A failed refresh leaves the old cache in place.
+- **Refresh.** `scryfall:refresh` batches requests to Scryfall's collection endpoint (75 cards per request, 550ms apart) and keeps only the fields the tools use. A plain refresh replaces the cache with just the collections' and decks' cards; `--missing` adds only what's not cached. A failed refresh leaves the old cache in place.
+- **Bulk data.** `scryfall:refresh -- --bulk` caches every printing on Scryfall from its daily [bulk data](https://scryfall.com/docs/api/bulk-data): the Default Cards file (every printing in English, or in its only language) and the Oracle Cards file, which marks the printing Scryfall shows for each name. That's about 105 MB of downloads and half a minute. It then fetches only what bulk data lacks, such as non-English printings in a collection. Afterwards, unowned cards named in a deck need no further fetching, and `--missing` keeps the bulk data while adding to it. Scryfall rebuilds the files every 12–24 hours, and its gameplay data changes rarely, so weekly or after a set release is plenty. Bulk prices are as old as the file, so they still go stale after 7 days.
+- **Shared names.** Bulk data includes tokens, art cards and playtest cards that share names with real cards. When a name matches several cards and only one is legal in some format, that one is meant.
 - **Old card data.** Card data older than 30 days adds a note to `deck:check` output but doesn't fail the check. Refresh to pick up new bans.
 - **Prices.** `deck:upgrades` uses the cheapest cached Scryfall nonfoil quote less than 7 days old, or the printing set by `scryfall_id`. Older or missing quotes count as unknown, never zero. Shipping and tax aren't included. Cuts aren't resold.
 - **Game Changers.** Scryfall marks each card on Wizards' Game Changers list, so `deck:check` lists a Commander deck's Game Changers and enforces the limit when `bracket` is set. `collection:search -- --game-changers` shows which ones you own. Refresh card data when the list changes.
