@@ -32,6 +32,19 @@ export function parseDeck(text, source = 'deck') {
 export const serializeDeck = (deck, { schemaPath = DEFAULT_SCHEMA_PATH } = {}) =>
   `# yaml-language-server: $schema=${schemaPath}\n${stringify(deck, { lineWidth: 0 })}`;
 
+// Adds a top-level field to a deck file's text, after the field named by after if it's there, else at
+// the end. Editing the YAML document rather than reserializing the deck keeps comments and quoting.
+export function withDeckField(text, key, value, { after, source = 'deck' } = {}) {
+  const document = parseDocument(text, { uniqueKeys: true });
+  if (document.has(key)) throw new Error(`${source} already has ${key}`);
+  const { items } = document.contents;
+  const position = items.findIndex((pair) => pair.key?.value === after);
+  items.splice(position === -1 ? items.length : position + 1, 0, document.createPair(key, value));
+  const updated = document.toString({ lineWidth: 0 });
+  parseDeck(updated, source);
+  return updated;
+}
+
 // A nested slug (brad/green-value) is titled from its last part.
 const titleFromSlug = (slug) =>
   slug

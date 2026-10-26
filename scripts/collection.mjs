@@ -13,7 +13,7 @@ function checkHeaders(headers, source) {
   return headers;
 }
 
-function toRow(record, location) {
+function toRow(record, location, position) {
   if (!record.Name.trim()) throw new Error(`${location}: empty card name`);
   if (!POSITIVE_INTEGER.test(record.Quantity) || !Number.isSafeInteger(Number(record.Quantity))) {
     throw new Error(`${location}: Quantity must be a positive integer`);
@@ -35,10 +35,12 @@ function toRow(record, location) {
     finish: record.Foil,
     isProxy: record.Proxy === 'true',
     inDeckBinder: record['Binder Type'] === 'deck',
+    position,
   };
 }
 
 // Parses a ManaBox CSV export into rows, rejecting anything that would make ownership counts wrong.
+// Each row's position is its record's index after the header, which removeCsvCopies relies on.
 export function parseCollection(text, source = 'collection') {
   const records = parse(text, {
     bom: true,
@@ -46,7 +48,7 @@ export function parseCollection(text, source = 'collection') {
     columns: (headers) => checkHeaders(headers, source),
   });
   if (!records.length) throw new Error(`${source}: no card rows`);
-  return records.map((record, index) => toRow(record, `${source}: record ${index + HEADER_ROWS + 1}`));
+  return records.map((record, index) => toRow(record, `${source}: record ${index + HEADER_ROWS + 1}`, index));
 }
 
 // A card line in the plain-text lists Moxfield, Archidekt and MTG Arena export: a quantity (optionally
@@ -59,7 +61,8 @@ const SKIPPED_LINE = /^(?:(?:commander|companion|deck|mainboard|sideboard|maybeb
 const TEXT_FINISHES = { F: 'foil', E: 'etched' };
 
 // Parses a plain-text list into rows like parseCollection's, without Scryfall IDs: resolveTextRows
-// finds each row's printing in the card cache by set and collector number, or by name.
+// finds each row's printing in the card cache by set and collector number, or by name. Each row's
+// position is its line's index, which removeTextCopies relies on.
 export function parseTextCollection(text, source = 'collection') {
   const rows = [];
   for (const [index, rawLine] of text
@@ -83,6 +86,7 @@ export function parseTextCollection(text, source = 'collection') {
       isProxy: false,
       inDeckBinder: false,
       location,
+      position: index,
     });
   }
   if (!rows.length) throw new Error(`${source}: no card lines`);

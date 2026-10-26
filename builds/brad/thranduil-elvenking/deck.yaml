@@ -6,7 +6,7 @@ status: draft
 bracket: 3
 allow_proxies: false
 unlimited_basics: true
-collections:
+collection_source:
   - 'collections/brad/*'
 primer: >-
   Fill the graveyard with Elves whose activated abilities Thranduil then uses himself (Circle of Dreams Druid mana, Guardian of the Halls counters, Elvenking's Harper evasion, Iron-Shield Elf indestructibility), while every other legendary Elf that enters draws two cards. Ramp with mana Elves, then win with a huge, unblockable Thranduil or a wide Elf board under Morcant's Loyalist, Thranduil, Sindarin Liege and Moon-Vigil Adherents.

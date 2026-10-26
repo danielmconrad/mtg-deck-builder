@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { readCache, writeCache } from './card-cache.mjs';
 import { cardIndex } from './card-index.mjs';
 import { holdDeckCards, parseCollection, parseTextCollection, resolveTextRows } from './collection.mjs';
-import { parseDeck, serializeDeck } from './deck.mjs';
+import { parseDeck, serializeDeck, withDeckField } from './deck.mjs';
 
 const PROJECT_ROOT = fileURLToPath(new URL('..', import.meta.url));
 // A deck is named by its folder under builds/, which may be nested (brad/bruenor-forge). Each part
@@ -20,7 +20,7 @@ const withoutExtension = (path) => path.replace(COLLECTION_EXTENSION, '');
 
 // A collection pattern matches the file's path, the path without its extension, or any folder it
 // sits in, so collections/conrad* selects collections/conrad/ and everything below it.
-function pathMatches(path, pattern) {
+export function pathMatches(path, pattern) {
   const glob = pattern.replace(/^\.\//, '').replace(/\/+$/, '');
   const parts = path.split('/');
   const candidates = [path, withoutExtension(path)];
@@ -105,6 +105,23 @@ export function openWorkspace(root = PROJECT_ROOT) {
 
   const removeDeckFile = async (slug, fileName) => rm(join(await deckFolder(slug), fileName), { force: true });
 
+  // Adds a field to a deck's deck.yaml, keeping its comments; see withDeckField.
+  async function setDeckField(slug, key, value, { after } = {}) {
+    const deckId = await resolveDeckId(slug);
+    const path = join(decksFolder, deckId, DECK_FILE);
+    await writeFile(
+      path,
+      withDeckField(await readFile(path, 'utf8'), key, value, { after, source: deckLabel(deckId) }),
+    );
+  }
+
+  // Where deck:build puts a deck's own cards by default: builds/brad/elves keeps them in
+  // collections/brad/decks/elves.txt, and an unnested builds/elves in collections/decks/elves.txt.
+  function defaultDeckCollection(deckId) {
+    const parts = deckId.split('/');
+    return [COLLECTIONS_FOLDER, ...parts.slice(0, -1), 'decks', `${parts.at(-1)}.txt`].join('/');
+  }
+
   const collectionName = (path) => withoutExtension(path.slice(COLLECTIONS_FOLDER.length + 1));
 
   function refuseDuplicateNames(paths) {
@@ -129,6 +146,22 @@ export function openWorkspace(root = PROJECT_ROOT) {
     return nested.flat().sort((first, second) => first.localeCompare(second));
   }
 
+  // Collection files are edited only by deck:build. Paths are relative to the project root.
+  const readCollectionFile = (path) => readFile(join(root, path), 'utf8');
+  const writeCollectionFile = (path, text) => writeFile(join(root, path), text);
+  const removeCollectionFile = (path) => rm(join(root, path));
+
+  // A deck's own text list, created only where no collection of that name exists yet.
+  async function createCollectionFile(path, text) {
+    if (!/^collections\/(?:[^/\\]+\/)*[^/\\]+\.txt$/.test(path) || path.split('/').includes('..')) {
+      throw new Error(`${path} must be a .txt file under ${COLLECTIONS_FOLDER}/`);
+    }
+    const existing = (await collectionPaths()).find((other) => collectionName(other) === collectionName(path));
+    if (existing) throw new Error(`${existing} already exists`);
+    await mkdir(join(root, path, '..'), { recursive: true });
+    await writeFile(join(root, path), text, { flag: 'wx' });
+  }
+
   // Every .csv and .txt under collections/ is a collection, named by its path inside collections/
   // without the extension (conrad/precons), so a CSV and a text list of the same name are refused
   // rather than both counted. Text lists name printings rather than Scryfall IDs, so their rows are
@@ -137,13 +170,14 @@ export function openWorkspace(root = PROJECT_ROOT) {
   // such as collections/conrad* or collections/**/precons. A non-empty only limits loading to
   // the matches, and protected matches are reported but never available to decks. Each row records
   // the collection it came from. Cards held for a collection's own deck binders are reported like
-  // protected copies, as "<name> decks".
-  async function loadCollections({ protect = [], only = [], resolve = true } = {}) {
+  // protected copies, as "<name> decks". own is a built deck's collection_destination: it's always
+  // read and never protected, since it holds that deck's cards.
+  async function loadCollections({ protect = [], only = [], resolve = true, own } = {}) {
     const allPaths = await collectionPaths();
     refuseDuplicateNames(allPaths);
-    const selected = only.length
-      ? allPaths.filter((path) => only.some((pattern) => pathMatches(path, pattern)))
-      : allPaths;
+    const selected = allPaths.filter(
+      (path) => path === own || !only.length || only.some((pattern) => pathMatches(path, pattern)),
+    );
     const sources = await Promise.all(
       selected.map(async (path) => {
         const name = collectionName(path);
@@ -151,7 +185,8 @@ export function openWorkspace(root = PROJECT_ROOT) {
         let rows = parse(await readFile(join(root, path), 'utf8'), name);
         if (resolve && rows.some((row) => !row.scryfallId)) rows = resolveTextRows(rows, await loadCardIndex());
         rows = rows.map((row) => ({ ...row, collection: name }));
-        return { name, path, isProtected: protect.some((pattern) => pathMatches(path, pattern)), rows };
+        const isProtected = path !== own && protect.some((pattern) => pathMatches(path, pattern));
+        return { name, path, isProtected, rows };
       }),
     );
     const split = sources.map((source) => {
@@ -167,6 +202,7 @@ export function openWorkspace(root = PROJECT_ROOT) {
       availableNames: sources.filter((source) => !source.isProtected).map((source) => source.name),
       unknownProtected: protect.filter(matchesNothing),
       unknownOnly: only.filter(matchesNothing),
+      missingOwn: own && !allPaths.includes(own) ? own : undefined,
     };
   }
 
@@ -187,7 +223,14 @@ export function openWorkspace(root = PROJECT_ROOT) {
     createDeck,
     writeDeckFile,
     removeDeckFile,
+    setDeckField,
+    resolveDeckId,
+    defaultDeckCollection,
     loadCollections,
+    readCollectionFile,
+    writeCollectionFile,
+    removeCollectionFile,
+    createCollectionFile,
     loadCache,
     saveCache,
     loadCardIndex,

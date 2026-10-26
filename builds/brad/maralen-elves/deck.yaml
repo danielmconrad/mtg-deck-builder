@@ -6,7 +6,7 @@ status: draft
 bracket: 3
 allow_proxies: false
 unlimited_basics: true
-collections:
+collection_source:
   - 'collections/brad/*'
 primer: >-
   Ramp with mana Elves and land drops, then turn every Elf and Faerie that enters into card advantage: Maralen exiles two cards from an opponent's library each time and lets you cast one for free once a turn. Landfall Thranduils and Springleaf Parade flood the board, and the Elf lords (Morcant's Loyalist, Thranduil, Sindarin Liege, Moon-Vigil Adherents) turn that wide board into a lethal attack.

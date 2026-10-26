@@ -6,7 +6,7 @@ status: draft
 bracket: 2
 allow_proxies: false
 unlimited_basics: true
-collections:
+collection_source:
   - 'collections/brad/**/*'
 max_card_price:
   amount: 1

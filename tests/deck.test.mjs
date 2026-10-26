@@ -9,6 +9,7 @@ import {
   resolveEntries,
   roleLabels,
   splitUpgrades,
+  withDeckField,
 } from '../scripts/deck.mjs';
 import { entry, forest, indexOf, leader } from './fixtures.mjs';
 
@@ -22,6 +23,23 @@ const deck = (fields = {}) => ({
   commanders: [entry(leader.name)],
   mainboard: [entry(forest.name, 99)],
   ...fields,
+});
+
+test('withDeckField adds a field after another, keeping comments, and validates the result', () => {
+  const text = `# keep me\n${stringify(deck({ collection_source: ['collections/brad/*'] }))}`;
+  const updated = withDeckField(text, 'collection_destination', 'collections/brad/decks/elves.txt', {
+    after: 'collection_source',
+  });
+  assert.match(updated, /^# keep me\n/);
+  assert.match(
+    updated,
+    /collection_source:\n {2}- collections\/brad\/\*\ncollection_destination: collections\/brad\/decks\/elves.txt\n/,
+  );
+  assert.throws(() => withDeckField(updated, 'collection_destination', 'collections/x.txt'), /already has/);
+  assert.throws(
+    () => withDeckField(text, 'collection_destination', 'elsewhere.csv'),
+    /collection_destination must match/,
+  );
 });
 
 test('parseDeck accepts a valid deck, including an empty draft mainboard', () => {

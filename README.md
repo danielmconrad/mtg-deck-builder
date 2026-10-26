@@ -19,6 +19,7 @@ cp .env.example .env    # project defaults, e.g. the export format (ignored by G
 ```text
 collections/*.csv, *.txt    ManaBox exports or text lists, one per collection, named after the file
                             (e.g. Organized.csv). Protected ones are reported but never used
+collections/<owner>/decks/  Physically built decks' own lists, written by deck:build
 builds/<slug>/deck.yaml      One file per deck (see builds/example and schemas/); may be nested, e.g. builds/brad/<slug>/
 builds/<slug>/decklist*.txt  Generated Archidekt and Moxfield decklists, written by deck:files and committed
 scripts/                    CLI (cli.mjs) and the modules behind it
@@ -46,6 +47,7 @@ node scripts/cli.mjs --help         # every command, plus exit codes
 | `deck:upgrades`     | Price the upgrade package and any shortfalls against the budget     |
 | `deck:export`       | Print or copy a paste-ready decklist                                |
 | `deck:files`        | Write the committed decklist files beside `deck.yaml`               |
+| `deck:build`        | Physically build a deck: move its cards into its own collection     |
 | `decks:check`       | Check every deck; the example is schema-checked only                |
 | `lint` / `fix`      | Check, or fix, linting and formatting                               |
 | `check`             | `lint`, `collection:check`, `test` and `decks:check`                |
@@ -101,6 +103,22 @@ mise run deck:files -- green-value
 
 `--copy` uses `pbcopy`, `clip`, or `wl-copy`/`xclip`/`xsel` depending on the OS.
 
+### Physically building a deck
+
+Once a deck is finished and you've sleeved it up, move its cards out of the shared collections so other decks stop counting them:
+
+```sh
+mise run deck:build -- brad/great-goblin-penny            # dry run: what it would take, from which file
+mise run deck:build -- brad/great-goblin-penny --apply    # do it
+```
+
+- **What it does:** takes every card in the deck, commanders included, out of the deck's available collections, lowering a row's quantity or removing the row (and removing a file left with no cards). It writes them to one text list, by default `collections/<owner>/decks/<slug>.txt` (`--to PATH` overrides), and adds `collection_destination` to `deck.yaml`.
+- **Which copies:** a pinned `scryfall_id` first, then the printing with the most available copies (the one the decklist files show), then the rest in collection order. Protected copies and proxies are never taken. With `unlimited_basics`, basics the collections lack are listed by name as coming from untracked basics.
+- **Requirements:** the deck must pass `deck:check`, and it can be built only once. Upgrades aren't applied, so build after making any swaps you want in `mainboard`.
+- **Afterwards:** the deck reads its own list as available, whatever its `collection_source` says, and every other deck sees those cards as protected (`collections/**/decks` is protected by default). Rerun `deck:files`.
+- **ManaBox exports:** the edited CSV now differs from ManaBox. Before your next export, move the same cards into a deck binder in ManaBox (whose cards are held back anyway) or out of the app, or the cards will count twice.
+- **What the text list keeps:** printing and finish. Purchase price, condition and language from a CSV row aren't carried over; they stay in Git history.
+
 ### Formatting and linting
 
 Prettier formats, ESLint lints ([eslint.config.js](eslint.config.js)). Two things keep code tidy without thinking about it:
@@ -120,13 +138,13 @@ Prettier formats, ESLint lints ([eslint.config.js](eslint.config.js)). Two thing
 - A text list is what Moxfield, Archidekt and MTG Arena export: one card per line, like `1 Sol Ring (TMC) 59`, `4x Forest (tmt) 319 *F*` (`*F*` foil, `*E*` etched) or just `1 Sol Ring`. Section headings such as `Commander`, `Deck` and `Sideboard`, `//` comments and Archidekt's `[Category]` tags are ignored, and any other line is an error.
 - Text lists carry no Scryfall IDs, so each line is matched to the card cache by set code and collector number, or by name when it has no printing. The name must be that printing's, though a single slash (`Dusk / Dawn`) and a printing's alternate name (`Aggro Amalgam` for Voracious Hydra) are fine; a mismatch is reported as a typo. Lines not cached yet count toward nothing, and `collection:check` lists them until `scryfall:refresh -- --missing` fetches them. Text lists have no proxies, deck binders or purchase prices.
 - Both settings below take comma-separated glob patterns relative to the project root. `*` matches within one folder or file name and `**` across folders. A pattern matches a collection's path, the path without its extension, or any folder it sits in, so `collections/conrad*` selects everything in `collections/conrad/`.
-- Protected collections are ones you don't want to dismantle, such as precons. Their copies are shown as e.g. "3 in conrad/precons (protected)" but never fill a deck. List patterns for them in `MTG_PROTECTED_COLLECTIONS` in `.env`, e.g. `collections/**/precons` or `collections/**/decks/**`. `--protect PATTERNS` overrides it for one command, and `--protect ''` protects nothing. With neither set, every `precons.csv`, `precons.txt` and `precons/` folder at any depth is protected.
-- A deck can name its own collections with a `collections` list of patterns in `deck.yaml`, such as a friend's deck built only from `collections/brad/*`. Every deck command, `decks:check` included, then reads just those collections for it. `--collections` beats a deck's field, which beats `MTG_COLLECTIONS`.
+- Protected collections are ones you don't want to dismantle, such as precons. Their copies are shown as e.g. "3 in conrad/precons (protected)" but never fill a deck. List patterns for them in `MTG_PROTECTED_COLLECTIONS` in `.env`, e.g. `collections/**/precons` or `collections/**/decks/**`. `--protect PATTERNS` overrides it for one command, and `--protect ''` protects nothing. With neither set, every `precons.csv`, `precons.txt` and `precons/` folder and every `decks/` folder at any depth is protected.
+- A deck can name its own collections with a `collection_source` list of patterns in `deck.yaml`, such as a friend's deck built only from `collections/brad/*`. Every deck command, `decks:check` included, then reads just those collections for it. `--collections` beats a deck's field, which beats `MTG_COLLECTIONS`. A built deck's `collection_destination` is read on top of whichever applies, and is never protected from that deck.
 - To read only some collections, list patterns in `MTG_COLLECTIONS` in `.env`, e.g. `MTG_COLLECTIONS=collections/conrad*,collections/other*`, or pass `--collections PATTERNS` to one command. The rest are ignored entirely, and protection still applies to the ones read. Empty means every collection. `scryfall:refresh` always covers every collection, so changing the list never leaves card data missing.
 - ManaBox binder exports (with `Binder Name` and `Binder Type` columns) work too. A card named in any of the export's deck binders is in use: every copy of it, spares in other binders included, is shown as e.g. "3 in BradsCollection decks (protected)" and never fills a new deck.
 - `collection:check` lists the collections it reads and marks the protected ones. A pattern in either list that matches no collection gets a warning.
-- Never hand-edit ManaBox exports; replace them with fresh exports when the collection changes. Text lists can be edited by hand.
-- Every deck is checked on its own. Two decks can both use your only copy of a card.
+- Never hand-edit ManaBox exports; replace them with fresh exports when the collection changes. `deck:build --apply` is the one tool that edits them (see above). Text lists can be edited by hand.
+- Every deck is checked on its own. Two decks can both use your only copy of a card, until one of them is built.
 - All printings and finishes of a card count together.
 - Proxy rows count only when the deck sets `allow_proxies: true`. An export without a `Proxy` column has no proxies.
 - Basic lands count from the export unless the deck sets `unlimited_basics: true`, for when you have a pile of basics that never went into ManaBox.
@@ -144,7 +162,8 @@ See [the example](builds/example/deck.yaml) and [the schema](schemas/deck.schema
 | card entry                          | `name`, `quantity`, optional `role` (comma-separated labels) and `scryfall_id` (pins the printing used for pricing)                         |
 | `bracket`                           | Optional Commander Bracket (1–5); `deck:check` enforces its Game Changer limit                                                              |
 | `allow_proxies`, `unlimited_basics` | Ownership policy, see above                                                                                                                 |
-| `collections`                       | Optional path globs of the collections the deck is built from, e.g. `['collections/brad/*']`                                                |
+| `collection_source`                 | Optional path globs of the collections the deck is built from, e.g. `['collections/brad/*']`                                                |
+| `collection_destination`            | The deck's own text list once physically built, set by `deck:build --apply`, e.g. `collections/brad/decks/elves.txt`                        |
 | `budget`                            | `amount` and `currency` (`USD`/`EUR`), needed for `deck:upgrades`                                                                           |
 | `max_card_price`                    | Optional `amount` and `currency`; `deck:check` fails any card (upgrade adds included) whose cheapest printing costs more. Basics are exempt |
 | `upgrades`                          | Paired `add`/`cut`/`reason` swaps; never applied automatically                                                                              |

@@ -64,9 +64,9 @@ Deck
 1 Elvenking's Halls (HOB) 182
 1 Thornwood Falls (TDM) 269
 1 Meditation Pools (TLA) 272
-13 Forest (CLB) 468
-6 Island (HOB) 195
-6 Swamp (HOB) 191
+13 Forest (MDD) 301
+6 Island (MDD) 294
+6 Swamp (MDD) 296
 1 Encroaching Dragonstorm (TDM) 142
 1 Emergent Sequence (STX) 129
 1 Kishla Village (TDM) 259
@@ -81,15 +81,15 @@ Deck
 1 Shattered Wings (EOE) 206
 
 Sideboard
-1 Sol Ring (EOC) 57
-1 Arcane Signet (LTC) 273
-1 Command Tower (EOC) 59
-1 Opulent Palace
-1 Zagoth Triome
-1 Priest of Titania
-1 Elvish Archdruid (LTC) 237
-1 Llanowar Elves
-1 Fyndhorn Elves
-1 Elvish Harbinger
-1 Skullclamp (TDC) 103
-1 Beast Within (EOC) 93
+1 Sol Ring (FRC) 21
+1 Arcane Signet (FRC) 20
+1 Command Tower (FRC) 22
+1 Opulent Palace (ECC) 157
+1 Zagoth Triome (IKO) 259
+1 Priest of Titania (MH3) 286
+1 Elvish Archdruid (HOC) 204
+1 Llanowar Elves (FDN) 227
+1 Fyndhorn Elves (CMR) 228
+1 Elvish Harbinger (EVG) 4
+1 Skullclamp (MSC) 210
+1 Beast Within (MSC) 169

@@ -1,0 +1,96 @@
+1 Angel (TFRA) 3
+1 Forest Tentacle (TFRA) 9
+1 Jace (TFRA) 5
+1 Phyrexian Mite (TFRC) 16
+1 Zombie Army (TFRC) 8
+1 Heartwood (TFRA) 11
+1 Soldier (TFRC) 3
+1 Hero (TFIN) 2
+1 Elf (TECL) 4
+1 Insect (TMSH) 12
+1 Treefolk (TECL) 3
+1 Coruscation Mage (TBLB) 17
+1 Bushy Bodyguard (TBLB) 20
+1 Shapeshifter (TECL) 1
+1 Clue (TMKM) 17
+1 Soldier (TMSH) 3
+1 Zabu (TMSH) 16
+1 Treasure (TMSH) 22
+1 Merfolk (TMSH) 6
+1 Ape Villain (TMSC) 10
+1 Thopter (TDFT) 9
+1 Elephant (TDFT) 6
+1 Treasure (TDFT) 11
+1 Frog (TFIN) 18
+1 Warrior (TTDM) 13
+1 Dragon (TTDM) 11
+1 Hero (TMSH) 2
+1 Dinosaur Soldier (TTMT) 2
+1 Zombie (TFIC) 6
+1 Treasure (TFIN) 23
+1 Lander (TEOE) 4
+1 Axe (THOB) 10
+1 Dragon (TFRA) 7
+1 Citizen (TFRC) 11
+1 Rogue (TFRC) 7
+1 Thopter (TFRA) 14
+1 Shark (TFRC) 6
+1 Kithkin (TECL) 7
+1 Food (TFIN) 22
+1 Soldier (TMSH) 4
+1 Goblin (TECL) 6
+1 Robot (TTMT) 10
+1 Merfolk (TECL) 8
+1 Redwing (TMSH) 7
+1 Moloid (TMSH) 13
+1 Doombot (TMSH) 18
+1 Shapeshifter (TMSC) 2
+1 Servo (TDFT) 8
+1 Vehicle (TDFT) 12
+1 Insect (TDFT) 7
+1 Reliquary Dragon (TTDM) 15
+1 Goblin (TFRC) 9
+1 Robot Villain (TMSH) 20
+1 Copy (TTMT) 1
+1 Hero (TFIN) 8
+1 Hero (TFIN) 7
+1 Hero (TFIN) 5
+1 Hero (TFIN) 4
+1 Robot Warrior (TFIN) 12
+1 Bird Soldier (THOB) 1
+3 Orc Army (TLTR) 5
+2 Beast (TFRA) 8
+2 Hero (TFIN) 3
+6 Dwarf (THOB) 6
+4 Food (TSPM) 5
+2 Ninja (TTMT) 5
+3 Mutagen (TTMT) 9
+2 Alien (TMSH) 11
+3 Wall (TMSH) 1
+2 Start Your Engines! // Max Speed (TDFT) 14
+2 Pilot (TDFT) 1
+6 Spider (TSPM) 3
+9 Treasure (TSPM) 7
+4 Wolf (THOB) 9
+7 Treasure (THOB) 13
+8 Goblin Army (THOB) 4
+6 Treasure (THOB) 12
+2 Human Soldier (TFIC) 1
+2 Wizard (TFIN) 15
+2 Bird (TFIC) 4
+4 Robot (TSPM) 6
+19 Human Soldier (THOB) 2
+7 Human Citizen (TSPM) 4
+7 Elf (THOB) 8
+2 Hero (TFIN) 6
+2 Drone (TEOE) 3
+8 On an Adventure (THOB) 15
+8 Goblin Army (THOB) 3
+2 Cadet (TFRA) 1
+2 Spirit (TFIC) 3
+5 Enduring Story (THOB) 14
+2 Villain (TMSH) 9
+2 Hero (TFIN) 9
+3 Illusion Villain (TSPM) 2
+2 Moogle (TFIN) 11
+3 Robot (TEOE) 10

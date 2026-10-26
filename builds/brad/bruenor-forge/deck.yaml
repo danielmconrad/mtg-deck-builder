@@ -6,7 +6,7 @@ status: draft
 bracket: 3
 allow_proxies: false
 unlimited_basics: true
-collections:
+collection_source:
   - 'collections/brad/*'
 primer: >-
   Deploy cheap Equipment and creatures to carry it, then let Bruenor make the first equip each turn free and give +2/+0 per attached Equipment. Win by attacking with one or two heavily suited, evasive or double-striking creatures (Hard-Won Jitte, Dáin Ironfoot, Mockingbird), backed by Equipment that draws cards and removes blockers.

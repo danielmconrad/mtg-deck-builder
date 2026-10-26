@@ -1,0 +1,442 @@
+1 Ajani Resolute (FRA) 291
+1 Aerid Konstrari (FRA) 407 *F*
+1 Azure Beastbinder (BLB) 302 *F*
+1 Archmage Emeritus (FIC) 261
+1 An Unexpected Party // At the Door (HOB) 29
+1 Astrologian's Planisphere (FIN) 46
+1 Alisaie Leveilleur (FIC) 9
+1 Ardbert, Warrior of Darkness (FIC) 77
+1 Alphinaud Leveilleur (FIC) 33
+1 Alien Invasion (MSH) 200
+1 Absorbing Man (MSH) 199
+1 Agent Phil Coulson (MSH) 4
+1 Azog, Moria's Ruin (HOB) 222
+1 Ajani's Anguish (FRA) 367 *F*
+1 Arcane Amphisbaena (FRA) 97
+1 Alien Symbiosis (SPM) 50
+1 Aven Fisher (DMR) 41
+1 Ainok Tracker (KTK) 96
+1 Anchovy & Banana Pizza (TMT) 57
+1 Aven Fateshaper (DMR) 40
+1 Aerial Doombot (MSH) 43
+1 Arnim Zola, Bio-Fanatic (MSH) 319
+1 Alley Assailant (MKM) 76
+1 Ageless Guardian (STX) 8
+1 Arnim Zola, Bio-Fanatic (MSH) 86
+1 Aftermath Analyst (EOC) 91
+1 Ant-Man's Army (MSH) 161
+1 Abomination, Terrifying Titan (MSH) 198
+1 Atlantean Cavalry (MSH) 45
+1 Ainok Wayfarer (TDM) 134
+1 Ancient Spider (PLS) 96
+1 Arcane Signet (LTC) 273
+1 Armament Dragon (TDM) 168
+1 Autarch Mammoth (DFT) 153
+1 Avishkar Raceway (DFT) 249
+1 Artifist Acumen (FRA) 73 *F*
+1 Archive Arbiter (FRA) 167 *F*
+1 Awaken the Inferno (FRA) 74 *F*
+1 Alien Symbiosis (SPM) 50 *F*
+1 Aerith Rescue Mission (FIN) 5 *F*
+1 Angry Rabble (SPM) 75 *F*
+1 Atlantis Attacks (MSH) 46 *F*
+1 Agent Maria Hill (MSH) 2 *F*
+1 Additive Evolution (SOS) 139 *F*
+1 Apex Witchstalker (FRA) 48 *F*
+3 Angry Rabble (SPM) 75
+2 Amazing Acrobatics (SPM) 25
+4 Attercop (HOB) 116
+2 Agent of Atlas (MSH) 3
+2 Aerith Rescue Mission (FIN) 5
+2 Aetherjacket (DFT) 230
+3 Alacrian Jaguar (DFT) 152
+1 Brigid's Command (ECL) 208 *F*
+1 Bard's Company (HOB) 146 *F*
+1 Bilbo, Fellow Conspirator (HOC) 4 *F*
+1 Belladonna Took (HOB) 4 *F*
+1 Bard's Company (HOB) 146
+1 Blood on the Snow (KHM) 79
+1 Baleful Strix (FIC) 318
+1 Belladonna Took (HOB) 4
+1 Blue Mage's Cane (FIC) 35
+1 Baxter, Fly in the Ointment (TMC) 10
+1 Black Market Connections (MSC) 155
+1 Bag End Banquet (HOC) 5
+1 Bilbo's Burglaring (HOC) 10
+1 Banon, the Returners' Leader (FIC) 78
+1 Braids, Arisen Nightmare (EOC) 82
+1 Bastion Protector (MSC) 122
+1 Bolg's Company (HOB) 149
+2 Bilbo's Gambit (HOB) 5
+2 Biorganic Carapace (SPM) 124
+1 Budding Insurgent (FRA) 99 *F*
+1 Blessed Ghoul (FRA) 123 *F*
+1 Blazing Crescendo (FRA) 75 *F*
+1 Broadside Barrage (DFT) 192 *F*
+1 Blossoming Sands (DFT) 252 *F*
+1 Boulderborn Dragon (TDM) 323 *F*
+1 Borough Backup (MSH) 7 *F*
+1 Black Panther, Vanguard (MSH) 207 *F*
+1 Beorn's Hospitality (HOB) 120 *F*
+1 Banishing Betrayal (SOS) 38 *F*
+1 Burn, Burn, Tree and Fern (HOB) 90 *F*
+1 Brave Brawler (MSH) 8 *F*
+1 Black Tom Cassidy (MSC) 715 *F*
+1 Bilbo, Luckwearer // Burglar's Plot (HOB) 32 *F*
+1 Bifur, Melodic Rider (HOB) 147 *F*
+1 Bullseye, Death Dealer (MSH) 325 *F*
+1 Bonecache Overseer (BLB) 85
+1 Bold Biochemist (MSH) 48
+1 Black Widow, Double Agent (MSH) 208
+1 Brambleback Brute (ECL) 128
+1 Boldwyr Aggressor (ECL) 125
+1 Beamsplitter Mage (GRN) 155
+1 Blazing Crescendo (MSH) 125
+1 Fatal Push (FCA) 9
+1 Betor, Kin to All (TDM) 172
+1 Biomechan Engineer (EOE) 213
+1 Binding the Old Gods (EOC) 52
+1 Blossoming Sands (TDM) 251
+1 Bombard (EOE) 129
+1 Boom Scholar (DFT) 189
+1 Boosted Sloop (DFT) 190
+1 Blossoming Sands (DFT) 252
+1 Breaking of the Fellowship (LTR) 117
+1 Broken Wings (DFT) 156
+1 Bygone Colossus (EOE) 235
+1 Burn, Burn, Tree and Fern (HOB) 90
+1 Bofur, Reliable Guardian // Concerted Care (HOB) 6
+1 Burrog Befuddler (FDN) 504
+1 Big Play (STX) 122
+1 Bayou Groff (STX) 121
+1 Bastion of Remembrance (FIC) 274
+1 Black Panther, Vanguard (MSH) 207
+1 Balustrade Spy (RVR) 66
+1 Boggart Arsonists (SHM) 85
+1 Bladebrand (RVR) 68
+1 Blind Hunter (RVR) 166
+1 Bulwark Giant (RVR) 11
+1 Blight Sickle (SHM) 247
+1 Battle Screech (ONC) 59
+1 Bilbo, Luckwearer // Burglar's Plot (HOB) 218
+1 Bofur, Reliable Guardian // Concerted Care (HOB) 215
+1 Bilbo, Luckwearer // Burglar's Plot (HOB) 32
+1 Banishing Betrayal (SOS) 38
+1 Benthic Criminologists (MKM) 40
+1 Behind the Mask (MKM) 39
+1 Barkform Harvester (BLB) 243
+1 Bloodfire Expert (KTK) 101
+2 Bofur, Reliable Guardian // Concerted Care (HOB) 215 *F*
+2 Bolg of the North (HOB) 148 *F*
+2 Brilliance Unleashed (TMT) 141
+2 Brave Brawler (MSH) 8
+4 Beorn, Reluctant Host // Till and Tend (HOB) 118
+4 Boughside Wanderers (HOB) 121
+2 Bolg of the North (HOB) 148
+3 Bestow Greatness (DFT) 155
+3 Bounce Off (DFT) 39
+2 Beorn's Hospitality (HOB) 120
+4 Bilbo Baggins, Burglar // Take a Glance (HOB) 34
+2 Bagel and Schmear (SPM) 161
+3 Bard the Bowman (HOB) 145
+3 Bifur, Melodic Rider (HOB) 147
+2 Bothersome Noisemaker (HOB) 89
+4 Bilbo's Deadly Slice (HOB) 62
+2 Buzz Bots (TMT) 32
+2 Bombur, Gentle Dreamer (HOB) 88
+1 Cantankerous Keepers (HOB) 122 *F*
+1 Crux of Fate (FIC) 275
+1 Champions from Beyond (FIC) 11
+1 Coveted Jewel (FIC) 341
+1 Captain America, Wings of Freedom (MSH) 353
+1 Choreographed Sparks (SOS) 111
+1 Collective Inferno (ECL) 132
+1 Chief Warg's Company (HOB) 151
+1 Carnivorous Cultivator // Enroot (FRA) 100
+1 Countersculpt (FRA) 25 *F*
+1 Clash of Elements (FRA) 126 *F*
+1 Cryotheory Adept (FRA) 27 *F*
+1 Compel Brutality (FRA) 101 *F*
+1 Charge the Sanctum (FRA) 125 *F*
+1 Cryptcaller Chariot (DFT) 80 *F*
+1 Crossroads Watcher (ECL) 173 *F*
+1 Captain America, Living Legend (MSH) 210 *F*
+1 Casey Jones, Jury-Rig Justiciar (TMT) 87 *F*
+1 Crude Bent Blade (HOB) 63 *F*
+1 Cryptcaller Chariot (DFT) 80
+1 Camera Launcher (DFT) 232
+1 Canyon Vaulter (DFT) 8
+1 Capital City (FIN) 274
+1 Cid, Timeless Artificer (FIN) 412
+1 Cactuar (FIN) 177
+1 Chocobo Racetrack (FIN) 179
+1 Chrome Companion (EOE) 236
+1 Clamorous Ironclad (DFT) 312
+1 Clamorous Ironclad (DFT) 117
+1 Cloudspire Captain (DFT) 9
+1 Cloudspire Coordinator (DFT) 196
+1 Cori Mountain Monastery (TDM) 252
+1 Call of the Herd (DMR) 153
+1 Carom (RVR) 12
+1 Cloudfin Raptor (RVR) 37
+1 Chainer's Edict (DMR) 425
+1 Circular Logic (DMR) 42
+1 Celebrate the Mountain-king (HOB) 7
+1 Culvert Ambusher (MKM) 158
+1 Casey Jones, Jury-Rig Justiciar (TMT) 87
+1 Chaos Spewer (ECL) 210
+1 Cosmic Larva (5DN) 63
+1 Candlelight Vigil (GRN) 3
+1 Canyon Lurkers (KTK) 105
+1 Clifftop Lookout (BLB) 168
+1 Corpseberry Cultivator (BLB) 210
+1 Courier of Comestibles (TMT) 112
+1 Captain America, Living Legend (MSH) 210
+1 Cruel Alliance (MSH) 92
+1 Crossbones, Malicious Mercenary (MSH) 91
+1 Call Damage Control (MSH) 162
+1 Crustacean Commando (TMT) 33
+1 Common Crook (SPM) 53
+1 Costume Closet (SPM) 5
+1 Chemister's Insight (CLU) 81
+1 Congregate (DMR) 4
+1 Coal Stoker (DMR) 114
+1 Clachan Festival (ECL) 10
+1 Circle of Power (FIN) 92
+1 Cut a Deal (FIC) 238
+2 Codie, Ravenous Codex (FRA) 168
+2 Cantankerous Keepers (HOB) 122
+2 Cheering Crowd (SPM) 126
+2 Celebrate the Mountain-king (HOB) 7 *F*
+3 Chitin Gravestalker (DFT) 79
+2 Codecracker Hound (EOE) 50
+3 Collision Course (DFT) 10
+4 Confusticate and Bebother (HOB) 35
+3 Crude Bent Blade (HOB) 63
+2 Crowd of True Believers (MSH) 14
+1 Dwalin, Weaponmaster (HOB) 154 *F*
+1 Dragon-Cursed Halls (HOC) 8 *F*
+1 Dragon's Desire (HOC) 11 *F*
+1 Dig Through Time (FIC) 263
+1 Doom Reigns Supreme (MSH) 96
+1 Daredevil, Man Without Fear (MSH) 213
+1 Dreamdew Entrancer (BLB) 211
+1 Down in the Valley (HOB) 124
+1 Desolation of Smaug (HOB) 226
+1 Dancer's Chakrams (FIC) 17
+1 Dáin's Company (HOB) 212
+1 Dáin Ironfoot (HOB) 91
+1 Donatello, Gadget Master (TMT) 35
+1 Defense of the Heart (MAR) 76
+1 Dancing from Dark to Dawn (HOB) 123
+1 Deserted Beach (FRA) 397
+1 Darksteel Angel (FRC) 13
+1 Draconic Visitor (FRA) 368
+1 Dáin, Lord of the Iron Hills (HOB) 8 *F*
+1 Dwarven Mattock (HOB) 172 *F*
+1 Dreaded Bat-Cloud (HOB) 66 *F*
+1 Desperate Futurescribe (FRA) 129 *F*
+1 Danitha, Sword of Hope (FRA) 196 *F*
+1 Danitha, Spear of Agony (FRA) 227 *F*
+1 Defend the Rider (DFT) 157 *F*
+1 Deathless Pilot (DFT) 82 *F*
+1 Dark Endurance (EOE) 93 *F*
+1 Disinformation Campaign (MKC) 208
+1 Deadapult (DMR) 115
+1 Dark Withering (DMR) 79
+1 Dawnhand Eulogist (ECL) 99
+1 Dimir House Guard (RVR) 73
+1 Drift of Phantasms (RVR) 42
+1 Daxos, Blessed by the Sun (THB) 258
+1 Dodecapod (DMR) 220
+1 Dreaded Bat-Cloud (HOB) 206
+1 Dig Site Inventory (SOS) 10
+1 Dream Seizer (ECL) 101
+1 Declare Dominance (M19) 175
+1 Dawn's Light Archer (ECL) 174
+1 Decoy Ploy (MSH) 94
+1 Daily Bugle Building (SPM) 179
+1 Dark Endurance (EOE) 93
+1 Delta Bloodflies (TDM) 77
+1 Depressurize (EOE) 95
+1 Descendant of Storms (TDM) 8
+1 Dirgur Island Dragon // Skimming Strike (TDM) 40
+1 Diversion Unit (DFT) 41
+1 Dragonstorm Globe (TDM) 241
+1 Dual-Sun Technique (EOE) 13
+1 Dynamite Diver (DFT) 123
+2 Delighted Halfling (LTR) 158
+2 Doc Ock's Tentacles (SPM) 162
+2 Desolation of Smaug (HOB) 93
+2 Dwarven Provisioner (HOB) 9 *F*
+5 Duskwatch Hunter (HOB) 153
+3 Desolation Prowler (HOB) 64
+3 Daily Bugle Reporters (SPM) 6
+3 Dreaded Bat-Cloud (HOB) 66
+5 Dori, Bearer of Friends (HOB) 94
+2 Dáin, Lord of the Iron Hills (HOB) 8
+2 Doc Ock, Sinister Scientist (SPM) 29
+4 Dwarven Provisioner (HOB) 9
+3 Down, Down to Goblin-town (HOB) 65
+2 Dwarven Mauler (HOB) 95
+2 Dwarven Mattock (HOB) 172
+3 Dwarven Shortsword (HOB) 10
+4 Dependable Quinjet (MSH) 246
+2 Doc Ock's Henchmen (SPM) 30
+2 Daring Mechanic (DFT) 11
+3 Deathless Pilot (DFT) 82
+2 Dubious Delicacy (EOE) 96
+1 Entrust the Spark (FRA) 131 *F*
+1 Elven Chorus (HOC) 26 *F*
+1 Eye of Nidhogg (FIC) 44
+1 Erode (SOS) 15
+1 Emissary Escort (EOE) 56
+1 Estinien Varlineau (FIC) 82
+1 Emet-Selch of the Third Seat (FIC) 81
+1 Epic Fight (MSH) 166
+1 Eddie Brock // Venom, Lethal Protector (SPM) 224
+1 Eddie Brock // Venom, Lethal Protector (SPM) 55
+1 Entrust the Spark (FRA) 350
+1 Elrond, Moon-Reader (HOB) 36
+1 Eardrum Rattler (FRA) 81
+1 Evil Eye of Orms-by-Gore (DMR) 83
+1 Expel (STX) 18
+1 EPF Point Squad (TMT) 145
+1 Elven Raft-Steerer (HOB) 37
+1 Eagle of the Great Shelf (HOB) 11
+1 Elemental Mascot (SOS) 185
+1 Extract a Confession (MKM) 84
+1 Encouraging Aviator // Jump (SOS) 46
+1 Ezekiel Sims, Spider-Totem (SPM) 100
+1 Effortless Master (TDM) 181
+1 Embrace Oblivion (EOE) 98
+1 Endrider Catalyzer (DFT) 124
+1 Entish Restoration (LTR) 163
+1 Errand-Rider of Gondor (LTR) 11
+1 Edgar, Moonlit Sovereign (FRA) 257 *F*
+1 Emergency Phytomedic // Seed Suture (FRA) 130 *F*
+1 Edgar, Ancient Bloodlord (FRA) 270 *F*
+1 Spring of Eternal Peace (PTK) 148
+1 Endrider Catalyzer (DFT) 124 *F*
+1 Esgaroth Garrison (HOB) 13 *F*
+1 Elven Raft-Steerer (HOB) 37 *F*
+4 Enchanted River's Grasp (HOB) 39
+2 Eerie Gravestone (SPM) 163
+2 Electro's Bolt (SPM) 77
+7 Elvenking's Harper (HOB) 38
+3 Esgaroth Garrison (HOB) 13
+2 Eagle's Rescue (HOB) 155
+2 Edge Rover (EOE) 179
+1 Foul Roads (DFT) 255
+1 Fortress Kin-Guard (TDM) 12
+1 Fear, Fire, Foes! (LTR) 125
+1 Fate of the Sun-Cryst (FIN) 19
+1 Faramir, Field Commander (LTR) 303
+1 Faller's Faithful (EOE) 100
+1 Fang-Druid Summoner (DFT) 163
+1 Foraging Wickermaw (ECL) 256
+1 Frog Butler (TMT) 114
+1 Foot Elite (TMT) 146
+1 Flame-Chain Mauler (ECL) 138
+1 Feisty Spikeling (ECL) 223
+1 Fractured Powerstone (MOC) 357
+1 Fire // Ice (DMR) 215
+1 Fomori Nomad (FUT) 114
+1 Flamekin Gildweaver (ECL) 140
+1 Flash Thompson, Spider-Fan (SPM) 7
+1 Feed the Flames (ECL) 137
+1 Fa'adiyah Seer (DMR) 160
+1 Fatehold Charm (FRA) 132
+1 Fatehold Chronologist // Peer Review (FRA) 133
+1 Ferocity of the Hunt (FRA) 134 *F*
+1 Fulminous Forte (FRA) 84 *F*
+1 Foot Mystic (TMT) 63 *F*
+1 Flying Octobot (SPM) 31 *F*
+1 Front Porch Sentries (HOB) 67 *F*
+1 Fíli and Kíli, Joyous (HOC) 1
+1 Forsworn Paladin (AFR) 104
+1 Fandaniel, Telophoroi Ascian (FIC) 46
+1 Forge Anew (LTR) 17
+1 Frenzied Baloth (EOE) 183
+1 Flickering Hound (FRA) 359
+1 Frostbite Pyromental (FRA) 135
+2 Focus Fire (EOE) 18
+4 Front Porch Sentries (HOB) 67
+2 Fearsome Goblin Pair (HOB) 156
+2 Fíli the Pathfinder (HOB) 14
+1 Grond, the Gatebreaker (LTR) 89
+1 Galvanize (MKM) 128
+1 Giant Growth (SOA) 52
+1 Gravestone Strider (MKM) 252 *F*
+1 Gravelgill Scoundrel (ECL) 53
+1 Go Nuts! (MSH) 168
+1 Green Goblin, Revenant (SPM) 130
+1 Guerrilla Gorilla (MSH) 169
+1 Giant Growth (MSH) 167
+1 Galadhrim Bow (LTR) 167
+1 Galadhrim Guide (LTR) 168
+1 Galuf's Final Act (FIN) 186
+1 Gandalf, Friend of the Shire (LTR) 50
+1 Garnet, Princess of Alexandria (FIN) 222
+1 Gastal Raider (DFT) 86
+1 Germinating Wurm (EOE) 187
+1 Gift of Strands (LTR) 170
+1 Gigantoad (FIN) 187
+1 Gigastorm Titan (EOE) 57
+1 Glitch Ghost Surveyor (DFT) 44
+1 Goblin Fireleaper (LTR) 133
+1 Goobbue Gardener (FIN) 188
+1 Gríma Wormtongue (LTR) 88
+1 Grim Bauble (DFT) 88
+1 Grim Javelineer (DFT) 89
+1 Giant-Sized Flying Ant (MSH) 56
+1 Great Forest Druid (ECL) 178
+1 Griffin Guide (DMR) 8
+1 Glóin the Mighty // Easy Pickings (HOB) 227
+1 Great Ugly-Looking Goblin // Clap! Snap! (HOB) 74
+1 Gandalf, Spark Starter (HOB) 97
+1 Gallant Citizen (SPM) 129
+1 Guy in the Chair (SPM) 102
+1 Gandalf, Spark Starter (HOB) 203
+1 Glintwing Invoker (DMR) 52
+1 Goblin Turncoat (DMR) 87
+1 Great Ugly-Looking Goblin // Clap! Snap! (HOB) 223
+1 Galadhrim Bow (LTR) 167 *F*
+1 Generous Revival (FRA) 8 *F*
+1 Ghalta the Unstoppable (FRA) 260 *F*
+1 Gallia, Tragic Host (FRA) 228 *F*
+1 Graft Surgeon (FRA) 10 *F*
+1 Gollum, Patient Plotter (LTR) 309 *F*
+1 Great Ugly-Looking Goblin // Clap! Snap! (HOB) 74 *F*
+1 Glóin the Mighty // Easy Pickings (HOB) 99 *F*
+1 Go Nuts! (MSH) 168 *F*
+1 Great Gilded Boat (HOB) 42
+1 Gigantic Big Bear (HOB) 126
+1 Garruk, Veiled Butcher (FRA) 303
+1 Garruk, Curse Breaker (FRA) 314
+1 Gleaming Bastion (MSH) 267
+1 Grave Researcher // Reanimate (SOS) 85
+1 Gathering Place (MSH) 266
+1 Gideon the Oathless (FRA) 304
+1 Gideon's Memorial (FRA) 292
+1 G'raha Tia, Scion Reborn (FIC) 3 *F*
+1 Gideon's Memorial (FRA) 198 *F*
+1 Gandalf, Party Guest (HOC) 2 *F*
+2 Galion, Elvenking's Butler (HOB) 125
+8 Gandalf, Wandering Wizard (HOB) 41
+4 Giant's Boulder (HOB) 173
+4 Guardian of the Halls (HOB) 127
+6 Gollum, Silent Slinker // Meager Meal (HOB) 71
+4 Gundabad Opportunist (HOB) 101
+5 Goblin Plate Mail (HOB) 157
+2 Gollum the Abandoned (HOB) 72
+2 Gathering of Darkness (HOB) 68
+2 Gnashing of Teeth (HOB) 69
+7 Great Fierce Bee (HOB) 73
+3 Goblin Surveyor (DFT) 131
+2 Gravkill (EOE) 103
+2 Grow Extra Arms (SPM) 101
+6 Goblin-town Flunkies (HOB) 100
+2 Glóin the Mighty // Easy Pickings (HOB) 99
+2 Goblin-town Flunkies (HOB) 100 *F*
+3 Getaway Barrel (HOB) 98

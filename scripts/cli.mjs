@@ -1,5 +1,6 @@
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
+import { deckCollectionText, nameLine, planBuild, printingLine, removeCsvCopies, removeTextCopies } from './build.mjs';
 import { emptyCache } from './card-cache.mjs';
 import { cardIndex } from './card-index.mjs';
 import { summarize } from './collection.mjs';
@@ -22,7 +23,7 @@ import { GROUP_BY_CHOICES, countResults, groupResults, searchCollection, searchF
 import { deckStats } from './stats.mjs';
 import { commandHelp, overviewHelp, parseArgsOptions, withHelpOption } from './help.mjs';
 import { upgradeReport } from './upgrades.mjs';
-import { openWorkspace } from './workspace.mjs';
+import { openWorkspace, pathMatches } from './workspace.mjs';
 
 const EXIT_CODES = { pass: 0, fail: 1, incomplete: 2 };
 
@@ -235,6 +236,85 @@ async function deckUpgrades({ workspace, slug, write }) {
   return report.outcome;
 }
 
+// The cards deck:build takes, grouped by the collection file they come from.
+function buildLines(plan, takenFrom, verb) {
+  const lines = [`${verb}:`];
+  for (const [path, takes] of takenFrom) {
+    lines.push(`  from ${path}:`);
+    for (const { row, card, quantity } of takes) lines.push(`    ${printingLine(quantity, card, row.finish)}`);
+  }
+  if (plan.untracked.length) {
+    lines.push('  from untracked basics (unlimited_basics):');
+    for (const { card, quantity } of plan.untracked) lines.push(`    ${nameLine(quantity, card)}`);
+  }
+  return lines;
+}
+
+// Takes each file's copies out of it, removing a file left with no cards.
+async function removeTakenCopies(workspace, takenFrom, write) {
+  for (const [path, takes] of takenFrom) {
+    const taken = new Map();
+    for (const { row, quantity } of takes) taken.set(row.position, (taken.get(row.position) ?? 0) + quantity);
+    const remove = path.endsWith('.csv') ? removeCsvCopies : removeTextCopies;
+    const updated = remove(await workspace.readCollectionFile(path), taken);
+    if (updated === null) {
+      await workspace.removeCollectionFile(path);
+      write(`Removed ${path}: every card in it went into the deck.`);
+    } else {
+      await workspace.writeCollectionFile(path, updated);
+    }
+  }
+}
+
+// The deck's copies to take, or null after printing why it can't be built: it must pass deck:check,
+// and every card must have real copies to take.
+async function buildPlan(workspace, deckId, deck, write) {
+  const [collections, index] = await Promise.all([workspace.loadCollections(deck), workspace.loadCardIndex()]);
+  const report = checkDeck(deck, collections, index);
+  if (report.outcome !== 'pass') {
+    printAll(write, [...checkLines(deckId, report), `Not built: ${deckId} must pass deck:check first.`]);
+    return { outcome: report.outcome };
+  }
+  const plan = planBuild(deck, collections, index);
+  if (plan.problems.length) {
+    printAll(write, [
+      ...plan.problems.map((problem) => `ERROR: ${problem}`),
+      `Not built: ${deckId} needs these cards owned as real copies first.`,
+    ]);
+    return { outcome: 'fail' };
+  }
+  const pathOf = new Map(collections.sources.map((source) => [source.name, source.path]));
+  return { plan, takenFrom: Map.groupBy(plan.takes, ({ row }) => pathOf.get(row.collection)) };
+}
+
+// Moves a finished deck's cards out of the collections they're counted in and into a text list of
+// its own, then points the deck's collection_destination at that list. Without --apply it only
+// prints what it would take.
+async function deckBuild({ workspace, slug, options, write, warn }) {
+  const deckId = await workspace.resolveDeckId(slug);
+  const deck = await workspace.loadDeck(deckId);
+  if (deck.collection_destination) throw new Error(`${deckId} is already built into ${deck.collection_destination}`);
+  const destination = options.to ?? workspace.defaultDeckCollection(deckId);
+  const { plan, takenFrom, outcome } = await buildPlan(workspace, deckId, deck, write);
+  if (!plan) return outcome;
+  printAll(write, buildLines(plan, takenFrom, options.apply ? 'Taking' : 'Would take'));
+  if (!workspace.protects(destination)) {
+    warn(`${destination} isn't protected, so other decks could count its cards; see MTG_PROTECTED_COLLECTIONS`);
+  }
+  if (!options.apply) {
+    write(`Would write ${destination} and set collection_destination in builds/${deckId}/deck.yaml.`);
+    write('Nothing changed; rerun with --apply to build it.');
+    return 'pass';
+  }
+  const heading = `${deck.name}: built from builds/${deckId} by deck:build`;
+  await workspace.createCollectionFile(destination, deckCollectionText(plan, heading));
+  await removeTakenCopies(workspace, takenFrom, write);
+  await workspace.setDeckField(deckId, 'collection_destination', destination, { after: 'collection_source' });
+  const sources = [...takenFrom.keys()].join(', ') || 'no collection';
+  write(`Wrote ${destination}, took the cards out of ${sources}, and set collection_destination.`);
+  return 'pass';
+}
+
 async function decksCheck({ workspace, write }) {
   const loadedDecks = await workspace.loadAllDecks();
   const candidates = loadedDecks.filter(({ deck }) => deck && deck.status !== 'example');
@@ -304,7 +384,8 @@ const SEARCH_OPTIONS = {
 // Which collections to read and which not to dismantle. Each option wins over its .env variable
 // (see .env.example). Both take comma-separated glob patterns relative to the project root, such as
 // collections/conrad* or collections/**/precons. --collections defaults to every collection, and
-// --protect to any precons collection; an empty value means every collection, or none protected.
+// --protect to any precons collection or decks folder, which is where deck:build puts built decks; an
+// empty value means every collection, or none protected.
 const COLLECTION_OPTIONS = {
   collections: {
     type: 'string',
@@ -316,10 +397,10 @@ const COLLECTION_OPTIONS = {
     type: 'string',
     placeholder: 'PATTERNS',
     description:
-      'Comma-separated path globs of collections to protect; defaults to MTG_PROTECTED_COLLECTIONS in .env, else collections/**/precons',
+      'Comma-separated path globs of collections to protect; defaults to MTG_PROTECTED_COLLECTIONS in .env, else collections/**/precons,collections/**/decks',
   },
 };
-const DEFAULT_PROTECTED = 'collections/**/precons';
+const DEFAULT_PROTECTED = 'collections/**/precons,collections/**/decks';
 
 const patternList = (value) =>
   value
@@ -334,25 +415,33 @@ const collectionScope = (options, env) => ({
 });
 
 // The workspace with the collection scope applied, so commands just call loadCollections(), passing
-// the deck when there is one. The collections read come from --collections, else the deck's own
-// collections field, else MTG_COLLECTIONS. Each distinct scope is loaded, and warned about, once.
+// the deck when there is one. The collections read come from --collections, else the deck's
+// collection_source, else MTG_COLLECTIONS, and a built deck's collection_destination is always read as
+// its own. Each distinct scope is loaded, and warned about, once.
 // loadEveryCollection ignores the scope, so scryfall:refresh caches every collection, and leaves text
 // lists unmatched, so a missing or outdated cache can't stop the refresh that replaces it.
 function scopedWorkspace(workspace, scope, warn) {
   const loaded = new Map();
-  async function load(only) {
-    const collections = await workspace.loadCollections({ only, protect: scope.protect });
+  async function load(only, own) {
+    const collections = await workspace.loadCollections({ only, own, protect: scope.protect });
     for (const pattern of collections.unknownOnly) warn(`No collection matches ${pattern} to read`);
     for (const pattern of collections.unknownProtected) warn(`No collection matches ${pattern} to protect`);
+    if (collections.missingOwn) warn(`collection_destination ${collections.missingOwn} doesn't exist`);
     return collections;
   }
   function loadCollections(deck) {
-    const only = scope.optionOnly ?? deck?.collections ?? scope.envOnly;
-    const key = JSON.stringify(only);
-    if (!loaded.has(key)) loaded.set(key, load(only));
+    const only = scope.optionOnly ?? deck?.collection_source ?? scope.envOnly;
+    const own = deck?.collection_destination;
+    const key = JSON.stringify([only, own]);
+    if (!loaded.has(key)) loaded.set(key, load(only, own));
     return loaded.get(key);
   }
-  return { ...workspace, loadCollections, loadEveryCollection: () => workspace.loadCollections({ resolve: false }) };
+  return {
+    ...workspace,
+    loadCollections,
+    loadEveryCollection: () => workspace.loadCollections({ resolve: false }),
+    protects: (path) => scope.protect.some((pattern) => pathMatches(path, pattern)),
+  };
 }
 
 const FORMAT_OPTION = {
@@ -441,6 +530,22 @@ const COMMANDS = {
     takesSlug: true,
     summary: 'Price the upgrade package and any shortfalls against the budget',
     options: COLLECTION_OPTIONS,
+  },
+  'deck:build': {
+    run: deckBuild,
+    takesSlug: true,
+    summary: "Physically build a finished deck: move its cards out of the collections into the deck's own list",
+    details:
+      "Only when the user says to build the deck. Takes every card, commanders included, out of the deck's available collections (the pinned printing first, then the printing with the most copies; never proxies or protected copies), writes them to a text list, and sets collection_destination in deck.yaml. Upgrades are not applied. The deck must pass deck:check. Without --apply, prints what it would take and changes nothing.",
+    options: {
+      apply: { type: 'boolean', description: 'Edit the collections and deck.yaml; without it, only print the plan' },
+      to: {
+        type: 'string',
+        placeholder: 'PATH',
+        description: "The deck's new text list; defaults to collections/<owner>/decks/<slug>.txt",
+      },
+      ...COLLECTION_OPTIONS,
+    },
   },
   'decks:check': {
     run: decksCheck,

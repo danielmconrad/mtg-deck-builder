@@ -61,8 +61,8 @@ Deck
 1 The Lonely Mountain (HOB) 187
 1 Rumble Arena (TLA) 277
 1 Plaza of Heroes (MSC) 255
-16 Plains (FRA) 383
-10 Mountain (FRA) 392
+16 Plains (MDD) 292
+10 Mountain (MDD) 298
 1 Worn Powerstone (MH3) 298
 1 Boros Keyrune (GK1) 96
 1 Boros Cluestone (CM2) 175
@@ -79,17 +79,17 @@ Deck
 1 Harsh Annotation (SOS) 18
 
 Sideboard
-1 Sol Ring (EOC) 57
-1 Arcane Signet (LTC) 273
-1 Talisman of Conviction (LTC) 285
-1 Command Tower (EOC) 59
+1 Sol Ring (FRC) 21
+1 Arcane Signet (FRC) 20
+1 Talisman of Conviction (MSC) 217
+1 Command Tower (FRC) 22
 1 Sacred Foundry (TRK) 295
 1 Inspiring Vantage (OTJ) 269
-1 Lightning Greaves (LTC) 281
-1 Swiftfoot Boots (MSC) 216
-1 Puresteel Paladin
-1 Sigarda's Aid
-1 Stoneforge Mystic
-1 Skullclamp (TDC) 103
-1 Swords to Plowshares (TDC) 134
-1 Path to Exile (LTC) 175
+1 Lightning Greaves (MSC) 202
+1 Swiftfoot Boots (MBC) 77
+1 Puresteel Paladin (CMM) 51
+1 Sigarda's Aid (CMR) 384
+1 Stoneforge Mystic (2XM) 31
+1 Skullclamp (MSC) 210
+1 Swords to Plowshares (FRC) 37
+1 Path to Exile (FRC) 30

@@ -45,6 +45,10 @@ run = "node scripts/cli.mjs deck:files"
 description = "Price the upgrade package and any shortfalls against the budget: -- <slug>"
 run = "node scripts/cli.mjs deck:upgrades"
 
+[tasks."deck:build"]
+description = "Physically build a finished deck: move its cards into its own collection list (-- <slug> --apply)"
+run = "node scripts/cli.mjs deck:build"
+
 [tasks."decks:check"]
 description = "Check every deck independently; the example is schema-checked only"
 run = "node scripts/cli.mjs decks:check"

@@ -16,7 +16,7 @@ Ask only about what the user hasn't already said. Don't fill gaps with defaults.
 - **Power level:** a Commander Bracket (1–5) or the playgroup's own terms. The bracket table is in the `deckbuilding-strategy` skill.
 - **Budget:** amount and currency for optional upgrades, and any per-card price cap (set `max_card_price` so `deck:check` enforces it).
 - **Proxies:** allowed or not.
-- **Collections:** whose cards to build from, if not every unprotected collection (e.g. a friend's deck from `collections/brad/*`). Record the patterns in the deck's `collections` field so every command reads the right cards without flags.
+- **Collections:** whose cards to build from, if not every unprotected collection (e.g. a friend's deck from `collections/brad/*`). Record the patterns in the deck's `collection_source` field so every command reads the right cards without flags.
 - **Basic lands:** run `mise run collection:search -- --type basic --count`. The collections usually hold very few basics, so every deck fails ownership unless the user has untracked basics. Ask, and set `unlimited_basics: true` if they do.
 
 ## 2. Survey the collection
@@ -75,7 +75,7 @@ Then **wait for the user to choose.** Don't run `deck:new` or write a list befor
 mise run deck:new -- <slug> --commander "Name"     # repeat --commander for partners; add --format commander-60 for 60 cards
 ```
 
-- **Header fields:** fill `primer` (the game plan, one line of YAML with no manual line breaks), `collections` (if the brief limits them), `power_notes`, `bracket`, `budget`, `allow_proxies` and `unlimited_basics` in the new `deck.yaml` (pass a nested slug such as `brad/<slug>` to `deck:new` to group decks by owner).
+- **Header fields:** fill `primer` (the game plan, one line of YAML with no manual line breaks), `collection_source` (if the brief limits them), `power_notes`, `bracket`, `budget`, `allow_proxies` and `unlimited_basics` in the new `deck.yaml` (pass a nested slug such as `brad/<slug>` to `deck:new` to group decks by owner).
 - **Mainboard:** owned cards only. Give each entry a `role` from the vocabulary below.
 - **Size:** reach exactly 100 cards including commanders (exactly 60 for `commander-60`), or at least 60 for casual.
 
@@ -105,3 +105,7 @@ Then review it with the checklist in `deckbuilding-strategy`, and explain the de
 - **Decklist files:** run `mise run deck:files -- <slug>` after the final `deck:check`. It writes `decklist.archidekt.txt` and `decklist.moxfield.txt` and, when the deck has upgrades, `decklist-upgraded.archidekt.txt` and `decklist-upgraded.moxfield.txt` beside `deck.yaml`. Rerun it after every later deck edit so the files never go stale.
 - **Viewing online:** if the user wants to paste the deck into a site, run `mise run deck:export -- <slug> --copy` (add `--upgrades apply` for a playtest list) and tell them where to paste it.
 - **Git:** don't commit unless asked.
+
+## 8. Physically build it (only when asked)
+
+When the user says they're physically assembling the deck, run `mise run deck:build -- <slug>` and show them what it would take from which collection file. Only after they confirm, run it again with `--apply`. That takes the cards out of the source collections (lowering or removing their rows), writes the deck's own list (default `collections/<owner>/decks/<slug>.txt`) and sets `collection_destination` in `deck.yaml`. Then run `deck:check` and `deck:files`, and mention that other decks now count those cards as protected, so `decks:check` may newly fail for decks sharing them. If the source is a ManaBox export, remind the user to move the same cards into a deck binder in ManaBox (or out of the app) before their next export, or the cards will be counted twice.

@@ -4,9 +4,9 @@ Read [README.md](README.md) first, and the deck's `deck.yaml` (under `builds/`, 
 
 ## Collection
 
-- Every `.csv` (ManaBox export) or `.txt` (Moxfield, Archidekt or Arena list) under `collections/`, at any depth, supplies cards except protected collections (`MTG_PROTECTED_COLLECTIONS` in `.env`, path globs, default `collections/**/precons`). Mention useful protected copies, but never put them in a deck. `MTG_COLLECTIONS` (path globs such as `collections/conrad*`) can limit which collections are read at all. A deck's own `collections` field in `deck.yaml` overrides `MTG_COLLECTIONS` for that deck. Don't pass `--protect` or `--collections` unless the user asks.
-- Never edit collection files. The user maintains them, from fresh ManaBox exports or by editing text lists. Text list lines match the card cache by set and collector number, so `collection:check` reports lines that aren't cached yet (`scryfall:refresh -- --missing`) and errors on lines whose name doesn't match their printing.
-- Decks are independent. Don't reserve cards across decks, and don't claim several decks can be assembled at once.
+- Every `.csv` (ManaBox export) or `.txt` (Moxfield, Archidekt or Arena list) under `collections/`, at any depth, supplies cards except protected collections (`MTG_PROTECTED_COLLECTIONS` in `.env`, path globs, default `collections/**/precons,collections/**/decks`). Mention useful protected copies, but never put them in a deck. `MTG_COLLECTIONS` (path globs such as `collections/conrad*`) can limit which collections are read at all. A deck's own `collection_source` field in `deck.yaml` overrides `MTG_COLLECTIONS` for that deck, and a built deck's `collection_destination` list is always available to that deck alone. Don't pass `--protect` or `--collections` unless the user asks.
+- Never edit collection files by hand. The only exception is `deck:build -- <slug> --apply`, run only when the user says they're physically building that deck, after showing them its dry run. Otherwise the user maintains them, from fresh ManaBox exports or by editing text lists. Text list lines match the card cache by set and collector number, so `collection:check` reports lines that aren't cached yet (`scryfall:refresh -- --missing`) and errors on lines whose name doesn't match their printing.
+- Decks are independent until built. Don't reserve cards across decks, and don't claim several decks can be assembled at once. A built deck (one with `collection_destination`) has its cards in its own protected list, so other decks no longer count them.
 
 ## Brewing
 

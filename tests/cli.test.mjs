@@ -329,11 +329,11 @@ test('--collections or MTG_COLLECTIONS limits which collections are read', () =>
     assert.match(stderr.join(), /No collection matches Organized to read/);
   }));
 
-test("a deck's collections field scopes it, between --collections and MTG_COLLECTIONS", () =>
+test("a deck's collection_source field scopes it, between --collections and MTG_COLLECTIONS", () =>
   inWorkspace(async ({ root, cli, cliWithEnv, writeDeck, stdout }) => {
     await mkdir(join(root, 'collections', 'brad'));
     await writeFile(join(root, 'collections', 'brad', 'Binder.csv'), CSV.replace(',60,', ',5,'));
-    await writeDeck({ ...casualDeck(), collections: ['collections/brad/*'] });
+    await writeDeck({ ...casualDeck(), collection_source: ['collections/brad/*'] });
     assert.equal(await cli('deck:check', 'fixture'), 1);
     assert.match(stdout.join('\n'), /Forest: need 60, 5 available/);
     assert.equal(await cli('deck:check', 'fixture', '--collections', 'collections/Organized.csv'), 0);
@@ -342,6 +342,42 @@ test("a deck's collections field scopes it, between --collections and MTG_COLLEC
     assert.match(stdout.join('\n'), /FAIL: fixture[^\n]*\n {2}ERROR: Forest: need 60, 5 available/);
     await writeDeck(casualDeck());
     assert.equal(await cliWithEnv(env, 'decks:check'), 0);
+  }));
+
+test('deck:build moves a deck into its own protected collection only with --apply', () =>
+  inWorkspace(async ({ root, cli, stdout, stderr }) => {
+    const deckPath = join(root, 'builds', 'fixture', 'deck.yaml');
+    const deckText = (quantity) => `# a comment\n${stringify(casualDeck([{ name: 'Forest', quantity }]))}`;
+    await writeFile(join(root, 'collections', 'Bulk Box.csv'), CSV.replace(',60,', ',5,'));
+    await writeFile(deckPath, deckText(66));
+    assert.equal(await cli('deck:build', 'fixture', '--apply'), 1);
+    assert.match(stdout.join('\n'), /Forest: need 66, 65 available(.|\n)*Not built: fixture must pass deck:check/);
+    await writeFile(deckPath, deckText(63));
+    assert.equal(await cli('deck:build', 'fixture', '--protect', 'collections/**/precons'), 0);
+    assert.match(stdout.join('\n'), /from collections\/Bulk Box.csv:\n {4}5 Forest \(TST\) 1\n/);
+    assert.match(stdout.at(-1), /Nothing changed/);
+    assert.match(stderr.join('\n'), /collections\/decks\/fixture.txt isn't protected/);
+    assert.equal(await readFile(join(root, 'collections', 'Organized.csv'), 'utf8'), CSV);
+    assert.equal(await cli('deck:build', 'fixture', '--apply'), 0);
+    assert.equal(await readFile(join(root, 'collections', 'Organized.csv'), 'utf8'), CSV.replace(',60,', ',2,'));
+    await assert.rejects(readFile(join(root, 'collections', 'Bulk Box.csv')), /ENOENT/);
+    assert.match(stdout.join('\n'), /Removed collections\/Bulk Box.csv/);
+    assert.equal(
+      await readFile(join(root, 'collections', 'decks', 'fixture.txt'), 'utf8'),
+      '// Fixture: built from builds/fixture by deck:build\nDeck\n63 Forest (TST) 1\n',
+    );
+    const builtDeck = await readFile(deckPath, 'utf8');
+    assert.match(builtDeck, /^# a comment\n(.|\n)*collection_destination: collections\/decks\/fixture.txt/);
+    assert.equal(await cli('deck:check', 'fixture'), 0);
+    assert.equal(await cli('deck:check', 'fixture', '--collections', 'collections/Organized.csv'), 0);
+    await mkdir(join(root, 'builds', 'other'));
+    await writeFile(join(root, 'builds', 'other', 'deck.yaml'), stringify(casualDeck()));
+    assert.equal(await cli('deck:check', 'other'), 1);
+    assert.match(
+      stdout.join('\n'),
+      /Forest: need 60, 2 available \(short 58\); 63 in decks\/fixture, 60 in precons \(protected\)/,
+    );
+    await assert.rejects(cli('deck:build', 'fixture'), /already built into collections\/decks\/fixture.txt/);
   }));
 
 test('scryfall:refresh covers every collection, whatever MTG_COLLECTIONS says', () =>
