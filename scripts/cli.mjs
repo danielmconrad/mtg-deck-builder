@@ -294,7 +294,7 @@ async function deckBuild({ workspace, slug, options, write, warn }) {
   const deckId = await workspace.resolveDeckId(slug);
   const deck = await workspace.loadDeck(deckId);
   if (deck.collection_destination) throw new Error(`${deckId} is already built into ${deck.collection_destination}`);
-  const destination = options.to ?? workspace.defaultDeckCollection(deckId);
+  const destination = options.to ?? workspace.defaultDeckCollection(deckId, deck.name);
   const { plan, takenFrom, outcome } = await buildPlan(workspace, deckId, deck, write);
   if (!plan) return outcome;
   printAll(write, buildLines(plan, takenFrom, options.apply ? 'Taking' : 'Would take'));
@@ -542,7 +542,7 @@ const COMMANDS = {
       to: {
         type: 'string',
         placeholder: 'PATH',
-        description: "The deck's new text list; defaults to collections/<owner>/decks/<slug>.txt",
+        description: "The deck's new text list; defaults to collections/<owner>/decks/<deck name>.txt",
       },
       ...COLLECTION_OPTIONS,
     },

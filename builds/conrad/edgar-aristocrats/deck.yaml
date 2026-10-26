@@ -8,7 +8,7 @@ allow_proxies: false
 unlimited_basics: true
 collection_source:
   - 'collections/conrad/**'
-collection_destination: collections/conrad/decks/custom/edgar-aristocrats.txt
+collection_destination: "collections/conrad/decks/custom/Edgar's Blood Tithe.txt"
 primer: >-
   Orzhov aristocrats. Flood the board with cheap tokens (Lingering Souls, Battle Screech, Hop to It, Champions from Beyond), then feed them to Edgar and the other sacrifice outlets. Every death gains life through Edgar, Daxos and Bastion of Remembrance, and Marauding Blight-Priest turns each lifegain into a drain on every opponent, so the board bleeds the table while Faramir, Braids, Kingpin's Enforcers and Niv-Mizzet refill the hand. Close with a menacing, counter-stacked Edgar, a sacrifice-everything Reprocess or a big Exsanguinate, and reset losing boards with Hour of Reckoning, which spares your tokens.
 power_notes: >-

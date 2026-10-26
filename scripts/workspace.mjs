@@ -115,11 +115,16 @@ export function openWorkspace(root = PROJECT_ROOT) {
     );
   }
 
-  // Where deck:build puts a deck's own cards by default: builds/brad/elves keeps them in
-  // collections/brad/decks/elves.txt, and an unnested builds/elves in collections/decks/elves.txt.
-  function defaultDeckCollection(deckId) {
-    const parts = deckId.split('/');
-    return [COLLECTIONS_FOLDER, ...parts.slice(0, -1), 'decks', `${parts.at(-1)}.txt`].join('/');
+  // Where deck:build puts a deck's own cards by default, named after the deck: builds/brad/elves,
+  // named Elf Ball, keeps them in collections/brad/decks/Elf Ball.txt, and an unnested builds/elves
+  // in collections/decks/Elf Ball.txt. Characters that aren't safe in a file name become hyphens.
+  function defaultDeckCollection(deckId, deckName) {
+    const owners = deckId.split('/').slice(0, -1);
+    const fileName = deckName
+      .replace(/[/\\:*?"<>|\p{Cc}]/gu, '-')
+      .trim()
+      .replace(/^\.+/, '');
+    return [COLLECTIONS_FOLDER, ...owners, 'decks', `${fileName}.txt`].join('/');
   }
 
   const collectionName = (path) => withoutExtension(path.slice(COLLECTIONS_FOLDER.length + 1));
