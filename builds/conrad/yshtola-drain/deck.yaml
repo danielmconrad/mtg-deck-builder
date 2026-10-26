@@ -1,0 +1,438 @@
+# yaml-language-server: $schema=../../../schemas/deck.schema.json
+schema_version: 1
+name: Y'shtola's Night Drain
+format: commander
+status: draft
+bracket: 4
+allow_proxies: false
+unlimited_basics: false
+collection_source:
+  - 'collections/conrad/**'
+primer: >-
+  Esper spells-control. Nearly every noncreature spell costs 3 or more, so each one Y'shtola sees drains every opponent for 2, and two such spells in a turn draw a card at end step. Answer threats with instant-speed removal and counters, refill with Uncover the Moon-Letters Into the Story and Niv-Mizzet, and close with stacked drain engines (Papalymo, Marauding Blight-Priest, the Circle of Power and Transpose Wizards, Fandaniel) and a big Exsanguinate, recasting spells with Emet-Selch and Torrential Gearhulk.
+power_notes: >-
+  Bracket 4 (Optimized), built only from Daniel's binders (CatLady has been dismantled back into them). Runs one Game Changer (Fierce Guardianship); The One Ring is owned but deliberately kept out. No mass land denial, extra turns or deterministic two-card combos; it wins by grinding drains, so it is on the slower, controlling end of Bracket 4.
+budget:
+  amount: 100
+  currency: USD
+commanders:
+  - name: Y'shtola, Night's Blessed
+    quantity: 1
+mainboard:
+  # Ramp
+  - name: Sol Ring
+    quantity: 1
+    role: ramp
+  - name: Arcane Signet
+    quantity: 1
+    role: ramp
+  - name: Talisman of Dominance
+    quantity: 1
+    role: ramp
+  - name: Talisman of Hierarchy
+    quantity: 1
+    role: ramp
+  - name: Talisman of Progress
+    quantity: 1
+    role: ramp
+  - name: Thought Vessel
+    quantity: 1
+    role: ramp
+  - name: Commander's Sphere
+    quantity: 1
+    role: ramp
+  - name: Relic of Legends
+    quantity: 1
+    role: ramp
+  - name: Hot Dog Cart
+    quantity: 1
+    role: ramp
+  - name: Inherited Envelope
+    quantity: 1
+    role: ramp
+  - name: Dragonstorm Globe
+    quantity: 1
+    role: ramp
+  - name: Dependable Quinjet
+    quantity: 1
+    role: ramp
+  - name: Phial of Galadriel
+    quantity: 1
+    role: ramp
+  - name: Black Market Connections
+    quantity: 1
+    role: ramp, draw
+  # Card draw
+  - name: Into the Story
+    quantity: 1
+    role: draw
+  - name: Uncover the Moon-Letters
+    quantity: 1
+    role: draw, synergy
+  - name: Stock Up
+    quantity: 1
+    role: draw
+  - name: Fact or Fiction
+    quantity: 1
+    role: draw
+  - name: Thirst for Knowledge
+    quantity: 1
+    role: draw
+  - name: Frantic Search
+    quantity: 1
+    role: draw
+  - name: Chemister's Insight
+    quantity: 1
+    role: draw
+  - name: Dig Through Time
+    quantity: 1
+    role: draw
+  - name: Syphon Mind
+    quantity: 1
+    role: draw
+  - name: Circle of Power
+    quantity: 1
+    role: draw, wincon
+  - name: Transpose
+    quantity: 1
+    role: draw, wincon
+  - name: Niv-Mizzet, Ghost Counsel
+    quantity: 1
+    role: draw, wincon
+  # Counters and protection
+  - name: Fierce Guardianship
+    quantity: 1
+    role: protection
+  - name: Render Silent
+    quantity: 1
+    role: protection
+  - name: Rewind
+    quantity: 1
+    role: protection
+  - name: Unwind
+    quantity: 1
+    role: protection
+  - name: Confusticate and Bebother
+    quantity: 1
+    role: protection, draw
+  - name: Spite // Malice
+    quantity: 1
+    role: protection, removal
+  - name: Sublime Epiphany
+    quantity: 1
+    role: protection, removal
+  - name: Darksteel Plate
+    quantity: 1
+    role: protection
+  - name: Swiftfoot Boots
+    quantity: 1
+    role: protection
+  - name: Propaganda
+    quantity: 1
+    role: protection
+  # Removal
+  - name: Swords to Plowshares
+    quantity: 1
+    role: removal
+  - name: Snuff Out
+    quantity: 1
+    role: removal
+  - name: Vindicate
+    quantity: 1
+    role: removal
+  - name: Void Rend
+    quantity: 1
+    role: removal
+  - name: Sephiroth's Intervention
+    quantity: 1
+    role: removal
+  - name: Celebrate the Mountain-king
+    quantity: 1
+    role: removal
+  - name: Banishing Light
+    quantity: 1
+    role: removal
+  - name: Web Up
+    quantity: 1
+    role: removal
+  - name: Perilous Snare
+    quantity: 1
+    role: removal
+  - name: White Auracite
+    quantity: 1
+    role: removal, ramp
+  - name: Your Fate Ends Here
+    quantity: 1
+    role: removal
+  - name: Murderous Rider
+    quantity: 1
+    role: removal
+  # Wipes
+  - name: Cleansing Nova
+    quantity: 1
+    role: wipe
+  - name: Final Judgment
+    quantity: 1
+    role: wipe
+  - name: Crux of Fate
+    quantity: 1
+    role: wipe
+  # Drain engines and finishers
+  - name: Exsanguinate
+    quantity: 1
+    role: wincon
+  - name: Papalymo Totolymo
+    quantity: 1
+    role: wincon, synergy
+  - name: Marauding Blight-Priest
+    quantity: 1
+    role: wincon, synergy
+  - name: Fandaniel, Telophoroi Ascian
+    quantity: 1
+    role: wincon, synergy
+  - name: Oath of the Grey Host
+    quantity: 1
+    role: wincon, ramp
+  - name: Gríma Wormtongue
+    quantity: 1
+    role: synergy
+  - name: Emet-Selch of the Third Seat
+    quantity: 1
+    role: synergy
+  - name: Torrential Gearhulk
+    quantity: 1
+    role: synergy
+  - name: Lyse Hext
+    quantity: 1
+    role: synergy
+  - name: Archmage Emeritus
+    quantity: 1
+    role: draw, synergy
+  - name: Baleful Strix
+    quantity: 1
+    role: draw, removal
+  - name: Unstoppable Plan
+    quantity: 1
+    role: synergy, ramp
+  # Lands
+  - name: Command Tower
+    quantity: 1
+    role: land
+  - name: Path of Ancestry
+    quantity: 1
+    role: land
+  - name: Arcane Sanctum
+    quantity: 1
+    role: land
+  - name: Dromar's Cavern
+    quantity: 1
+    role: land
+  - name: Darkwater Catacombs
+    quantity: 1
+    role: land
+  - name: Desolate Mire
+    quantity: 1
+    role: land
+  - name: Skycloud Expanse
+    quantity: 1
+    role: land
+  - name: Drowned Catacomb
+    quantity: 1
+    role: land
+  - name: Glacial Fortress
+    quantity: 1
+    role: land
+  - name: Isolated Chapel
+    quantity: 1
+    role: land
+  - name: Choked Estuary
+    quantity: 1
+    role: land
+  - name: Port Town
+    quantity: 1
+    role: land
+  - name: Shineshadow Snarl
+    quantity: 1
+    role: land
+  - name: Sunken Hollow
+    quantity: 1
+    role: land
+  - name: Prairie Stream
+    quantity: 1
+    role: land
+  - name: Deserted Beach
+    quantity: 1
+    role: land
+  - name: Underground River
+    quantity: 1
+    role: land
+  - name: Hidden Lair
+    quantity: 1
+    role: land
+  - name: Gleaming Bastion
+    quantity: 1
+    role: land
+  - name: Fetid Heath
+    quantity: 1
+    role: land
+  - name: Sunken Ruins
+    quantity: 1
+    role: land
+  - name: Bleachbone Verge
+    quantity: 1
+    role: land
+  - name: Plains
+    quantity: 4
+    role: land
+  - name: Island
+    quantity: 5
+    role: land
+  - name: Swamp
+    quantity: 5
+    role: land
+upgrades:
+  - add:
+      name: Exquisite Blood
+      quantity: 1
+      role: wincon, synergy
+    cut:
+      name: Unstoppable Plan
+      quantity: 1
+    reason: >-
+      Opponents losing life makes you gain that much, which turns every Y'shtola drain into lifegain for Niv-Mizzet and Blight-Priest. With the owned Marauding Blight-Priest (or Sanguine Bond or Vito below) it is a two-card infinite drain, allowed at Bracket 4.
+  - add:
+      name: Sanguine Bond
+      quantity: 1
+      role: wincon, synergy
+    cut:
+      name: Archmage Emeritus
+      quantity: 1
+    reason: >-
+      Every Y'shtola trigger gains 2 life, so this doubles each drain against one opponent, and it is a second Exquisite Blood partner.
+  - add:
+      name: Vito, Thorn of the Dusk Rose
+      quantity: 1
+      role: wincon, synergy
+    cut:
+      name: Lyse Hext
+      quantity: 1
+    reason: >-
+      A cheap creature copy of Sanguine Bond, giving the combo a third partner that also dodges enchantment removal.
+  - add:
+      name: Toxic Deluge
+      quantity: 1
+      role: wipe
+    cut:
+      name: Crux of Fate
+      quantity: 1
+    reason: >-
+      A 3-mana wipe that still triggers Y'shtola and gets around indestructible, replacing a 5-mana one.
+  - add:
+      name: Anguished Unmaking
+      quantity: 1
+      role: removal
+    cut:
+      name: Sephiroth's Intervention
+      quantity: 1
+    reason: >-
+      Instant-speed exile of any nonland permanent for 3, against a creature-only answer that costs 4.
+  - add:
+      name: Generous Gift
+      quantity: 1
+      role: removal
+    cut:
+      name: Your Fate Ends Here
+      quantity: 1
+    reason: >-
+      Answers any permanent, lands included, at instant speed for the same 3 mana.
+  - add:
+      name: Cryptic Command
+      quantity: 1
+      role: protection, draw
+    cut:
+      name: Unwind
+      quantity: 1
+    reason: >-
+      Counters anything (not just noncreature spells) and cantrips or bounces; mana value 4 still drains.
+  - add:
+      name: Watery Grave
+      quantity: 1
+      role: land
+    cut:
+      name: Prairie Stream
+      quantity: 1
+    reason: >-
+      Untapped dual; Prairie Stream often enters tapped with only 14 basics.
+  - add:
+      name: Godless Shrine
+      quantity: 1
+      role: land
+    cut:
+      name: Sunken Hollow
+      quantity: 1
+    reason: >-
+      Untapped dual in place of an unreliable battle land.
+  - add:
+      name: Hallowed Fountain
+      quantity: 1
+      role: land
+    cut:
+      name: Path of Ancestry
+      quantity: 1
+    reason: >-
+      Untapped dual in place of a tapped land.
+  - add:
+      name: Fabled Passage
+      quantity: 1
+      role: land
+    cut:
+      name: Hidden Lair
+      quantity: 1
+    reason: >-
+      Fetches a basic, which turns on the checklands, snarls, Port Town and Bleachbone Verge.
+  - add:
+      name: Coalition Relic
+      quantity: 1
+      role: ramp
+    cut:
+      name: Dependable Quinjet
+      quantity: 1
+    reason: >-
+      Same 3-mana any-color rock (still drains), but it can bank a charge counter for 2 mana on the Y'shtola or wipe turn.
+  - add:
+      name: Chromatic Lantern
+      quantity: 1
+      role: ramp
+    cut:
+      name: Dragonstorm Globe
+      quantity: 1
+    reason: >-
+      Same cost and trigger, and turns every land into a rainbow land, fixing WW/UU/BB costs like Niv-Mizzet, Rewind and Exsanguinate.
+  - add:
+      name: Thran Dynamo
+      quantity: 1
+      role: ramp
+    cut:
+      name: Inherited Envelope
+      quantity: 1
+    reason: >-
+      Mana value 4 still drains, and it makes three mana instead of one, which pays for Gearhulk, Sublime Epiphany and big Exsanguinates.
+  - add:
+      name: Curiosity
+      quantity: 1
+      role: draw, synergy
+    cut:
+      name: Thirst for Knowledge
+      quantity: 1
+    reason: >-
+      The top Y'shtola card per Draftsim: her trigger is damage to each opponent, so on Y'shtola it draws a card per opponent (3 in a four-player game) for every spell costing 3 or more.
+  - add:
+      name: Tandem Lookout
+      quantity: 1
+      role: draw, synergy
+    cut:
+      name: Stock Up
+      quantity: 1
+    reason: >-
+      A second Curiosity effect that survives on a creature: soulbond it with Y'shtola (it pairs when either enters) for a card per opponent each trigger.
+playtests: []
