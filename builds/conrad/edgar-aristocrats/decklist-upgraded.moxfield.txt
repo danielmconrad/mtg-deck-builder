@@ -1,0 +1,81 @@
+Commander
+1 Edgar, Ancient Bloodlord (FRA) 270
+
+Deck
+1 Command Tower (FIC) 382
+1 Bleachbone Verge (DFT) 250
+1 Isolated Chapel (FIC) 405
+1 Shineshadow Snarl (FIC) 422
+1 Fetid Heath (FIC) 391
+1 Sunlit Marsh (FIC) 431
+1 Path of Ancestry (FIC) 411
+1 Exotic Orchard (FIC) 390
+1 Night Market (DFT) 258
+13 Plains (DFT) 278
+13 Swamp (HOB) 191
+1 Sol Ring (FIC) 359
+1 Arcane Signet (LTC) 273
+1 Talisman of Hierarchy (FIC) 365
+1 Thought Vessel (FIC) 368
+1 Commander's Sphere (ECC) 139
+1 Phial of Galadriel (LTR) 248
+1 Hot Dog Cart (SPM) 164
+1 Long-Bodied Grey Dog (HOB) 1
+1 Troop of Ponies (HOB) 3
+1 Syphon Mind (FIC) 288
+1 Black Market Connections (MSC) 155
+1 Kingpin's Enforcers (MSH) 102
+1 Nasty End (LTR) 99
+1 Faramir, Field Commander (LTR) 303
+1 Braids, Arisen Nightmare (EOC) 82
+1 Niv-Mizzet, Ghost Counsel (FRC) 10
+1 Belladonna Took (HOB) 4
+1 Reprocess (7ED) 159
+1 Swords to Plowshares (FIC) 256
+1 Vindicate (FIC) 330
+1 Fatal Push (FCA) 9
+1 Erode (SOS) 15
+1 Chainer's Edict (DMR) 425
+1 Stir Up Trouble (HOB) 84
+1 Lethal Scheme (FIC) 277
+1 Murderous Rider // Swift End (FIC) 279
+1 Bilbo's Deadly Slice (HOB) 62
+1 Celebrate the Mountain-king (HOB) 7
+1 Your Fate Ends Here (FRA) 24
+1 Hour of Reckoning (GK1) 104
+1 Blood on the Snow (KHM) 79
+1 Lightning Greaves (LTC) 281
+1 Swiftfoot Boots (MSC) 216
+1 Spectacular Spider-Man (SPM) 14
+1 Teyo, Lightshield Expert (FRA) 295
+1 Marauding Blight-Priest (FDN) 178
+1 Bastion of Remembrance (FIC) 274
+1 Mirkwood Bats (LTR) 95
+1 Exsanguinate (FIC) 276
+1 Gríma Wormtongue (LTR) 88
+1 Daxos, Blessed by the Sun (THB) 258
+1 Liliana the Faultless (FRA) 293
+1 Lingering Souls (FIC) 245
+1 Battle Screech (ONC) 59
+1 Clachan Festival (ECL) 10
+1 Champions from Beyond (FIC) 11
+1 Hexhaven Battalion (FRA) 12
+1 Oath of the Grey Host (LTR) 101
+1 Hildibrand Manderville // Gentleman's Rise (FIC) 83
+1 Send in the Pest (SOS) 100
+1 Dimir House Guard (RVR) 73
+1 Gollum the Abandoned (HOB) 72
+1 Spiteful Squad (STX) 237
+1 Generous Revival (FRA) 8
+1 Voracious Fell Beast (LTR) 113
+1 Winter, Tormented Loner (FRA) 240
+
+Sideboard
+1 Exquisite Blood (LCC) 195
+1 Sanguine Bond (C21) 153
+1 Bloodthirsty Conqueror (FDN) 58
+1 Heliod, Sun-Crowned (CMM) 29
+1 Walking Ballista (2XM) 306
+1 Viscera Seer (SOC) 229
+1 Diabolic Intent (BRO) 89
+1 Enlightened Tutor (DMR) 6

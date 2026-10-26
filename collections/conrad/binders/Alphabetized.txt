@@ -162,7 +162,6 @@
 1 Burn, Burn, Tree and Fern (HOB) 90
 1 Burn, Burn, Tree and Fern (HOB) 90 *F*
 1 Burrog Befuddler (FDN) 504
-1 Buster Sword (FIN) 351
 2 Buzz Bots (TMT) 32
 1 Bygone Colossus (EOE) 235
 1 Cactuar (FIN) 177
@@ -1305,7 +1304,6 @@
 1 The Master of Lake-town (HOB) 77 *F*
 1 The Masters of Evil (MSH) 105
 2 The Mountain-king's Return (HOB) 22
-1 The One Ring (LTR) 246
 1 The Queen of Dale (HOB) 24
 1 The Sentry, Golden Guardian (MSH) 35
 1 The Spot's Portal (SPM) 68

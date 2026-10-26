@@ -1,0 +1,322 @@
+# yaml-language-server: $schema=../../../schemas/deck.schema.json
+schema_version: 1
+name: Edgar's Blood Tithe
+format: commander
+status: draft
+bracket: 3
+allow_proxies: false
+unlimited_basics: true
+collection_source:
+  - 'collections/conrad/**'
+primer: >-
+  Orzhov aristocrats. Flood the board with cheap tokens (Lingering Souls, Battle Screech, Hop to It, Champions from Beyond), then feed them to Edgar and the other sacrifice outlets. Every death gains life through Edgar, Daxos and Bastion of Remembrance, and Marauding Blight-Priest turns each lifegain into a drain on every opponent, so the board bleeds the table while Faramir, Braids, Kingpin's Enforcers and Niv-Mizzet refill the hand. Close with a menacing, counter-stacked Edgar, a sacrifice-everything Reprocess or a big Exsanguinate, and reset losing boards with Hour of Reckoning, which spares your tokens.
+power_notes: >-
+  Bracket 3 (Upgraded) baseline built only from Daniel's binders. No Game Changers (The One Ring is owned but deliberately kept out). No mass land denial, extra turns or two-card infinite combos; it wins by grinding drains. The upgrades add two-card infinite combos (Exquisite Blood with Marauding Blight-Priest or Sanguine Bond, Heliod with Walking Ballista) plus Diabolic Intent and Enlightened Tutor, which make it Bracket 4. Enlightened Tutor is its only Game Changer.
+budget:
+  amount: 150
+  currency: USD
+commanders:
+  - name: Edgar, Ancient Bloodlord
+    quantity: 1
+mainboard:
+  # Lands
+  - name: Command Tower
+    quantity: 1
+    role: land
+  - name: Bleachbone Verge
+    quantity: 1
+    role: land
+  - name: Isolated Chapel
+    quantity: 1
+    role: land
+  - name: Shineshadow Snarl
+    quantity: 1
+    role: land
+  - name: Fetid Heath
+    quantity: 1
+    role: land
+  - name: Sunlit Marsh
+    quantity: 1
+    role: land
+  - name: Path of Ancestry
+    quantity: 1
+    role: land
+  - name: Exotic Orchard
+    quantity: 1
+    role: land
+  - name: Night Market
+    quantity: 1
+    role: land
+  - name: Plains
+    quantity: 13
+    role: land
+  - name: Swamp
+    quantity: 13
+    role: land
+  # Ramp
+  - name: Sol Ring
+    quantity: 1
+    role: ramp
+  - name: Arcane Signet
+    quantity: 1
+    role: ramp
+  - name: Talisman of Hierarchy
+    quantity: 1
+    role: ramp
+  - name: Thought Vessel
+    quantity: 1
+    role: ramp
+  - name: "Commander's Sphere"
+    quantity: 1
+    role: ramp
+  - name: Phial of Galadriel
+    quantity: 1
+    role: ramp
+  - name: Hot Dog Cart
+    quantity: 1
+    role: ramp
+  - name: Long-Bodied Grey Dog
+    quantity: 1
+    role: ramp
+  - name: Troop of Ponies
+    quantity: 1
+    role: ramp,synergy
+  # Draw
+  - name: Syphon Mind
+    quantity: 1
+    role: draw
+  - name: Black Market Connections
+    quantity: 1
+    role: draw
+  - name: "Night's Whisper"
+    quantity: 1
+    role: draw
+  - name: "Kingpin's Enforcers"
+    quantity: 1
+    role: draw,synergy
+  - name: Nasty End
+    quantity: 1
+    role: draw,synergy
+  - name: Faramir, Field Commander
+    quantity: 1
+    role: draw
+  - name: Braids, Arisen Nightmare
+    quantity: 1
+    role: draw,synergy
+  - name: Niv-Mizzet, Ghost Counsel
+    quantity: 1
+    role: draw
+  - name: Belladonna Took
+    quantity: 1
+    role: draw
+  - name: Reprocess
+    quantity: 1
+    role: draw,synergy
+  # Removal
+  - name: Swords to Plowshares
+    quantity: 1
+    role: removal
+  - name: Vindicate
+    quantity: 1
+    role: removal
+  - name: Fatal Push
+    quantity: 1
+    role: removal
+  - name: Erode
+    quantity: 1
+    role: removal
+  - name: "Chainer's Edict"
+    quantity: 1
+    role: removal
+  - name: Stir Up Trouble
+    quantity: 1
+    role: removal,synergy
+  - name: Lethal Scheme
+    quantity: 1
+    role: removal
+  - name: Murderous Rider // Swift End
+    quantity: 1
+    role: removal
+  - name: "Bilbo's Deadly Slice"
+    quantity: 1
+    role: removal
+  - name: Celebrate the Mountain-king
+    quantity: 1
+    role: removal
+  - name: Your Fate Ends Here
+    quantity: 1
+    role: removal
+  # Wipes
+  - name: Hour of Reckoning
+    quantity: 1
+    role: wipe
+  - name: Blood on the Snow
+    quantity: 1
+    role: wipe
+  # Protection
+  - name: Lightning Greaves
+    quantity: 1
+    role: protection
+  - name: Swiftfoot Boots
+    quantity: 1
+    role: protection
+  - name: Spectacular Spider-Man
+    quantity: 1
+    role: protection,synergy
+  - name: Teyo, Lightshield Expert
+    quantity: 1
+    role: protection
+  # Drain payoffs
+  - name: Marauding Blight-Priest
+    quantity: 1
+    role: wincon
+  - name: Bastion of Remembrance
+    quantity: 1
+    role: wincon
+  - name: Mirkwood Bats
+    quantity: 1
+    role: wincon
+  - name: Exsanguinate
+    quantity: 1
+    role: wincon
+  # Lifegain and death triggers
+  - name: Gríma Wormtongue
+    quantity: 1
+    role: synergy,wincon
+  - name: Daxos, Blessed by the Sun
+    quantity: 1
+    role: synergy
+  - name: Liliana the Faultless
+    quantity: 1
+    role: synergy
+  - name: Authority of the Consuls
+    quantity: 1
+    role: synergy
+  # Tokens
+  - name: Lingering Souls
+    quantity: 1
+    role: synergy
+  - name: Battle Screech
+    quantity: 1
+    role: synergy
+  - name: Hop to It
+    quantity: 1
+    role: synergy
+  - name: Clachan Festival
+    quantity: 1
+    role: synergy
+  - name: Champions from Beyond
+    quantity: 1
+    role: synergy
+  - name: Hexhaven Battalion
+    quantity: 1
+    role: synergy
+  - name: Oath of the Grey Host
+    quantity: 1
+    role: synergy
+  - name: Resolute Reinforcements
+    quantity: 1
+    role: synergy
+  - name: Inside Source
+    quantity: 1
+    role: synergy
+  - name: "Hildibrand Manderville // Gentleman's Rise"
+    quantity: 1
+    role: synergy
+  - name: Send in the Pest
+    quantity: 1
+    role: synergy
+  - name: Aerith Rescue Mission
+    quantity: 1
+    role: synergy
+  # Sacrifice outlets, fodder and recursion
+  - name: Unburied Earthcarver
+    quantity: 1
+    role: synergy
+  - name: Dimir House Guard
+    quantity: 1
+    role: synergy
+  - name: Gollum the Abandoned
+    quantity: 1
+    role: synergy
+  - name: Common Crook
+    quantity: 1
+    role: synergy,ramp
+  - name: Spiteful Squad
+    quantity: 1
+    role: synergy
+  - name: Generous Revival
+    quantity: 1
+    role: synergy
+  - name: Voracious Fell Beast
+    quantity: 1
+    role: removal,synergy
+  - name: Winter, Tormented Loner
+    quantity: 1
+    role: removal,synergy
+upgrades:
+  - add:
+      name: Exquisite Blood
+      quantity: 1
+      role: wincon
+    cut:
+      name: Authority of the Consuls
+      quantity: 1
+    reason: 'Combo: with Marauding Blight-Priest or Sanguine Bond, each drain gains life and each gain drains, killing the table. Also turns Bastion and Mirkwood Bats triggers into extra drains.'
+  - add:
+      name: Sanguine Bond
+      quantity: 1
+      role: wincon
+    cut:
+      name: Hop to It
+      quantity: 1
+    reason: "Combo: a second Exquisite Blood partner, so one removal spell on Blight-Priest doesn't end the plan."
+  - add:
+      name: Bloodthirsty Conqueror
+      quantity: 1
+      role: wincon
+    cut:
+      name: Inside Source
+      quantity: 1
+    reason: "Combo: a creature copy of Exquisite Blood's effect, pairing with Blight-Priest or Sanguine Bond."
+  - add:
+      name: Heliod, Sun-Crowned
+      quantity: 1
+      role: synergy
+    cut:
+      name: Resolute Reinforcements
+      quantity: 1
+    reason: 'Combo: with Walking Ballista (lifelink from Heliod) every ping gains life and adds a counter for infinite damage. Also grows Edgar on every lifegain.'
+  - add:
+      name: Walking Ballista
+      quantity: 1
+      role: wincon
+    cut:
+      name: Common Crook
+      quantity: 1
+    reason: 'Combo: Heliod partner; also a flexible mana sink and removal on its own.'
+  - add:
+      name: Viscera Seer
+      quantity: 1
+      role: synergy
+    cut:
+      name: Unburied Earthcarver
+      quantity: 1
+    reason: "Free sacrifice outlet with scry, so combos and death triggers don't need mana."
+  - add:
+      name: Diabolic Intent
+      quantity: 1
+      role: synergy
+    cut:
+      name: Night's Whisper
+      quantity: 1
+    reason: 'Tutor that sacrifices a token as its cost, finding whichever combo piece is missing.'
+  - add:
+      name: Enlightened Tutor
+      quantity: 1
+      role: synergy
+    cut:
+      name: Aerith Rescue Mission
+      quantity: 1
+    reason: 'Instant-speed tutor for Exquisite Blood, Sanguine Bond or Heliod.'
+playtests: []
