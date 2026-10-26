@@ -15,7 +15,6 @@
 1 Eclipsed Realms (ECL) 263
 3 Elvenking's Halls (HOB) 182
 1 Evolving Wilds (FIC) 389
-1 Exotic Orchard (FIC) 390
 1 Fatehold Annex (FRA) 177 *F*
 1 Forest (BLB) 278
 1 Forest (BLB) 280
@@ -98,23 +97,11 @@
 1 Mountain (SPM) 192
 1 Mountain (SPM) 197
 1 Nantuko Monastery (DMR) 252
-1 Night Market (DFT) 258
 1 Northampton Farm (TMT) 188
 1 Ominous Asylum (SPM) 181
 1 Paradox Gardens (SOS) 258
-1 Path of Ancestry (FIC) 411
-1 Plains (DFT) 272
-1 Plains (DFT) 272 *F*
-1 Plains (DFT) 277
-1 Plains (DFT) 277 *F*
-1 Plains (DFT) 278
-1 Plains (DFT) 278 *F*
-1 Plains (DFT) 279
-1 Plains (DFT) 279 *F*
 1 Plains (ECL) 269
-1 Plains (FIN) 294
 1 Plains (FIN) 296
-2 Plains (FRA) 383 *F*
 2 Plains (FRA) 384 *F*
 1 Plains (HOB) 189
 1 Plains (HOB) 189 *F*
@@ -139,10 +126,6 @@
 1 Subterranean Cavern (MSH) 273
 1 Suburban Sanctuary (SPM) 185 *F*
 1 Surveillance Room (MSH) 274 *F*
-1 Swamp (DFT) 274
-1 Swamp (DFT) 274 *F*
-1 Swamp (DFT) 283
-1 Swamp (DFT) 283 *F*
 1 Swamp (DFT) 284
 1 Swamp (DFT) 284 *F*
 1 Swamp (DFT) 285
@@ -150,12 +133,8 @@
 1 Swamp (EOE) 272
 2 Swamp (FIN) 300
 2 Swamp (FIN) 301
-2 Swamp (FIN) 302
-1 Swamp (FIN) 302 *F*
 2 Swamp (FRA) 388 *F*
 2 Swamp (FRA) 390 *F*
-3 Swamp (HOB) 191
-1 Swamp (HOB) 191 *F*
 2 Swamp (HOB) 196
 2 Swamp (MSH) 281
 1 Swamp (MSH) 291 *F*

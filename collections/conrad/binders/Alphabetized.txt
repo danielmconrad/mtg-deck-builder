@@ -5,7 +5,7 @@
 1 Additive Evolution (SOS) 139 *F*
 1 Aerial Doombot (MSH) 43
 1 Aerid Konstrari (FRA) 407 *F*
-2 Aerith Rescue Mission (FIN) 5
+1 Aerith Rescue Mission (FIN) 5
 1 Aerith Rescue Mission (FIN) 5 *F*
 2 Aetherjacket (DFT) 230
 1 Aftermath Analyst (EOC) 91
@@ -34,7 +34,9 @@
 1 Apex Witchstalker (FRA) 48 *F*
 1 Aquitect's Defenses (ECL) 44
 1 Arcane Amphisbaena (FRA) 97
-1 Arcane Signet (LTC) 273
+1 Arcane Sanctum (FIC) 373
+1 Arcane Signet (FIC) 335
+1 Archaeomancer's Map (FIC) 230
 1 Archive Arbiter (FRA) 167 *F*
 1 Archmage Emeritus (FIC) 261
 1 Ardbert, Warrior of Darkness (FIC) 77
@@ -42,14 +44,17 @@
 1 Arnim Zola, Bio-Fanatic (MSH) 86
 1 Arnim Zola, Bio-Fanatic (MSH) 319
 1 Artifist Acumen (FRA) 73 *F*
+1 Ash Barrens (FIC) 374
 1 Astrologian's Planisphere (FIN) 46
 1 Atlantean Cavalry (MSH) 45
 1 Atlantis Attacks (MSH) 46 *F*
 4 Attercop (HOB) 116
 1 Attune with Aether (DRC) 109
 1 Autarch Mammoth (DFT) 153
+1 Auxiliary Boosters (EOE) 5
 2 Aven Fateshaper (DMR) 40
 1 Aven Fisher (DMR) 41
+1 Avengers Hangar (MSH) 259
 1 Awaken the Inferno (FRA) 74 *F*
 1 Azog, Moria's Ruin (HOB) 222
 1 Azure Beastbinder (BLB) 302 *F*
@@ -59,6 +64,7 @@
 1 Balustrade Spy (RVR) 66
 1 Banishing Betrayal (SOS) 38
 1 Banishing Betrayal (SOS) 38 *F*
+1 Banishing Light (BLB) 1
 1 Banishing Light (FDN) 138
 1 Banon, the Returners' Leader (FIC) 78
 3 Bard the Bowman (HOB) 145
@@ -66,16 +72,14 @@
 1 Bard's Company (HOB) 146
 1 Bard's Company (HOB) 146 *F*
 1 Barkform Harvester (BLB) 243
-1 Bastion of Remembrance (FIC) 274
 1 Bastion Protector (MSC) 122
-2 Battle Screech (ONC) 59
+1 Battle Screech (ONC) 59
 1 Baxter, Fly in the Ointment (TMC) 10
 1 Bayou Groff (STX) 121
 2 Beamsplitter Mage (GRN) 155
 1 Bedeck // Bedazzle (RVR) 244
 1 Behind the Mask (MKM) 39
 2 Bejeweled Warg (HOB) 117 *F*
-1 Belladonna Took (HOB) 4
 1 Belladonna Took (HOB) 4 *F*
 1 Belladonna Took (HOB) 214 *F*
 1 Benthic Criminologists (MKM) 40
@@ -94,18 +98,18 @@
 1 Bilbo, Luckwearer // Burglar's Plot (HOB) 32 *F*
 1 Bilbo, Luckwearer // Burglar's Plot (HOB) 218
 1 Bilbo's Burglaring (HOC) 10
-4 Bilbo's Deadly Slice (HOB) 62
+3 Bilbo's Deadly Slice (HOB) 62
 2 Bilbo's Gambit (HOB) 5
 1 Binding the Old Gods (EOC) 52
 1 Biomechan Engineer (EOE) 213
 2 Biorganic Carapace (SPM) 124
 1 Bite Down (FDN) 212
-1 Black Market Connections (MSC) 155
 1 Black Panther, Vanguard (MSH) 207
 1 Black Panther, Vanguard (MSH) 207 *F*
 1 Black Tom Cassidy (MSC) 715 *F*
 1 Black Widow, Double Agent (MSH) 208
 1 Black Widow, Super Spy (MSH) 393 *F*
+1 Blade of Shared Souls (ONE) 42
 1 Bladebrand (RVR) 68
 1 Blasphemous Edict (FDN) 57
 1 Blazing Crescendo (FRA) 75 *F*
@@ -115,7 +119,6 @@
 1 Blighted Blackthorn (ECL) 90
 1 Blind Hunter (RVR) 166
 1 Blitz Leech (IKO) 74
-1 Blood on the Snow (KHM) 79
 1 Bloodfire Expert (KTK) 101
 1 Blue Mage's Cane (FIC) 35
 1 Bofur, Reliable Guardian // Concerted Care (HOB) 6
@@ -140,13 +143,13 @@
 4 Boughside Wanderers (HOB) 121
 1 Boulderborn Dragon (TDM) 323 *F*
 3 Bounce Off (DFT) 39
-1 Braids, Arisen Nightmare (EOC) 82
 1 Brambleback Brute (ECL) 128
 2 Brave Brawler (MSH) 8
 1 Brave Brawler (MSH) 8 *F*
 1 Breaking of the Fellowship (LTR) 117
 1 Brigid's Command (ECL) 208 *F*
 2 Brilliance Unleashed (TMT) 141
+1 Broadcast Rambler (DFT) 293
 1 Broadside Barrage (DFT) 192 *F*
 1 Broken Wings (DFT) 156
 1 Bruenor Battlehammer (AFR) 219
@@ -174,10 +177,7 @@
 1 Carom (RVR) 12
 1 Casey Jones, Jury-Rig Justiciar (TMT) 87
 1 Casey Jones, Jury-Rig Justiciar (TMT) 87 *F*
-1 Celebrate the Mountain-king (HOB) 7
 2 Celebrate the Mountain-king (HOB) 7 *F*
-1 Chainer's Edict (DMR) 425
-1 Champions from Beyond (FIC) 11
 1 Chaos Spewer (ECL) 210
 1 Charge the Sanctum (FRA) 125 *F*
 2 Cheering Crowd (SPM) 126
@@ -185,15 +185,16 @@
 1 Chief Warg's Company (HOB) 151
 3 Chitin Gravestalker (DFT) 79
 1 Chocobo Racetrack (FIN) 179
+1 Choked Estuary (FIC) 379
 1 Choreographed Sparks (SOS) 111
 1 Chrome Companion (EOE) 236
 1 Cid, Timeless Artificer (FIN) 412
 1 Circle of Power (FIN) 92
 2 Circular Logic (DMR) 42
-1 Clachan Festival (ECL) 10
 1 Clamorous Ironclad (DFT) 117
 1 Clamorous Ironclad (DFT) 312
 1 Clash of Elements (FRA) 126 *F*
+1 Cleansing Nova (FIC) 235
 1 Clifftop Lookout (BLB) 168
 1 Cloudfin Raptor (RVR) 37
 1 Cloudspire Captain (DFT) 9
@@ -203,20 +204,21 @@
 2 Codie, Ravenous Codex (FRA) 168
 1 Collective Inferno (ECL) 132
 3 Collision Course (DFT) 10
-1 Commander's Sphere (ECC) 139
-1 Common Crook (SPM) 53
 1 Compel Brutality (FRA) 101 *F*
 4 Confusticate and Bebother (HOB) 35
 2 Congregate (DMR) 4
+1 Contaminated Aquifer (FIC) 383
 1 Corpseberry Cultivator (BLB) 210
 1 Cosmic Larva (5DN) 63
 1 Costume Closet (SPM) 5
 1 Countersculpt (FRA) 25 *F*
+1 Country Roads (DFT) 253
 1 Courier of Comestibles (TMT) 112
 1 Coveted Jewel (FIC) 341
 1 Crackling Cyclops (FDN) 83
 1 Cragplate Baloth (ZNR) 183
 1 Crossbones, Malicious Mercenary (MSH) 91
+1 Crossroads Village (FIN) 276
 1 Crossroads Watcher (ECL) 173 *F*
 2 Crowd of True Believers (MSH) 14
 3 Crude Bent Blade (HOB) 63
@@ -242,11 +244,14 @@
 2 Daring Mechanic (DFT) 11
 1 Dark Endurance (EOE) 93
 1 Dark Endurance (EOE) 93 *F*
+1 Dark Knight's Greatsword (FIN) 95
 1 Dark Withering (DMR) 79
 1 Darksteel Angel (FRC) 13
+1 Darksteel Mutation (SOC) 142
+1 Darksteel Plate (2X2) 304
+1 Darkwater Catacombs (FIC) 384
 1 Dawn's Light Archer (ECL) 174
 1 Dawnhand Eulogist (ECL) 99
-1 Daxos, Blessed by the Sun (THB) 258
 1 Deadapult (DMR) 115
 1 Deadlock Trap (KLD) 204
 1 Deadwood Treefolk (DMR) 155
@@ -260,20 +265,22 @@
 2 Delighted Halfling (LTR) 158
 1 Delta Bloodflies (TDM) 77
 1 Deluge Virtuoso (SOS) 42
+1 Demolition Field (FIC) 385
 1 Demonic Rising (AVR) 94
 4 Dependable Quinjet (MSH) 246
 1 Depressurize (EOE) 95
 1 Descendant of Storms (TDM) 8
+1 Desolate Mire (FIC) 386
 2 Desolation of Smaug (HOB) 93
 1 Desolation of Smaug (HOB) 226
 3 Desolation Prowler (HOB) 64
 1 Desperate Futurescribe (FRA) 129 *F*
 1 Dig Site Inventory (SOS) 10
 1 Dig Through Time (FIC) 263
-1 Dimir House Guard (RVR) 73
 1 Dinosaur Stampede (XLN) 140
 1 Dirgur Island Dragon // Skimming Strike (TDM) 40
 1 Disinformation Campaign (MKC) 208
+1 Dismal Backwater (DFT) 254
 1 Diversion Unit (DFT) 41
 2 Doc Ock, Sinister Scientist (SPM) 29
 2 Doc Ock's Henchmen (SPM) 30
@@ -281,6 +288,7 @@
 2 Dodecapod (DMR) 220
 1 Donatello, Gadget Master (TMT) 35
 1 Doom Reigns Supreme (MSH) 96
+1 Doomfall (MSC) 795
 5 Dori, Bearer of Friends (HOB) 94
 1 Down in the Valley (HOB) 124
 3 Down, Down to Goblin-town (HOB) 65
@@ -296,6 +304,7 @@
 1 Dream Seizer (ECL) 101
 1 Dreamdew Entrancer (BLB) 211
 1 Drift of Phantasms (RVR) 42
+1 Drowned Catacomb (FIC) 388
 1 Dual-Sun Technique (EOE) 13
 2 Dubious Delicacy (EOE) 96
 5 Duskwatch Hunter (HOB) 153
@@ -305,14 +314,13 @@
 2 Dwarven Mauler (HOB) 95
 4 Dwarven Provisioner (HOB) 9
 2 Dwarven Provisioner (HOB) 9 *F*
-3 Dwarven Shortsword (HOB) 10
+4 Dwarven Shortsword (HOB) 10
 1 Dynamite Diver (DFT) 123
 1 Eagle of the Great Shelf (HOB) 11
 2 Eagle's Rescue (HOB) 155
 1 Eardrum Rattler (FRA) 81
 1 Eddie Brock // Venom, Lethal Protector (SPM) 55
 1 Eddie Brock // Venom, Lethal Protector (SPM) 224
-1 Edgar, Ancient Bloodlord (FRA) 270 *F*
 1 Edgar, Moonlit Sovereign (FRA) 257 *F*
 2 Edge Rover (EOE) 179
 2 Eerie Gravestone (SPM) 163
@@ -340,12 +348,12 @@
 1 Entrust the Spark (FRA) 350
 1 EPF Point Squad (TMT) 145
 1 Epic Fight (MSH) 166
-1 Erode (SOS) 15
 1 Errand-Rider of Gondor (LTR) 11
 3 Esgaroth Garrison (HOB) 13
 1 Esgaroth Garrison (HOB) 13 *F*
 1 Estinien Varlineau (FIC) 82
 2 Evil Eye of Orms-by-Gore (DMR) 83
+1 Evolving Wilds (LTC) 306
 1 Expel (STX) 18
 1 Explore (WHO) 231
 1 Expressive Firedancer (SOS) 114
@@ -358,8 +366,6 @@
 1 Faller's Faithful (EOE) 100
 1 Fandaniel, Telophoroi Ascian (FIC) 46
 1 Fang-Druid Summoner (DFT) 163
-1 Faramir, Field Commander (LTR) 303
-1 Fatal Push (FCA) 9
 1 Fate of the Sun-Cryst (FIN) 19
 1 Fatehold Charm (FRA) 132
 1 Fatehold Chronologist // Peer Review (FRA) 133
@@ -370,8 +376,10 @@
 1 Feisty Spikeling (ECL) 223
 1 Ferocity of the Hunt (FRA) 134 *F*
 1 Festering Goblin (DMR) 85
+1 Fierce Guardianship (CMM) 94
 1 Fíli and Kíli, Joyous (HOC) 1
 2 Fíli the Pathfinder (HOB) 14
+1 Final Judgment (FIC) 243
 2 Fire // Ice (DMR) 215
 1 Fire // Ice (MH2) 290
 1 Fishing Pole (FDN) 128
@@ -381,6 +389,7 @@
 1 Flash Thompson, Spider-Fan (SPM) 7
 1 Flashfreeze (FDN) 590
 1 Fleeting Distraction (FDN) 155
+1 Fleetwheel Cruiser (KLD) 214
 1 Flickering Hound (FRA) 359
 1 Flood of Recollection (CMR) 61
 1 Floodgate (DMR) 49
@@ -395,11 +404,13 @@
 1 Fortress Kin-Guard (TDM) 12
 1 Fractal (TSOS) 4
 1 Fractured Powerstone (MOC) 357
+1 Frantic Search (TDC) 153
 1 Frenzied Baloth (EOE) 183
 1 Frog Butler (TMT) 114
 4 Front Porch Sentries (HOB) 67
 1 Front Porch Sentries (HOB) 67 *F*
 1 Frostbite Pyromental (FRA) 135
+1 Frozen in Ice (MSH) 54
 1 Fulminous Forte (FRA) 84 *F*
 1 G'raha Tia, Scion Reborn (FIC) 3 *F*
 1 Galadhrim Bow (LTR) 167
@@ -421,7 +432,6 @@
 1 Garruk, Veiled Butcher (FRA) 303
 1 Gastal Raider (DFT) 86
 2 Gathering of Darkness (HOB) 68
-1 Generous Revival (FRA) 8 *F*
 1 Germinating Wurm (EOE) 187
 3 Getaway Barrel (HOB) 98
 1 Ghalta the Unstoppable (FRA) 260 *F*
@@ -436,6 +446,7 @@
 1 Gigantic Big Bear (HOB) 126
 1 Gigantoad (FIN) 187
 1 Gigastorm Titan (EOE) 57
+1 Glacial Fortress (FIC) 400
 1 Gleaming Barrier (FDN) 252
 1 Gleaming Splendor (HOB) 239
 1 Glintwing Invoker (DMR) 52
@@ -454,8 +465,9 @@
 2 Goblin Turncoat (DMR) 87
 6 Goblin-town Flunkies (HOB) 100
 2 Goblin-town Flunkies (HOB) 100 *F*
+1 Goldwarden's Helm (ONE) 13
 1 Golgari Raiders (GRN) 130
-2 Gollum the Abandoned (HOB) 72
+1 Gollum the Abandoned (HOB) 72
 1 Gollum, Patient Plotter (LTR) 309 *F*
 6 Gollum, Silent Slinker // Meager Meal (HOB) 71
 1 Goobbue Gardener (FIN) 188
@@ -474,19 +486,20 @@
 1 Griffin Guide (DMR) 8
 1 Grim Bauble (DFT) 88
 1 Grim Javelineer (DFT) 89
-1 Gríma Wormtongue (LTR) 88
 1 Gristle Glutton (ECL) 144
 1 Grond, the Gatebreaker (LTR) 89
 1 Groundskeeper (EOC) 97
 2 Grow Extra Arms (SPM) 101
 4 Guardian of the Halls (HOB) 127
 1 Guerrilla Gorilla (MSH) 169
+1 Guidelight Pathmaker (DFT) 206
 4 Gundabad Opportunist (HOB) 101
 1 Guy in the Chair (SPM) 102
 2 H.E.R.B.I.E. Scout Unit (MSH) 247
 1 Haazda Officer (M20) 305
 1 Hallway Heckler // Vicious Verse (FRA) 85 *F*
 1 Haste Magic (FIN) 140 *F*
+1 Haunted Hellride (DFT) 208
 1 Hawkeye's Bow (MSH) 132
 2 Hazard of the Dunes (DFT) 165
 1 Head of the Hunt (HOB) 224
@@ -502,11 +515,9 @@
 1 Heroes for Hire (MSC) 688 *F*
 2 Heroes' Hangout (SPM) 79
 1 Hex Magic (MSH) 133
-1 Hexhaven Battalion (FRA) 12 *F*
+1 Hexgold Hoverwings (ONE) 14
 2 High-Flying Ace (TMT) 9
-1 Hildibrand Manderville // Gentleman's Rise (FIC) 83
 3 Hobgoblin, Mantled Marauder (SPM) 80
-1 Hop to It (BLB) 16
 2 Horseshoe Crab (DMR) 55
 2 Hot Dog Cart (SPM) 164
 1 Hour of Defeat (MSH) 99
@@ -528,7 +539,7 @@
 1 I Am Iron Man (MSH) 58
 1 Ice Cream Kitty (TMT) 150
 1 Ichor Slick (DMR) 90
-1 Icy Manipulator (DMR) 225
+2 Icy Manipulator (DMR) 225
 1 Icy Reception (FRA) 30 *F*
 1 Identity Echo (FRA) 371 *F*
 1 Illusion // Reality (DMR) 213
@@ -536,6 +547,7 @@
 2 Illvoi Light Jammer (EOE) 60
 1 Impending Doom (THB) 139
 1 Imposing Vantasaur (IKO) 17
+1 Imprisoned in the Moon (INR) 69
 2 Improvised Armor (DMR) 10
 1 Infernal Scarring (M21) 105
 1 Inherited Envelope (LTR) 242
@@ -543,7 +555,6 @@
 1 Insatiable Skittermaw (EOE) 108
 2 Insectoid Exterminator (TMT) 64
 1 Inside Information (HOB) 76
-1 Inside Source (MKM) 19
 1 Inspiring Call (FDN) 226
 1 Interface Ace (DFT) 17
 1 Intimidation Tactics (DFT) 92
@@ -554,6 +565,7 @@
 1 Invigorating Boon (DMR) 164
 1 Invisible Woman, Sue Storm (MSH) 17
 1 Ioreth of the Healing House (LTR) 56
+1 Irenicus's Vile Duplication (CLB) 78
 1 Iron Fist, Living Weapon (MSH) 138 *F*
 1 Iron Giant (FIN) 260
 1 Iron Hills Blacksmith (HOB) 16
@@ -562,6 +574,8 @@
 3 Iron Hills Stalwart (HOB) 102
 1 Iron Lad, Diverging Destiny (MSH) 59
 1 Iron-Shield Elf (ECL) 108
+1 Island (EOE) 263
+1 Island (EOE) 270
 1 Ithilien Kingfisher (LTR) 58
 1 Jace, Reality Sculptor (FRA) 216 *F*
 1 Jace's Machinations (FRA) 32 *F*
@@ -585,7 +599,6 @@
 1 Kid Loki (MSH) 63
 1 Kíli the Resourceful (HOB) 17 *F*
 1 King of the Oathbreakers (LTR) 211
-1 Kingpin's Enforcers (MSH) 102
 1 Kiora of Salt and Sand (FRA) 273 *F*
 1 Kithkeeper (ECL) 23
 1 Kithkin (TECL) 7
@@ -619,22 +632,20 @@
 1 Leaden Fists (DMR) 57
 1 Leader, Super-Genius (MSH) 64
 1 Leonardo, Leader in Blue (TMT) 16
-1 Lethal Scheme (FIC) 277
 2 Lifecraft Engine (DFT) 234
 1 Light of Judgment (FIN) 144
 1 Lightning Reflexes (DMR) 128
 1 Lightning Strike (MSH) 142
 3 Lightshield Parry (DFT) 19
 1 Lightwheel Enhancements (DFT) 20
-1 Liliana the Faultless (FRA) 293
 1 Liliana the Faultless (FRA) 293 *F*
 2 Liminal Hold (ECL) 24
-1 Lingering Souls (FIC) 245
+1 Lithoform Engine (ZNR) 245
 4 Little Bear (HOB) 128
 1 Living Brain, Mechanical Marvel (SPM) 167
 1 Living Library (FRA) 172 *F*
 3 Long Lake Nuisance (HOB) 45
-7 Long-Bodied Grey Dog (HOB) 1
+6 Long-Bodied Grey Dog (HOB) 1
 1 Long-Lost Lances (HOC) 7
 1 Long-Lost Lances (HOC) 7 *F*
 1 Loot, the Anomaly (FRA) 232 *F*
@@ -649,17 +660,18 @@
 1 Lurking Lizards (SPM) 107 *F*
 1 Lyse Hext (FIC) 88
 1 Macetail Hystrodon (DMR) 130
+1 Machinist's Arsenal (FIN) 23
 3 Madame Web, Clairvoyant (SPM) 36
 2 Mage Tower Referee (SOS) 249
 1 Magic Damper (FIN) 61
 1 Magic Pot (FIN) 263
+1 Magitek Armor (FIN) 24
 2 Magmakin Artillerist (DFT) 137
 6 Magnificent End (HOB) 20
 1 Make Your Move (FDN) 143
 1 Man-o'-War (DMR) 58
 1 Many Partings (LTR) 445 *F*
 1 Maralen, Fae Ascendant (ECL) 233
-1 Marauding Blight-Priest (FDN) 178
 1 Marauding Mako (DFT) 138
 1 Mardu Siegebreaker (TDM) 364 *F*
 1 Marked by Honor (W16) 2
@@ -688,12 +700,12 @@
 2 Millikin (TDC) 321
 1 Mimeoplasm, Revered One (DFT) 214
 1 Mindspring Merfolk (DFT) 51 *F*
-1 Mirkwood Bats (LTR) 95
 1 Mirkwood Bats (LTR) 421 *F*
 4 Mirkwood Meditator (HOB) 48
 4 Mirkwood Nurturer (HOB) 160
 1 Mirkwood Pathmaker (HOB) 129
 1 Mirkwood Spider (LTR) 178
+1 Mirran Bardiche (ONE) 22
 1 Mischievous Mystic (FDN) 47
 1 Mister Fantastic, Reed Richards (MSH) 320
 2 Mister Negative (SPM) 135
@@ -717,13 +729,12 @@
 1 Mouser Mark III (TMT) 159
 1 Mu Yanling, Wind Rider (DFT) 52
 1 Mugging (RVR) 119
-1 Murderous Rider // Swift End (FIC) 279
+1 Multiversal Recruitment (MSC) 629
 1 Mysidian Elder (FIN) 145
 2 Mysterio, Master of Illusion (SPM) 37
 3 Mysterio's Phantasm (SPM) 38
 2 Mystic Enforcer (DMR) 192
 1 Nashi, Moon's Legacy (MAT) 39
-1 Nasty End (LTR) 99
 3 Nasty Little Rabbit (HOB) 130
 2 Nasty Little Rabbit (HOB) 130 *F*
 1 Nebula Dragon (EOE) 147
@@ -735,19 +746,19 @@
 1 Nettle Guard (BLB) 23
 1 New Generation's Technique (TMT) 126
 2 News Helicopter (SPM) 169
+1 Nexus of Becoming (BIG) 25
 1 Night // Day (DMR) 214
 1 Nightblade Brigade (TDM) 85
 2 Nighthowl Pursuer (HOB) 78
 1 Nightshade Peddler (AVR) 187
 1 Nimbus of the Isles (BBD) 124
 2 Ninja of the Hand (MSH) 108
-1 Niv-Mizzet, Ghost Counsel (FRC) 10
 1 Nocturnal Hunger (BLB) 102
 2 Nomad Decoy (DMR) 17
 6 Nori, Teller of Tales (HOB) 161
 1 North Wind Avatar (TMT) 162
 1 Now for Wrath, Now for Ruin! (LTR) 24
-1 Oath of the Grey Host (LTR) 101 *F*
+1 Observed Stasis (FIC) 40
 4 Óin the Brave (HOB) 106
 3 Old Fat Spider (HOB) 132
 1 Old Fat Spider Can't See Me (HOB) 50 *F*
@@ -764,12 +775,14 @@
 1 Ori, Plate Stacker (HOC) 6 *F*
 2 Oscorp Research Team (SPM) 40
 1 Otterball Antics (BLB) 63
+1 Out of Time (MH2) 23
 1 Overkill (FIN) 109
 1 Ovinize (DMR) 63
 1 Owlin Historian (SOS) 24
 1 Pacifism (BBD) 101
 1 Pain // Suffering (DMR) 209
 2 Pain 101 (TMT) 69
+1 Paladin's Arms (FIN) 28
 2 Panther Pounce (MSH) 29
 1 Papalymo Totolymo (FIC) 90
 1 Part in Friendship (HOB) 134
@@ -786,7 +799,6 @@
 1 Pestered Wellguard (ECL) 63
 1 Peter Parker's Camera (SPM) 171 *F*
 1 Phantom Flock (DMR) 20
-1 Phial of Galadriel (LTR) 248
 1 Phyrexian Debaser (DMR) 97
 1 Pia, Aether Ascetic (FRA) 264
 2 Pia, Aether Ascetic (FRA) 264 *F*
@@ -802,15 +814,21 @@
 2 Pippin's Bravery (LTR) 414 *F*
 1 Pit Automaton (DFT) 238
 1 Pizza Face, Gastromancer (TMT) 163
+1 Plains (LTR) 262
+1 Plains (LTR) 272
 1 Plan for All Outcomes (FRA) 35 *F*
 7 Plunder the Trollshaws (HOB) 51
 2 Plunder the Trollshaws (HOB) 51 *F*
 1 Political Triumph (MSH) 31 *F*
 1 Pompous Battlemage // Improvised Act (FRA) 90 *F*
+1 Ponder (TDC) 159
+1 Port Town (FIC) 412
 1 Pothole Mole (DFT) 176
 1 Predictive Preparations (FRA) 16 *F*
+1 Preordain (TDC) 161
 1 Prescient Chimera (THS) 59
 1 Primordial Pachyderm (TMT) 129
+1 Prodigy's Prototype (NEO) 231
 2 Professional Wrestler (SPM) 110
 1 Proft, Consulting Detective (FRA) 218
 1 Proft, Sinister Mastermind (FRA) 235
@@ -828,6 +846,7 @@
 1 Push the Limit (DFT) 143
 1 Pym Particles (MSH) 70
 1 Pyre Rhymer // Molten Tide (FRA) 91 *F*
+1 Quantum Misalignment (MSC) 152
 6 Quarrel (HOB) 135
 1 Queen Brahne (FIN) 149
 1 Quickbeam, Upstart Ent (LTR) 183
@@ -844,7 +863,7 @@
 1 Raft Security Officer (MSH) 33
 4 Rage into the Valley (HOB) 79
 1 Rage into the Valley (HOB) 79 *F*
-1 Rage into the Valley (HOB) 200
+2 Rage into the Valley (HOB) 200
 5 Ragged Short Spear (HOB) 108
 1 Ragost, Deft Gastronaut (EOE) 224 *F*
 1 Rakdos Charm (EOC) 125
@@ -866,8 +885,10 @@
 1 Refute Destiny (FRA) 361 *F*
 2 Regal Imperiosaur (DFT) 177
 1 Relentless X-ATM092 (FIN) 268
+1 Relic of Legends (FIC) 354
+1 Render Silent (GK2) 18
+1 Renewed Faith (DMR) 23
 2 Rent Is Due (SPM) 11
-1 Reprocess (7ED) 159
 1 Reptil, Dinomorpher (MSH) 182 *F*
 1 Repulsor Blast (MSH) 150
 1 Repurposed Enforcer (FRA) 335
@@ -875,11 +896,11 @@
 1 Requisition Raid (SOA) 10
 1 Reroute Systems (EOE) 31
 1 Rescue Leopard (TDM) 116
-1 Resolute Reinforcements (FDN) 145
 1 Restore with Empathy (FRA) 112 *F*
 1 Retrieve the Esper (FIN) 68
 1 Return to the Light Realms (FRA) 323
 5 Reverent Howl (HOB) 81
+1 Rewind (M21) 63
 1 Rewrite History (MSH) 71 *F*
 2 Rhino's Rampage (SPM) 141
 1 Rhovanion Rampager (HOB) 82
@@ -892,6 +913,7 @@
 2 Risky Research (SPM) 62
 2 Risky Shortcut (DFT) 103
 1 Risky Shortcut (DFT) 103 *F*
+1 Rite of Replication (FIC) 270
 1 Riverguard's Reflexes (ECL) 33
 1 Roadside Blowout (DFT) 58
 1 Roadside Blowout (DFT) 58 *F*
@@ -939,8 +961,8 @@
 1 Seedglaive Mentor (BLB) 231
 1 Selfcraft Mechan (EOE) 74
 2 Selfless Police Captain (SPM) 12
-1 Send in the Pest (SOS) 100
 1 Send in the Pest (SOS) 100 *F*
+1 Sephiroth's Intervention (FIN) 116
 1 Serpent Specialist (MSH) 186
 1 Settle the Wreckage (HOB) 26
 1 Sewer-veillance Cam (TMT) 53
@@ -971,6 +993,7 @@
 1 Silvergill Peddler (ECL) 70
 1 Skilled Battlecarver (FRA) 92 *F*
 1 Skirk Prospector (DMR) 137
+1 Skycloud Expanse (FIC) 423
 1 Skyline Scout (GRN) 25
 1 Skyskipper Duo (BLB) 71 *F*
 4 Skyward Spider (SPM) 146
@@ -996,7 +1019,6 @@
 1 SP//dr, Piloted by Peni (SPM) 147
 2 Spark Spray (DMR) 141
 1 Specimen Freighter (EOE) 76 *F*
-1 Spectacular Spider-Man (SPM) 14
 3 Spectacular Tactics (SPM) 15
 1 Specter of the Fens (STX) 87
 1 Spectral Denial (TDM) 58
@@ -1028,7 +1050,6 @@
 1 Spiritcall Enthusiast // Scrollboost (SOS) 33
 1 Spiritmonger (DMR) 202
 1 Spite // Malice (DMR) 208
-1 Spiteful Squad (STX) 237
 1 Spring of Eternal Peace (PTK) 148
 1 Springleaf Drum (ECL) 260
 2 Sprouting Goblin (EOC) 90
@@ -1049,7 +1070,8 @@
 1 Sting, Bilbo's Sword (HOB) 178
 1 Sting, Bilbo's Sword (HOB) 178 *F*
 1 Stingerfling Spider (CMR) 258
-5 Stir Up Trouble (HOB) 84
+4 Stir Up Trouble (HOB) 84
+1 Stock Up (DFT) 67
 1 Stoic Grove-Guide (ECL) 243
 1 Stolen Stark Tech (MSH) 114
 2 Stone by Sunlight (HOB) 27
@@ -1078,6 +1100,8 @@
 1 Sun-Spider, Nimble Webber (SPM) 154
 1 Sundering Archaic (SOS) 3
 1 Sundial, Dawn Tyrant (DFT) 31
+1 Sunken Hollow (FIC) 429
+1 Sunken Ruins (FIC) 430
 1 Sunset Strikemaster (TDM) 126
 1 Super Speed (MSH) 154
 1 Super Strength (MSH) 189
@@ -1092,9 +1116,7 @@
 1 Swat Away (ECL) 75
 1 Swathcutter Giant (GRN) 202
 1 Swift Kick (KTK) 122
-1 Swords to Plowshares (FIC) 256
 1 Symbiotic Beast (DMR) 180
-1 Syphon Mind (FIC) 288
 1 Syr Vondam, the Lucent (EOE) 232
 2 Systems Override (EOE) 161
 1 Tackle Artist (SOS) 133
@@ -1102,6 +1124,8 @@
 1 Take Up the Shield (MSH) 39
 1 Tale of Tinúviel (LTR) 34
 1 Talisman of Conviction (TDC) 329
+1 Talisman of Dominance (FIC) 364
+1 Talisman of Progress (FIC) 367
 1 Tam, Observant Sequencer // Deep Sight (SOS) 237
 1 Tam's Resistance (FRA) 153 *F*
 1 Tamiyo, Upriser Crowned (FRC) 11
@@ -1120,7 +1144,6 @@
 1 Tetsuko Umezawa, Pursuer (FRA) 252 *F*
 1 Textbook Tabulator (SOS) 70
 1 Teyo, Diamondblade Mage (FRA) 306 *F*
-1 Teyo, Lightshield Expert (FRA) 295 *F*
 1 Thalia, the Survivor (FRA) 296 *F*
 1 Thancred Waters (FIC) 31
 1 Thaumaton Torpedo (EOE) 246
@@ -1129,7 +1152,7 @@
 1 The Black Arrow (HOB) 171 *F*
 1 The Black Breath (LTR) 78
 2 The Chief Warg (HOB) 150
-1 The Death of Gwen Stacy (SPM) 54
+2 The Death of Gwen Stacy (SPM) 54
 2 The Eagles Are Coming! (HOB) 12
 1 The Eagles Are Coming! (HOB) 12 *F*
 1 The Kingpin of Crime (MSH) 220
@@ -1148,6 +1171,7 @@
 1 Theorist's Proxy (FRA) 44 *F*
 1 Theorist's Proxy (FRA) 339
 1 Theorix Charm (FRA) 155 *F*
+1 Thief's Knife (FIN) 81
 1 Thieving Magpie (DMR) 68
 1 Thirst for Knowledge (MSH) 79
 1 Thorin Oakenshield (HOB) 165
@@ -1180,6 +1204,7 @@
 1 Tireless Missionaries (M15) 39
 1 Tokka & Rahzar, Terrible Twos (TMT) 171
 2 Tombstone, Career Criminal (SPM) 70
+1 Tome of Legends (FIC) 369
 1 Tomik, Distinguished Advokist (RVR) 31
 1 Tony Stark // The Invincible Iron Man (MSH) 80
 1 Too Evil to Stay Dead (MSH) 118
@@ -1192,10 +1217,12 @@
 1 Treacherous Werewolf (JUD) 76
 1 Treasure (TECL) 10
 1 Treasure (THOB) 12 *F*
+1 Trickbind (TSP) 88
 1 Trip Up (DFT) 71
 2 Troll Negotiations (HOB) 138
-2 Troop of Ponies (HOB) 3
+1 Troop of Ponies (HOB) 3
 1 Troop of Ponies (HOB) 3 *F*
+1 Tune Up (DFT) 33
 1 Twin Bolt (TDM) 128
 1 Twinmaw Stormbrood // Charring Bite (TDM) 232
 1 Twisted Fates (FRA) 158 *F*
@@ -1203,7 +1230,6 @@
 2 Ultimate Green Goblin (SPM) 157
 2 Ultron Drone (MSH) 253
 1 Ultron Drone (MSH) 253 *F*
-1 Unburied Earthcarver (TDM) 95
 1 Uncover the Moon-Letters (HOB) 57
 1 Undercover Skrull (MSH) 194
 1 Underfoot Underdogs (TDM) 129 *F*
@@ -1218,6 +1244,7 @@
 1 Unstoppable Plan (DFT) 72
 1 Unsummon (FRA) 46 *F*
 1 Unswerving Sloth (DFT) 34
+1 Unwind (DOM) 72
 1 Urianger Augurelt (FIC) 96
 1 Uruk-hai Berserker (LTR) 112
 1 Uurg, Spawn of Turg (EOC) 127
@@ -1238,9 +1265,9 @@
 1 Vision of Love (MSH) 158 *F*
 1 Vitu-Ghazi Inspector (MKM) 183 *F*
 1 Void Extrapolator // Omit Variables (FRA) 70
+1 Void Rend (FIC) 331
 1 Voidforged Titan (EOE) 125
 1 Volcanic Villain (MSH) 159
-1 Voracious Fell Beast (LTR) 113
 5 Vow to Erebor (HOB) 31
 1 Vraska, the Cutting Glare (FRA) 319
 1 Vraska, the Cutting Glare (FRA) 319 *F*
@@ -1266,6 +1293,8 @@
 4 Well-Worn Spatula (HOB) 180
 2 Well-Worn Spatula (HOB) 180 *F*
 1 Whisper Agent (CLU) 218
+1 Whispersilk Cloak (DSC) 257
+1 White Auracite (FIN) 41
 2 Whitemane Lion (DMR) 35
 3 Whoosh! (SPM) 48
 1 Widow's Bite (MSH) 122
@@ -1278,7 +1307,6 @@
 1 Winnowing (ECL) 43
 1 Winter Soldier, Icy Assassin (MSH) 239
 1 Winter, Team Player (FRA) 256 *F*
-1 Winter, Tormented Loner (FRA) 240 *F*
 1 Wojek Bodyguard (CLU) 154
 1 Wojek Investigator (MKM) 36
 6 Wood Elves (HOB) 142
@@ -1294,9 +1322,9 @@
 1 Wrecking Gecko (FRA) 120 *F*
 1 Wretched Anurid (DMR) 109
 1 Xu-Ifit, Osteoharmonist (EOE) 127
+1 Y'shtola, Night's Blessed (FIC) 7
 1 Yoshimaru, Beloved Companion (FRA) 209 *F*
 1 Yoshimaru, Scrappy Stray (FRA) 269 *F*
-1 Your Fate Ends Here (FRA) 24 *F*
 1 Zealous Lorecaster (SOS) 137
 1 Zog, Triceraton Castaway (TMT) 111
 1 Zoo Escapees (TMT) 138
