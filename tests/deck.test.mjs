@@ -123,7 +123,7 @@ test('applyUpgrades refuses a cut the mainboard cannot cover', () => {
   assert.throws(() => applyUpgrades(deck), /cuts 2 Forest, but the mainboard has 1/);
 });
 
-test('splitUpgrades moves cut copies, roles included, to swapOut and adds to the sideboard', () => {
+test('splitUpgrades moves cut copies, roles included, to swapOut and adds to considering', () => {
   const deck = {
     mainboard: [entry('Forest', 3, { role: 'land' }), entry('Example Spell', 1, { role: 'draw' })],
     upgrades: [
@@ -134,6 +134,6 @@ test('splitUpgrades moves cut copies, roles included, to swapOut and adds to the
   const split = splitUpgrades(deck);
   assert.deepEqual(split.mainboard, [entry('Forest', 2, { role: 'land' })]);
   assert.deepEqual(split.swapOut, [entry('Example Spell', 1, { role: 'draw' }), entry('Forest', 1, { role: 'land' })]);
-  assert.deepEqual(split.sideboard, [entry('Sol Ring'), entry('Wastes')]);
+  assert.deepEqual(split.considering, [entry('Sol Ring'), entry('Wastes')]);
   assert.equal(deck.mainboard[0].quantity, 3);
 });

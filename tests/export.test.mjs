@@ -60,16 +60,16 @@ test('printingChooser prefers the pin, then the most-owned non-proxy printing, t
   assert.deepEqual([...missing], ['Unknown Card', 'Forest']);
 });
 
-test('each format lists swap-out cards in the deck and sideboard cards outside it', () => {
+test('each format lists upgrade cards in the deck, and swap-out and considered cards outside it', () => {
   const withSideboard = {
     ...deck,
     mainboard: [entry('Forest', 98)],
     swapOut: [entry('Sol Ring', 1, { role: 'ramp', scryfall_id: RING_ID })],
-    sideboard: [entry('Example Spell', 1, { role: 'draw' })],
+    considering: [entry('Example Spell', 1, { role: 'draw' })],
   };
   assert.equal(
     exportDeck(withSideboard),
-    'Commander\n1 Example Leader\n\n98 Forest\n\nSwap Out\n1 Sol Ring\n\nSideboard\n1 Example Spell\n',
+    'Commander\n1 Example Leader\n\n98 Forest\n\nSwap Out\n1 Sol Ring\n\nConsidering\n1 Example Spell\n',
   );
   const withUpgradesIn = {
     ...deck,
@@ -79,7 +79,7 @@ test('each format lists swap-out cards in the deck and sideboard cards outside i
   assert.match(exportDeck(withUpgradesIn), /98 Forest\n\nUpgrades\n1 Sol Ring\n$/);
   assert.match(
     exportDeck(withUpgradesIn, { format: 'moxfield', printingOf }),
-    /Deck\n98 Forest\n\nSideboard\n1 Sol Ring \(CMR\) 472\n$/,
+    /Deck\n98 Forest\n1 Sol Ring \(CMR\) 472\n$/,
   );
   assert.match(
     exportDeck(withUpgradesIn, { format: 'archidekt', printingOf }),
@@ -87,10 +87,10 @@ test('each format lists swap-out cards in the deck and sideboard cards outside i
   );
   assert.match(
     exportDeck(withSideboard, { format: 'moxfield', printingOf }),
-    /Deck\n98 Forest\n1 Sol Ring \(CMR\) 472\n\nSideboard\n1 Example Spell\n$/,
+    /Deck\n98 Forest\n\nSideboard\n1 Sol Ring \(CMR\) 472\n\nConsidering\n1 Example Spell\n$/,
   );
   assert.match(
     exportDeck(withSideboard, { format: 'archidekt', printingOf }),
-    /98x Forest\n1x Sol Ring \(CMR\) 472 \[Swap Out\]\n1x Example Spell \[Sideboard\]\n$/,
+    /98x Forest\n1x Sol Ring \(CMR\) 472 \[Sideboard\]\n1x Example Spell \[Maybeboard\]\n$/,
   );
 });

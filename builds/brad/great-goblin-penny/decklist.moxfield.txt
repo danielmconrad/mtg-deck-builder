@@ -35,6 +35,8 @@ Deck
 1 Hell's Kitchen (MSH) 268
 9 Mountain (MDD) 298
 9 Swamp (MDD) 296
+
+Sideboard
 1 Chaos Spewer (ECL) 210
 1 Battle Cry Goblin (AFR) 132
 1 Great Ugly-Looking Goblin // Clap! Snap! (HOB) 223
@@ -46,7 +48,7 @@ Deck
 1 Bothersome Noisemaker (HOB) 89
 1 Fearsome Goblin Pair (HOB) 156
 
-Sideboard
+Considering
 1 Dreadhorde Invasion (FRC) 48
 1 Krenko, Baron of Tin Street (MKM) 135
 1 Siege-Gang Commander (PLST) DMR-136

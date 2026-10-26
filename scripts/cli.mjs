@@ -512,7 +512,7 @@ const COMMANDS = {
         type: 'string',
         placeholder: 'MODE',
         description:
-          'apply: make every upgrade swap, e.g. for playtesting; split: keep the deck, listing cuts under Swap Out and adds in the sideboard',
+          'apply: make every upgrade swap, e.g. for playtesting; split: list the kept cards as the deck, cuts in the sideboard and adds under Considering (Maybeboard in Archidekt)',
       },
       copy: { type: 'boolean', description: 'Copy to the clipboard instead of printing' },
       ...COLLECTION_OPTIONS,
@@ -522,7 +522,7 @@ const COMMANDS = {
     run: deckFiles,
     takesSlug: true,
     summary: 'Write the decklist files kept beside deck.yaml',
-    details: `Writes ${DECKLIST_FORMATS.map(decklistFile).join(' and ')} (upgrade cuts under Swap Out, adds in the sideboard) and, if the deck has upgrades, ${DECKLIST_FORMATS.map(upgradedDecklistFile).join(' and ')} (every swap made, adds under Upgrade). Overwrites them; rerun after every deck edit. Does not validate the deck.`,
+    details: `Writes ${DECKLIST_FORMATS.map(decklistFile).join(' and ')} (the kept cards, upgrade cuts in the sideboard, adds under Considering or Maybeboard) and, if the deck has upgrades, ${DECKLIST_FORMATS.map(upgradedDecklistFile).join(' and ')} (the full deck with every swap made). Overwrites them; rerun after every deck edit. Does not validate the deck.`,
     options: COLLECTION_OPTIONS,
   },
   'deck:upgrades': {

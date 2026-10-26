@@ -202,12 +202,12 @@ test('deck:export --upgrades apply exports the deck with every swap made', () =>
     assert.match(stderr.join(), /Applied 1 upgrade swaps(.|\n)*exported by name only: Sol Ring/);
   }));
 
-test('deck:export --upgrades split lists cuts under Swap Out and adds in the sideboard', () =>
+test('deck:export --upgrades split lists cuts under Swap Out and adds under Considering', () =>
   inWorkspace(async ({ cli, writeDeck, stdout }) => {
     const swap = { add: { name: 'Sol Ring', quantity: 1 }, cut: { name: 'Forest', quantity: 1 }, reason: 'Fixture' };
     await writeDeck({ ...casualDeck(), upgrades: [swap] });
     assert.equal(await cli('deck:export', 'fixture', '--upgrades', 'split'), 0);
-    assert.deepEqual(stdout, ['59 Forest\n\nSwap Out\n1 Forest\n\nSideboard\n1 Sol Ring']);
+    assert.deepEqual(stdout, ['59 Forest\n\nSwap Out\n1 Forest\n\nConsidering\n1 Sol Ring']);
     await assert.rejects(
       cli('deck:export', 'fixture', '--upgrades', 'maybe'),
       /--upgrades must be one of: apply, split/,
@@ -239,14 +239,14 @@ test('deck:files writes Archidekt and Moxfield lists, plus upgraded ones only wh
     assert.equal(await cli('deck:files', 'fixture'), 0);
     assert.equal(
       await read('decklist.archidekt.txt'),
-      '59x Forest (TST) 1\n1x Forest (TST) 1 [Swap Out]\n1x Sol Ring [Sideboard]\n',
+      '59x Forest (TST) 1\n1x Forest (TST) 1 [Sideboard]\n1x Sol Ring [Maybeboard]\n',
     );
     assert.equal(
       await read('decklist.moxfield.txt'),
-      'Deck\n59 Forest (TST) 1\n1 Forest (TST) 1\n\nSideboard\n1 Sol Ring\n',
+      'Deck\n59 Forest (TST) 1\n\nSideboard\n1 Forest (TST) 1\n\nConsidering\n1 Sol Ring\n',
     );
     assert.equal(await read('decklist-upgraded.archidekt.txt'), '59x Forest (TST) 1\n1x Sol Ring [Upgrade]\n');
-    assert.equal(await read('decklist-upgraded.moxfield.txt'), 'Deck\n59 Forest (TST) 1\n\nSideboard\n1 Sol Ring\n');
+    assert.equal(await read('decklist-upgraded.moxfield.txt'), 'Deck\n59 Forest (TST) 1\n1 Sol Ring\n');
     await assert.rejects(read('decklist.txt'), { code: 'ENOENT' });
     await assert.rejects(read('decklist-moxfield.txt'), { code: 'ENOENT' });
     assert.match(stdout.pop(), /Wrote builds\/fixture\/decklist.archidekt.txt, .*decklist-upgraded.moxfield.txt\.$/);

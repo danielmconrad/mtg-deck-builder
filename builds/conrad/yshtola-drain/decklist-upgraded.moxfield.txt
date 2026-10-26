@@ -74,8 +74,6 @@ Deck
 4 Plains (DFT) 278
 5 Island (DFT) 280
 5 Swamp (HOB) 191
-
-Sideboard
 1 Exquisite Blood (LCC) 195
 1 Sanguine Bond (C21) 153
 1 Vito, Thorn of the Dusk Rose (M21) 127

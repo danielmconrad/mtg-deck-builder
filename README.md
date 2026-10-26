@@ -85,7 +85,7 @@ mise run deck:export -- green-value --upgrades apply --copy   # every upgrade sw
 - **Moxfield:** create a deck and paste into Import, or replace an existing list with Bulk Edit. The export uses MTG Arena's `Commander`/`Deck`/`Sideboard` sections.
 - **Archidekt:** open a deck's Import menu, paste and save. Roles become Title Case categories and commanders get `[Commander{top}]`.
 - **Printings:** a pinned `scryfall_id` wins, then the printing you own in an available collection, then Scryfall's default printing if the cache came from bulk data, else any cached printing. The plain `text` format lists names only.
-- **Upgrades:** `--upgrades apply` makes every swap and lists the added cards in their own Upgrades section (an `Upgrade` category in Archidekt), so they're easy to select for buying. Moxfield's import has no custom sections, so there the added cards go in the sideboard instead of Deck. `--upgrades split` keeps the deck, lists the cards it would cut under Swap Out (still in the deck) and the cards it would add in the sideboard. Moxfield has no Swap Out section, so those cards stay in Deck.
+- **Upgrades:** `--upgrades apply` makes every swap. Moxfield gets the full upgraded deck in Deck; Archidekt tags the added cards with an `Upgrade` category, still in the deck, and the text format lists them under Upgrades. `--upgrades split` lists the cards the upgrades keep as the deck, the cards they would cut in the sideboard (Moxfield's `Sideboard` section, Archidekt's `Sideboard` category) and the cards they would add as candidates to buy (Moxfield's `Considering` section, Archidekt's `Maybeboard` category). Neither of those counts toward the deck, so the split deck is short by the number of swaps.
 
 ### Decklist files
 
@@ -96,8 +96,8 @@ mise run deck:files -- green-value
 ```
 
 - **`decklist.archidekt.txt`, `decklist.moxfield.txt`:** the deck exported with `--upgrades split`.
-- **`decklist-upgraded.archidekt.txt`, `decklist-upgraded.moxfield.txt`:** the deck exported with `--upgrades apply`: every swap made, with the added cards in an `Upgrade` category in Archidekt. They're written only when the deck has upgrades, and removed when it has none.
-- **Buying upgrades:** in Archidekt, select the `Upgrade` category of the upgraded list. In Moxfield, import `decklist-upgraded.moxfield.txt` and select its sideboard, which holds every upgrade card; its Deck section is the baseline with the cuts made, so it's short by the number of swaps.
+- **`decklist-upgraded.archidekt.txt`, `decklist-upgraded.moxfield.txt`:** the deck exported with `--upgrades apply`: the full deck with every swap made and no sideboard, with the added cards in an `Upgrade` category in Archidekt. They're written only when the deck has upgrades, and removed when it has none.
+- **Buying upgrades:** import `decklist.moxfield.txt` or `decklist.archidekt.txt` and select its Considering section (Maybeboard in Archidekt), which holds every upgrade card. Its Sideboard holds the cards they replace.
 
 `MTG_EXPORT_FORMAT` doesn't apply here. The files are overwritten on every run, and decklist files under older names (`decklist.txt`, `decklist-upgraded.txt`, `decklist-archidekt.txt` and so on) are removed, so rerun `deck:files` after every deck edit, including upgrade changes.
 

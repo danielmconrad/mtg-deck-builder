@@ -74,6 +74,8 @@ Deck
 4 Plains (DFT) 278
 5 Island (DFT) 280
 5 Swamp (HOB) 191
+
+Sideboard
 1 Unstoppable Plan (DFT) 72
 1 Archmage Emeritus (FIC) 261
 1 Lyse Hext (FIC) 88
@@ -91,7 +93,7 @@ Deck
 1 Thirst for Knowledge (MSH) 79
 1 Stock Up (DFT) 67
 
-Sideboard
+Considering
 1 Exquisite Blood (LCC) 195
 1 Sanguine Bond (C21) 153
 1 Vito, Thorn of the Dusk Rose (M21) 127

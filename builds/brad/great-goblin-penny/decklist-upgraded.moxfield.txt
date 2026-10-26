@@ -35,8 +35,6 @@ Deck
 1 Hell's Kitchen (MSH) 268
 9 Mountain (MDD) 298
 9 Swamp (MDD) 296
-
-Sideboard
 1 Dreadhorde Invasion (FRC) 48
 1 Krenko, Baron of Tin Street (MKM) 135
 1 Siege-Gang Commander (PLST) DMR-136

@@ -88,7 +88,7 @@ function takeCut(mainboard, cut) {
 }
 
 // The deck as it would be with every upgrade swap made. The added cards are kept apart in
-// upgradesIn, still part of the deck, so exports can show them in their own section for buying.
+// upgradesIn, still part of the deck, so text and Archidekt exports can mark them.
 // A later swap may cut an earlier add.
 export function applyUpgrades(deck) {
   let mainboard = deck.mainboard.map((entry) => ({ ...entry }));
@@ -105,7 +105,7 @@ export function applyUpgrades(deck) {
 }
 
 // The baseline deck split for review: swapOut holds the copies the upgrades would cut, keeping
-// their roles, and sideboard holds the cards the upgrades would add.
+// their roles, and considering holds the cards the upgrades would add.
 export function splitUpgrades(deck) {
   const mainboard = deck.mainboard.map((entry) => ({ ...entry }));
   const swapOut = [];
@@ -119,7 +119,7 @@ export function splitUpgrades(deck) {
     ...deck,
     mainboard: mainboard.filter((entry) => entry.quantity > 0),
     swapOut,
-    sideboard: (deck.upgrades ?? []).map(({ add }) => ({ ...add })),
+    considering: (deck.upgrades ?? []).map(({ add }) => ({ ...add })),
   };
 }
 

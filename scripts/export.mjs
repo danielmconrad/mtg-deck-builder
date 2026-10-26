@@ -2,10 +2,9 @@ import { roleLabels } from './deck.mjs';
 
 // Paste-ready decklists. Each format receives the deck and printingOf(entry), which returns the
 // cached printing to export for an entry, or null so the site picks its default printing. Optional
-// deck.swapOut lists deck cards proposed for cutting, deck.upgradesIn deck cards an applied upgrade
-// added, and deck.sideboard cards outside the deck. Arena-style lists have no section for swapOut, so
-// Moxfield keeps those cards in Deck. Moxfield puts upgradesIn in the sideboard instead of Deck, so
-// the cards to buy can be selected together; Deck then holds the baseline with the cuts made.
+// deck.upgradesIn lists deck cards an applied upgrade added. Optional deck.swapOut lists cards the
+// upgrades would cut and deck.considering cards they would add; both stay outside the deck, as the
+// Sideboard and Considering sections in Moxfield and the Sideboard and Maybeboard categories in Archidekt.
 
 // Picks each entry's printing: its pinned scryfall_id, else the non-proxy printing with the most
 // copies in the given collection rows (the earliest row wins a tie), else any cached printing.
@@ -42,7 +41,7 @@ function plainText(deck) {
   const commanderSection = deck.commanders.length ? `Commander\n${render(deck.commanders)}\n\n` : '';
   const section = (heading, entries) => (entries?.length ? `\n\n${heading}\n${render(entries)}` : '');
   const extraSections =
-    section('Upgrades', deck.upgradesIn) + section('Swap Out', deck.swapOut) + section('Sideboard', deck.sideboard);
+    section('Upgrades', deck.upgradesIn) + section('Swap Out', deck.swapOut) + section('Considering', deck.considering);
   return `${commanderSection}${render(deck.mainboard)}${extraSections}\n`;
 }
 
@@ -50,19 +49,21 @@ function plainText(deck) {
 function moxfield(deck, printingOf) {
   const line = (entry) => `${entry.quantity} ${entry.name}${printingSuffix(printingOf(entry))}`;
   const section = (heading, entries) => [heading, ...entries.map(line)].join('\n');
-  const sideboard = [...(deck.upgradesIn ?? []), ...(deck.sideboard ?? [])];
+  const optional = (heading, entries) => (entries?.length ? [section(heading, entries)] : []);
   const sections = [
-    ...(deck.commanders.length ? [section('Commander', deck.commanders)] : []),
-    section('Deck', [...deck.mainboard, ...(deck.swapOut ?? [])]),
-    ...(sideboard.length ? [section('Sideboard', sideboard)] : []),
+    ...optional('Commander', deck.commanders),
+    section('Deck', [...deck.mainboard, ...(deck.upgradesIn ?? [])]),
+    ...optional('Sideboard', deck.swapOut),
+    ...optional('Considering', deck.considering),
   ];
   return `${sections.join('\n\n')}\n`;
 }
 
 // Archidekt's line syntax: categories in brackets, with roles becoming Title Case categories
 // ("ramp" becomes "Ramp"). {top} marks Commander as a premier category so Archidekt treats those
-// cards as the commanders. Upgrade and Swap Out are plain categories, so those cards still count
-// toward the deck; Upgrade comes first so it is the card's primary category, then its roles. Sideboard is Archidekt's built-in category for cards outside the deck, so it stands alone.
+// cards as the commanders. Upgrade is a plain category, so those cards still count toward the deck;
+// it comes first so it is the card's primary category, then its roles. Sideboard and Maybeboard are
+// Archidekt's built-in categories for cards outside the deck, so they stand alone.
 function archidekt(deck, printingOf) {
   const line = (entry, categories) => {
     const tags = categories.length ? ` [${categories.join(',')}]` : '';
@@ -72,8 +73,8 @@ function archidekt(deck, printingOf) {
     ...deck.commanders.map((entry) => line(entry, ['Commander{top}'])),
     ...deck.mainboard.map((entry) => line(entry, roleLabels(entry).map(titleCase))),
     ...(deck.upgradesIn ?? []).map((entry) => line(entry, ['Upgrade', ...roleLabels(entry).map(titleCase)])),
-    ...(deck.swapOut ?? []).map((entry) => line(entry, ['Swap Out'])),
-    ...(deck.sideboard ?? []).map((entry) => line(entry, ['Sideboard'])),
+    ...(deck.swapOut ?? []).map((entry) => line(entry, ['Sideboard'])),
+    ...(deck.considering ?? []).map((entry) => line(entry, ['Maybeboard'])),
   ];
   return `${lines.join('\n')}\n`;
 }

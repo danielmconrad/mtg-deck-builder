@@ -3,7 +3,7 @@ schema_version: 1
 name: Edgar's Blood Tithe
 format: commander
 status: draft
-bracket: 3
+bracket: 2
 allow_proxies: false
 unlimited_basics: true
 collection_source:
@@ -11,9 +11,9 @@ collection_source:
 primer: >-
   Orzhov aristocrats. Flood the board with cheap tokens (Lingering Souls, Battle Screech, Hop to It, Champions from Beyond), then feed them to Edgar and the other sacrifice outlets. Every death gains life through Edgar, Daxos and Bastion of Remembrance, and Marauding Blight-Priest turns each lifegain into a drain on every opponent, so the board bleeds the table while Faramir, Braids, Kingpin's Enforcers and Niv-Mizzet refill the hand. Close with a menacing, counter-stacked Edgar, a sacrifice-everything Reprocess or a big Exsanguinate, and reset losing boards with Hour of Reckoning, which spares your tokens.
 power_notes: >-
-  Bracket 3 (Upgraded) baseline built only from Daniel's binders. No Game Changers (The One Ring is owned but deliberately kept out). No mass land denial, extra turns or two-card infinite combos; it wins by grinding drains. The upgrades add two-card infinite combos (Exquisite Blood with Marauding Blight-Priest or Sanguine Bond, Heliod with Walking Ballista) plus Diabolic Intent and Enlightened Tutor, which make it Bracket 4. Enlightened Tutor is its only Game Changer.
+  Bracket 2 (Core) baseline built only from Daniel's binders: no Game Changers, mass land denial, extra turns or two-card combos, and a slow 1-drain-per-death clock that wins around turn 9 or 10. The upgrades make it a real Bracket 4. They add three combos (Heliod with Walking Ballista from turn 4; Exquisite Blood with Marauding Blight-Priest or Vito; Karmic Guide, Reveillark and a free sacrifice outlet into Blood Artist, Zulaport Cutthroat, Cruel Celebrant, Elas il-Kor or Edgar with Blight-Priest). They also add fast mana (Dark Ritual, Orzhov Signet, Fellwar Stone, Ashnod's Altar), tutors (Demonic Tutor and Enlightened Tutor, both Game Changers, plus Diabolic Intent), Skullclamp, cheap instant-speed interaction, and Grand Abolisher and Silence to protect the combo turn.
 budget:
-  amount: 150
+  amount: 250
   currency: USD
 commanders:
   - name: Edgar, Ancient Bloodlord
@@ -256,37 +256,13 @@ mainboard:
     role: removal,synergy
 upgrades:
   - add:
-      name: Exquisite Blood
-      quantity: 1
-      role: wincon
-    cut:
-      name: Authority of the Consuls
-      quantity: 1
-    reason: 'Combo: with Marauding Blight-Priest or Sanguine Bond, each drain gains life and each gain drains, killing the table. Also turns Bastion and Mirkwood Bats triggers into extra drains.'
-  - add:
-      name: Sanguine Bond
-      quantity: 1
-      role: wincon
-    cut:
-      name: Hop to It
-      quantity: 1
-    reason: "Combo: a second Exquisite Blood partner, so one removal spell on Blight-Priest doesn't end the plan."
-  - add:
-      name: Bloodthirsty Conqueror
-      quantity: 1
-      role: wincon
-    cut:
-      name: Inside Source
-      quantity: 1
-    reason: "Combo: a creature copy of Exquisite Blood's effect, pairing with Blight-Priest or Sanguine Bond."
-  - add:
       name: Heliod, Sun-Crowned
       quantity: 1
       role: synergy
     cut:
-      name: Resolute Reinforcements
+      name: Liliana the Faultless
       quantity: 1
-    reason: 'Combo: with Walking Ballista (lifelink from Heliod) every ping gains life and adds a counter for infinite damage. Also grows Edgar on every lifegain.'
+    reason: 'Combo: Heliod gives Walking Ballista lifelink, so each ping gains life and adds a counter for infinite damage, as early as turn 4. Indestructible, and it also grows Edgar on every lifegain.'
   - add:
       name: Walking Ballista
       quantity: 1
@@ -294,7 +270,39 @@ upgrades:
     cut:
       name: Common Crook
       quantity: 1
-    reason: 'Combo: Heliod partner; also a flexible mana sink and removal on its own.'
+    reason: "Combo: Heliod's partner. Also a mana sink and repeatable removal on its own."
+  - add:
+      name: Exquisite Blood
+      quantity: 1
+      role: wincon
+    cut:
+      name: Authority of the Consuls
+      quantity: 1
+    reason: 'Combo: with Marauding Blight-Priest or Vito, each drain gains life and each gain drains, killing the table. Also doubles up Bastion, Blood Artist and Zulaport triggers.'
+  - add:
+      name: Vito, Thorn of the Dusk Rose
+      quantity: 1
+      role: wincon
+    cut:
+      name: Spiteful Squad
+      quantity: 1
+    reason: "Combo: a 3-mana Exquisite Blood partner, so one removal spell on Blight-Priest doesn't end the plan."
+  - add:
+      name: Karmic Guide
+      quantity: 1
+      role: synergy
+    cut:
+      name: Hexhaven Battalion
+      quantity: 1
+    reason: 'Combo: Karmic Guide, Reveillark and any free sacrifice outlet (Viscera Seer, Carrion Feeder, Dimir House Guard) loop forever, so every death payoff, or Edgar plus Blight-Priest, kills the table. Both pieces are under $1.'
+  - add:
+      name: Reveillark
+      quantity: 1
+      role: synergy
+    cut:
+      name: Oath of the Grey Host
+      quantity: 1
+    reason: "Combo: Karmic Guide's partner. When it leaves it returns Karmic Guide and a sacrifice outlet; also good value after a wipe."
   - add:
       name: Viscera Seer
       quantity: 1
@@ -304,13 +312,109 @@ upgrades:
       quantity: 1
     reason: "Free sacrifice outlet with scry, so combos and death triggers don't need mana."
   - add:
-      name: Diabolic Intent
+      name: Carrion Feeder
       quantity: 1
       role: synergy
     cut:
-      name: Night's Whisper
+      name: Winter, Tormented Loner
       quantity: 1
-    reason: 'Tutor that sacrifices a token as its cost, finding whichever combo piece is missing.'
+    reason: 'A second free 1-mana sacrifice outlet for the Reveillark loop.'
+  - add:
+      name: Blood Artist
+      quantity: 1
+      role: wincon
+    cut:
+      name: Belladonna Took
+      quantity: 1
+    reason: 'Drains a player on every death, yours or theirs; a payoff for the Reveillark loop.'
+  - add:
+      name: Zulaport Cutthroat
+      quantity: 1
+      role: wincon
+    cut:
+      name: Send in the Pest
+      quantity: 1
+    reason: 'Drains every opponent whenever your creatures die; a payoff for the Reveillark loop.'
+  - add:
+      name: Cruel Celebrant
+      quantity: 1
+      role: wincon
+    cut:
+      name: Hop to It
+      quantity: 1
+    reason: 'An Orzhov Zulaport: drains every opponent on each death and works with planeswalkers too.'
+  - add:
+      name: Elas il-Kor, Sadistic Pilgrim
+      quantity: 1
+      role: synergy,wincon
+    cut:
+      name: Inside Source
+      quantity: 1
+    reason: "Gains life on each creature entering and drains on each death, so it's another loop payoff and feeds Blight-Priest."
+  - add:
+      name: Teysa Karlov
+      quantity: 1
+      role: synergy
+    cut:
+      name: Gollum the Abandoned
+      quantity: 1
+    reason: 'Doubles every death trigger (Edgar, Bastion, Blood Artist, Zulaport), and gives tokens lifelink to feed Blight-Priest and Vito.'
+  - add:
+      name: Pitiless Plunderer
+      quantity: 1
+      role: ramp,synergy
+    cut:
+      name: Hot Dog Cart
+      quantity: 1
+    reason: 'Makes a Treasure on every death, turning a sacrifice turn into a combo turn.'
+  - add:
+      name: "Ashnod's Altar"
+      quantity: 1
+      role: ramp,synergy
+    cut:
+      name: "Commander's Sphere"
+      quantity: 1
+    reason: "Free sacrifice outlet that makes two mana per creature, paying for Heliod's lifelink or Edgar's ability."
+  - add:
+      name: Skullclamp
+      quantity: 1
+      role: draw
+    cut:
+      name: Syphon Mind
+      quantity: 1
+    reason: 'The best draw engine for 1/1 tokens: equip for 1, sacrifice, draw two.'
+  - add:
+      name: Dark Ritual
+      quantity: 1
+      role: ramp
+    cut:
+      name: Phial of Galadriel
+      quantity: 1
+    reason: 'Fast mana for an early Heliod, Vito or Blight-Priest.'
+  - add:
+      name: Orzhov Signet
+      quantity: 1
+      role: ramp
+    cut:
+      name: Night Market
+      quantity: 1
+    reason: 'Cheaper ramp than a tapped land; the deck goes to 34 lands with nine cheap mana sources.'
+  - add:
+      name: Fellwar Stone
+      quantity: 1
+      role: ramp
+    cut:
+      name: Long-Bodied Grey Dog
+      quantity: 1
+    reason: 'Another 2-mana rock to speed up the combo turn.'
+  - add:
+      name: Demonic Tutor
+      quantity: 1
+      role: synergy
+    cut:
+      name: Niv-Mizzet, Ghost Counsel
+      quantity: 1
+    reason: 'Game Changer. Finds whichever combo piece is missing for 2 mana.'
   - add:
       name: Enlightened Tutor
       quantity: 1
@@ -318,5 +422,101 @@ upgrades:
     cut:
       name: Aerith Rescue Mission
       quantity: 1
-    reason: 'Instant-speed tutor for Exquisite Blood, Sanguine Bond or Heliod.'
+    reason: "Game Changer. Instant-speed tutor for Exquisite Blood, Heliod, Walking Ballista, Ashnod's Altar or Skullclamp."
+  - add:
+      name: Diabolic Intent
+      quantity: 1
+      role: synergy
+    cut:
+      name: Clachan Festival
+      quantity: 1
+    reason: 'Tutor that sacrifices a token as its cost, triggering every death payoff.'
+  - add:
+      name: Grand Abolisher
+      quantity: 1
+      role: protection
+    cut:
+      name: Teyo, Lightshield Expert
+      quantity: 1
+    reason: "Stops opponents responding on your turn, so they can't break up the combo."
+  - add:
+      name: Silence
+      quantity: 1
+      role: protection
+    cut:
+      name: Resolute Reinforcements
+      quantity: 1
+    reason: 'One mana to lock opponents out of spells for the turn you go off.'
+  - add:
+      name: Infernal Grasp
+      quantity: 1
+      role: removal
+    cut:
+      name: "Bilbo's Deadly Slice"
+      quantity: 1
+    reason: 'Instant-speed kill for 2 instead of 3.'
+  - add:
+      name: Path to Exile
+      quantity: 1
+      role: removal
+    cut:
+      name: Erode
+      quantity: 1
+    reason: 'Instant-speed exile for 1; it hands over a land, as Erode does.'
+  - add:
+      name: Deadly Dispute
+      quantity: 1
+      role: draw,synergy
+    cut:
+      name: Troop of Ponies
+      quantity: 1
+    reason: 'Sacrifices a token or Treasure to draw two and make a Treasure.'
+  - add:
+      name: Village Rites
+      quantity: 1
+      role: draw,synergy
+    cut:
+      name: Reprocess
+      quantity: 1
+    reason: 'One mana: sacrifice a creature and draw two, at instant speed.'
+  - add:
+      name: Toxic Deluge
+      quantity: 1
+      role: wipe
+    cut:
+      name: Blood on the Snow
+      quantity: 1
+    reason: 'A 3-mana wipe that scales to any size of board, instead of 6 mana.'
+  - add:
+      name: Anguished Unmaking
+      quantity: 1
+      role: removal
+    cut:
+      name: Celebrate the Mountain-king
+      quantity: 1
+    reason: 'Instant-speed exile for any nonland permanent.'
+  - add:
+      name: Mortify
+      quantity: 1
+      role: removal
+    cut:
+      name: Your Fate Ends Here
+      quantity: 1
+    reason: 'Instant-speed answer to creatures and enchantments.'
+  - add:
+      name: Midnight Reaper
+      quantity: 1
+      role: draw,synergy
+    cut:
+      name: Generous Revival
+      quantity: 1
+    reason: 'Draws a card whenever a nontoken creature of yours dies.'
+  - add:
+      name: Snuff Out
+      quantity: 1
+      role: removal
+    cut:
+      name: Lethal Scheme
+      quantity: 1
+    reason: 'Owned already (no cost). Free instant removal for 4 life with a Swamp out.'
 playtests: []
