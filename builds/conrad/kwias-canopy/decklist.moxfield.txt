@@ -1,0 +1,92 @@
+Commander
+1 Kwia Vigorbloom (FRA) 352
+
+Deck
+1 Blossoming Sands (DFT) 252
+1 Gathering Place (MSH) 266
+1 Suburban Sanctuary (SPM) 185
+1 Evolving Wilds (FIC) 389
+1 Ash Barrens (FIC) 374
+17 Forest (HOB) 198
+12 Plains (FRA) 384
+1 Arcane Signet (FIC) 335
+1 Great Forest Druid (ECL) 178
+1 Three Tree Rootweaver (BLB) 198
+1 Frog Butler (TMT) 114
+1 Guy in the Chair (SPM) 102
+1 Wood Elves (HOB) 142
+1 Clifftop Lookout (BLB) 168
+1 Long-Bodied Grey Dog (HOB) 1
+1 Elven Chorus (HOC) 26
+1 Gallant Citizen (SPM) 129
+1 Wall of Omens (FCA) 27
+1 Garruk, Curse Breaker (FRA) 314
+1 Pictures of Spider-Man (SPM) 109
+1 Boughside Wanderers (HOB) 121
+1 Belladonna Took (HOB) 214
+1 Inspiring Call (FDN) 226
+1 Tome of Legends (FIC) 369
+1 Warg Tactics (HOB) 139
+1 Shattered Wings (EOE) 206
+1 Broken Wings (DFT) 156
+1 Stingerfling Spider (CMR) 258
+1 Banishing Light (FDN) 138
+1 Web Up (SPM) 21
+1 Memory Trap (FRA) 15
+1 Liminal Hold (ECL) 24
+1 Celebrate the Mountain-king (HOB) 7
+1 Surgical Precision (FRA) 22
+1 Settle the Wreckage (HOB) 26
+1 Cleansing Nova (FIC) 235
+1 Ori, Plate Stacker (HOC) 6
+1 Vigorbloom Charm (FRA) 160
+1 Snakeskin Veil (TDM) 159
+1 Bastion Protector (MSC) 122
+1 Bofur, Reliable Guardian // Concerted Care (HOB) 215
+1 Attercop (HOB) 116
+1 Ancient Spider (PLS) 96
+1 Vitu-Ghazi Inspector (MKM) 183
+1 Dawn's Light Archer (ECL) 174
+1 Primordial Pachyderm (TMT) 129
+1 Hazard of the Dunes (DFT) 165
+1 Migrating Ketradon (DFT) 170
+1 Lashwhip Predator (EOE) 195
+1 Old Fat Spider (HOB) 132
+1 Spider-Rex, Daring Dino (SPM) 116
+1 Wildvine Pummeler (ECL) 203
+1 Galadhrim Bow (LTR) 167
+1 Web-Shooters (SPM) 22
+1 The Black Arrow (HOB) 171
+1 Liliana the Faultless (FRA) 293
+1 Ajani Resolute (FRA) 291
+1 Lotusguard Disciple (DFT) 21
+1 Ghalta the Unstoppable (FRA) 260
+1 Strength of the Pack (CMR) 259
+
+Sideboard
+1 Germinating Wurm (EOE) 187
+1 Ride's End (DFT) 25
+1 Fate of the Sun-Cryst (FIN) 19
+1 Scout the Wilderness (DMU) 176
+1 Studious First-Year // Rampant Growth (SOS) 162
+1 Old Thrush (HOB) 2
+1 Take Up the Shield (MSH) 39
+1 Crossroads Village (FIN) 276
+1 Vibrant Cityscape (SPM) 188
+1 Plains (FRA) 384
+1 Phantom Flock (DMR) 20
+1 Radiant Strike (EOE) 29
+
+Considering
+1 Sol Ring (FRC) 21
+1 Swords to Plowshares (FRC) 37
+1 Beast Within (MSC) 169
+1 Nature's Lore (MSC) 177
+1 Farseek (MSC) 173
+1 Essence Warden (CMA) 106
+1 Heroic Intervention (CMM) 295
+1 Command Tower (FRC) 22
+1 Sunpetal Grove (MSC) 272
+1 Canopy Vista (MSC) 227
+1 Archangel of Thune (2XM) 5
+1 Path to Exile (FRC) 30

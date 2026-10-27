@@ -1,0 +1,343 @@
+# yaml-language-server: $schema=../../../schemas/deck.schema.json
+schema_version: 1
+name: Kwia's Canopy
+format: commander
+status: ready
+bracket: 3
+allow_proxies: false
+unlimited_basics: true
+collection_source:
+  - 'collections/conrad/**'
+collection_destination: "collections/conrad/decks/custom/Kwia's Canopy.txt"
+primer: >-
+  Selesnya reach wall with lifegain ramp. Shut the skies with reach Spiders and beasts (Attercop, Ancient Spider, Old Fat Spider, Spider-Rex, Hazard of the Dunes), reach Equipment and a stack of flyer-only removal, so flying decks can't attack you profitably. Meanwhile gain a little life every turn (Liliana the Faultless, Ajani Resolute, Old Thrush, lifelink creatures, Blossoming Sands) so Kwia makes a Lotus each turn, and use that mana to land big threats early: Ghalta, Wildvine Pummeler, Strength of the Pack. Win by attacking with a wide, oversized ground board backed by Kwia and a few lifelinking flyers, with Settle the Wreckage and Cleansing Nova as resets.
+power_notes: >-
+  Aimed at Bracket 3 (Upgraded), but the baseline plays closer to a strong Bracket 2: no Game Changers, mass land denial, extra turns or two-card combos, and the efficient staples (Sol Ring, Swords to Plowshares, Path to Exile, Cultivate, Beast Within, Command Tower) are all in Daniel's protected precon decks. The upgrades add cheap ramp, instant-speed removal and a lifegain payoff or two to bring it up to a real Bracket 3.
+budget:
+  amount: 100
+  currency: USD
+commanders:
+  - name: Kwia Vigorbloom
+    quantity: 1
+mainboard:
+  # Lands
+  - name: Blossoming Sands
+    quantity: 1
+    role: land
+  - name: Gathering Place
+    quantity: 1
+    role: land
+  - name: Suburban Sanctuary
+    quantity: 1
+    role: land
+  - name: Evolving Wilds
+    quantity: 1
+    role: land
+  - name: Ash Barrens
+    quantity: 1
+    role: land
+  - name: Vibrant Cityscape
+    quantity: 1
+    role: land
+  - name: Crossroads Village
+    quantity: 1
+    role: land
+  - name: Forest
+    quantity: 17
+    role: land
+  - name: Plains
+    quantity: 13
+    role: land
+  # Ramp
+  - name: Arcane Signet
+    quantity: 1
+    role: ramp
+  - name: Great Forest Druid
+    quantity: 1
+    role: ramp
+  - name: Three Tree Rootweaver
+    quantity: 1
+    role: ramp
+  - name: Frog Butler
+    quantity: 1
+    role: ramp, synergy
+  - name: Guy in the Chair
+    quantity: 1
+    role: ramp
+  - name: Wood Elves
+    quantity: 1
+    role: ramp
+  - name: Studious First-Year // Rampant Growth
+    quantity: 1
+    role: ramp
+  - name: Clifftop Lookout
+    quantity: 1
+    role: ramp, synergy
+  - name: Long-Bodied Grey Dog
+    quantity: 1
+    role: ramp, synergy
+  - name: Scout the Wilderness
+    quantity: 1
+    role: ramp
+  - name: Elven Chorus
+    quantity: 1
+    role: ramp, draw
+  # Card draw
+  - name: Gallant Citizen
+    quantity: 1
+    role: draw
+  - name: Wall of Omens
+    quantity: 1
+    role: draw
+  - name: Garruk, Curse Breaker
+    quantity: 1
+    role: draw, wincon
+  - name: Pictures of Spider-Man
+    quantity: 1
+    role: draw
+  - name: Boughside Wanderers
+    quantity: 1
+    role: draw
+  - name: Belladonna Took
+    quantity: 1
+    role: draw, synergy
+  - name: Inspiring Call
+    quantity: 1
+    role: draw, protection
+  - name: Tome of Legends
+    quantity: 1
+    role: draw
+  # Removal (flyer answers first)
+  - name: Warg Tactics
+    quantity: 1
+    role: removal
+  - name: Shattered Wings
+    quantity: 1
+    role: removal
+  - name: Broken Wings
+    quantity: 1
+    role: removal
+  - name: Stingerfling Spider
+    quantity: 1
+    role: removal, synergy
+  - name: Banishing Light
+    quantity: 1
+    role: removal
+  - name: Web Up
+    quantity: 1
+    role: removal
+  - name: Memory Trap
+    quantity: 1
+    role: removal
+  - name: Liminal Hold
+    quantity: 1
+    role: removal, synergy
+  - name: Celebrate the Mountain-king
+    quantity: 1
+    role: removal
+  - name: Fate of the Sun-Cryst
+    quantity: 1
+    role: removal
+  - name: Ride's End
+    quantity: 1
+    role: removal
+  - name: Radiant Strike
+    quantity: 1
+    role: removal, synergy
+  - name: Surgical Precision
+    quantity: 1
+    role: removal, draw
+  # Wipes
+  - name: Settle the Wreckage
+    quantity: 1
+    role: wipe
+  - name: Cleansing Nova
+    quantity: 1
+    role: wipe
+  - name: Ori, Plate Stacker
+    quantity: 1
+    role: wipe, synergy
+  # Protection
+  - name: Vigorbloom Charm
+    quantity: 1
+    role: protection, draw
+  - name: Snakeskin Veil
+    quantity: 1
+    role: protection
+  - name: Take Up the Shield
+    quantity: 1
+    role: protection, synergy
+  - name: Bastion Protector
+    quantity: 1
+    role: protection
+  - name: Bofur, Reliable Guardian // Concerted Care
+    quantity: 1
+    role: protection, synergy
+  # Reach wall
+  - name: Attercop
+    quantity: 1
+    role: synergy
+  - name: Ancient Spider
+    quantity: 1
+    role: synergy
+  - name: Vitu-Ghazi Inspector
+    quantity: 1
+    role: synergy
+  - name: Dawn's Light Archer
+    quantity: 1
+    role: synergy
+  - name: Primordial Pachyderm
+    quantity: 1
+    role: synergy
+  - name: Hazard of the Dunes
+    quantity: 1
+    role: synergy, wincon
+  - name: Migrating Ketradon
+    quantity: 1
+    role: synergy
+  - name: Lashwhip Predator
+    quantity: 1
+    role: synergy
+  - name: Old Fat Spider
+    quantity: 1
+    role: synergy, draw
+  - name: Spider-Rex, Daring Dino
+    quantity: 1
+    role: synergy, wincon
+  - name: Wildvine Pummeler
+    quantity: 1
+    role: synergy, wincon
+  - name: Galadhrim Bow
+    quantity: 1
+    role: synergy
+  - name: Web-Shooters
+    quantity: 1
+    role: synergy
+  - name: The Black Arrow
+    quantity: 1
+    role: synergy, removal
+  # Lifegain engines (a Lotus every turn)
+  - name: Liliana the Faultless
+    quantity: 1
+    role: synergy
+  - name: Ajani Resolute
+    quantity: 1
+    role: synergy
+  - name: Old Thrush
+    quantity: 1
+    role: synergy
+  - name: Germinating Wurm
+    quantity: 1
+    role: synergy
+  # Our own flyers
+  - name: Lotusguard Disciple
+    quantity: 1
+    role: synergy, protection
+  - name: Phantom Flock
+    quantity: 1
+    role: synergy
+  # Finishers
+  - name: Ghalta the Unstoppable
+    quantity: 1
+    role: wincon
+  - name: Strength of the Pack
+    quantity: 1
+    role: wincon
+upgrades:
+  - add:
+      name: 'Sol Ring'
+      quantity: 1
+      role: ramp
+    cut:
+      name: 'Germinating Wurm'
+      quantity: 1
+    reason: 'The best turn-one ramp in the format; a two-mana jump straight into Kwia on turn 4. Your only copies are in protected precons.'
+  - add:
+      name: 'Swords to Plowshares'
+      quantity: 1
+      role: removal
+    cut:
+      name: "Ride's End"
+      quantity: 1
+    reason: "One-mana instant exile for any creature, including a flyer mid-attack. The life it gives the opponent rarely matters against this deck's lifegain."
+  - add:
+      name: 'Beast Within'
+      quantity: 1
+      role: removal
+    cut:
+      name: 'Fate of the Sun-Cryst'
+      quantity: 1
+    reason: 'Three-mana instant answer to any permanent, including artifacts, enchantments and planeswalkers the deck otherwise struggles with.'
+  - add:
+      name: "Nature's Lore"
+      quantity: 1
+      role: ramp
+    cut:
+      name: 'Scout the Wilderness'
+      quantity: 1
+    reason: 'Two-mana untapped land drop instead of three; fetches Canopy Vista too.'
+  - add:
+      name: 'Farseek'
+      quantity: 1
+      role: ramp
+    cut:
+      name: 'Studious First-Year // Rampant Growth'
+      quantity: 1
+    reason: 'Two-mana ramp that fetches a Plains or Canopy Vista, fixing white for the WW in Kwia.'
+  - add:
+      name: 'Essence Warden'
+      quantity: 1
+      role: synergy
+    cut:
+      name: 'Old Thrush'
+      quantity: 1
+    reason: "Gains life whenever any creature enters, on every player's turn, so Kwia makes a Lotus nearly every turn around the table."
+  - add:
+      name: 'Heroic Intervention'
+      quantity: 1
+      role: protection
+    cut:
+      name: 'Take Up the Shield'
+      quantity: 1
+    reason: 'Protects the whole board (hexproof and indestructible) from wipes and removal, not just one creature.'
+  - add:
+      name: 'Command Tower'
+      quantity: 1
+      role: land
+    cut:
+      name: 'Crossroads Village'
+      quantity: 1
+    reason: 'Untapped land for both colors instead of a tapped one.'
+  - add:
+      name: 'Sunpetal Grove'
+      quantity: 1
+      role: land
+    cut:
+      name: 'Vibrant Cityscape'
+      quantity: 1
+    reason: 'Usually untapped dual land instead of a slow fetch.'
+  - add:
+      name: 'Canopy Vista'
+      quantity: 1
+      role: land
+    cut:
+      name: 'Plains'
+      quantity: 1
+    reason: "Dual land with basic types, so Farseek and Nature's Lore can fetch it."
+  - add:
+      name: 'Archangel of Thune'
+      quantity: 1
+      role: synergy
+    cut:
+      name: 'Phantom Flock'
+      quantity: 1
+    reason: 'The lifegain payoff the deck lacks: a lifelinking flyer that puts a +1/+1 counter on every creature you control whenever you gain life, so each lifegain that makes a Lotus also pumps the team.'
+  - add:
+      name: 'Path to Exile'
+      quantity: 1
+      role: removal
+    cut:
+      name: 'Radiant Strike'
+      quantity: 1
+    reason: 'One-mana instant exile instead of a four-mana answer that only hits tapped creatures.'
+playtests: []
