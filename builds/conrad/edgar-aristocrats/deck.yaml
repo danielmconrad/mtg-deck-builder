@@ -10,7 +10,7 @@ collection_source:
   - 'collections/conrad/**'
 collection_destination: "collections/conrad/decks/custom/Edgar's Blood Tithe.txt"
 primer: >-
-  Orzhov aristocrats. Flood the board with cheap tokens (Lingering Souls, Battle Screech, Hop to It, Champions from Beyond), then feed them to Edgar and the other sacrifice outlets. Every death gains life through Edgar, Daxos and Bastion of Remembrance, and Marauding Blight-Priest turns each lifegain into a drain on every opponent, so the board bleeds the table while Faramir, Braids, Kingpin's Enforcers and Niv-Mizzet refill the hand. Close with a menacing, counter-stacked Edgar, a sacrifice-everything Reprocess or a big Exsanguinate, and reset losing boards with Hour of Reckoning, which spares your tokens.
+  Orzhov aristocrats. Flood the board with cheap tokens (Lingering Souls, Battle Screech, Hop to It, Champions from Beyond), then feed them to Edgar and the other sacrifice outlets. Every death gains life through Edgar, Daxos and Bastion of Remembrance, and Marauding Blight-Priest turns each lifegain into a drain on every opponent, so the board bleeds the table while Faramir, Braids, Kingpin's Enforcers and Niv-Mizzet refill the hand. Rent Is Due turns spare tokens into a card every turn. Close with a menacing, counter-stacked Edgar or a big Exsanguinate, and reset losing boards with Hour of Reckoning, which spares your tokens.
 power_notes: >-
   Bracket 2 (Core) baseline built only from Daniel's binders: no Game Changers, mass land denial, extra turns or two-card combos, and a slow 1-drain-per-death clock that wins around turn 9 or 10. The upgrades make it a real Bracket 4. They add three combos (Heliod with Walking Ballista from turn 4; Exquisite Blood with Marauding Blight-Priest or Vito; Karmic Guide, Reveillark and a free sacrifice outlet into Blood Artist, Zulaport Cutthroat, Cruel Celebrant, Elas il-Kor or Edgar with Blight-Priest). They also add fast mana (Dark Ritual, Orzhov Signet, Fellwar Stone, Ashnod's Altar), tutors (Demonic Tutor and Enlightened Tutor, both Game Changers, plus Diabolic Intent), Skullclamp, cheap instant-speed interaction, and Grand Abolisher and Silence to protect the combo turn.
 budget:
@@ -110,7 +110,7 @@ mainboard:
   - name: Belladonna Took
     quantity: 1
     role: draw
-  - name: Reprocess
+  - name: Rent Is Due
     quantity: 1
     role: draw,synergy
   # Removal
@@ -477,7 +477,7 @@ upgrades:
       quantity: 1
       role: draw,synergy
     cut:
-      name: Reprocess
+      name: Rent Is Due
       quantity: 1
     reason: 'One mana: sacrifice a creature and draw two, at instant speed.'
   - add:

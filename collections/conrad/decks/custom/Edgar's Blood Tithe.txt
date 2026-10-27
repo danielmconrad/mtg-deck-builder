@@ -26,7 +26,7 @@ Deck
 1 Swamp (HOB) 191 *F*
 2 Swamp (FIN) 302
 1 Swamp (FIN) 302 *F*
-1 Swamp (SPM) 191
+1 Swamp (SPM) 191 *F*
 1 Swamp (MSH) 291
 1 Swamp (DFT) 274
 1 Swamp (DFT) 274 *F*
@@ -50,7 +50,7 @@ Deck
 1 Braids, Arisen Nightmare (EOC) 82
 1 Niv-Mizzet, Ghost Counsel (FRC) 10
 1 Belladonna Took (HOB) 4
-1 Reprocess (7ED) 159
+1 Rent Is Due (SPM) 11
 1 Swords to Plowshares (FIC) 256
 1 Vindicate (FIC) 330
 1 Fatal Push (FCA) 9

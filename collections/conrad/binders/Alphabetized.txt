@@ -888,7 +888,7 @@
 1 Relic of Legends (FIC) 354
 1 Render Silent (GK2) 18
 1 Renewed Faith (DMR) 23
-2 Rent Is Due (SPM) 11
+1 Rent Is Due (SPM) 11
 1 Reptil, Dinomorpher (MSH) 182 *F*
 1 Repulsor Blast (MSH) 150
 1 Repurposed Enforcer (FRA) 335
