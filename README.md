@@ -113,7 +113,7 @@ mise run deck:build -- brad/great-goblin-penny --apply    # do it
 ```
 
 - **What it does:** takes every card in the deck, commanders included, out of the deck's available collections, lowering a row's quantity or removing the row (and removing a file left with no cards). It writes them to one text list, by default `collections/<owner>/decks/<deck name>.txt` (`--to PATH` overrides), and adds `collection_destination` to `deck.yaml`.
-- **Which copies:** a pinned `scryfall_id` first, then the printing with the most available copies (the one the decklist files show), then the rest in collection order. Protected copies and proxies are never taken. With `unlimited_basics`, basics the collections lack are listed by name as coming from untracked basics.
+- **Which copies:** a pinned `scryfall_id` first, then nonfoil copies before foil or etched ones, then the printing with the most available copies (the one the decklist files show), then the rest in collection order. Protected copies and proxies are never taken. With `unlimited_basics`, basics the collections lack are listed by name as coming from untracked basics.
 - **Requirements:** the deck must pass `deck:check`, and it can be built only once. Upgrades aren't applied, so build after making any swaps you want in `mainboard`.
 - **Afterwards:** the deck reads its own list as available, whatever its `collection_source` says, and every other deck sees those cards as protected (`collections/**/decks` is protected by default). Rerun `deck:files`.
 - **ManaBox exports:** the edited CSV now differs from ManaBox. Before your next export, move the same cards into a deck binder in ManaBox (whose cards are held back anyway) or out of the app, or the cards will count twice.

@@ -536,7 +536,7 @@ const COMMANDS = {
     takesSlug: true,
     summary: "Physically build a finished deck: move its cards out of the collections into the deck's own list",
     details:
-      "Only when the user says to build the deck. Takes every card, commanders included, out of the deck's available collections (the pinned printing first, then the printing with the most copies; never proxies or protected copies), writes them to a text list, and sets collection_destination in deck.yaml. Upgrades are not applied. The deck must pass deck:check. Without --apply, prints what it would take and changes nothing.",
+      "Only when the user says to build the deck. Takes every card, commanders included, out of the deck's available collections (the pinned printing first, then nonfoil copies, then the printing with the most copies; never proxies or protected copies), writes them to a text list, and sets collection_destination in deck.yaml. Upgrades are not applied. The deck must pass deck:check. Without --apply, prints what it would take and changes nothing.",
     options: {
       apply: { type: 'boolean', description: 'Edit the collections and deck.yaml; without it, only print the plan' },
       to: {

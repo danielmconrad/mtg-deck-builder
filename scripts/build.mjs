@@ -20,18 +20,21 @@ function rowsByCard(collections, index) {
   return { rows, copiesById };
 }
 
-// The pinned printing first, then the printing with the most copies; the sort is stable, so ties keep
-// collection order.
+// The pinned printing first, then nonfoil copies before foil or etched ones, so a deck doesn't use up
+// the special copies when plain ones exist, then the printing with the most copies; the sort is stable,
+// so ties keep collection order.
+const isNonfoil = (row) => Number(row.finish === 'normal');
 const takeOrder = (rows, printingId, copiesById) =>
   rows.toSorted(
     (first, second) =>
       Number(second.scryfallId === printingId) - Number(first.scryfallId === printingId) ||
+      isNonfoil(second) - isNonfoil(first) ||
       copiesById.get(second.scryfallId) - copiesById.get(first.scryfallId),
   );
 
 // Chooses which collection rows supply every card in the deck, commanders included. Upgrades are not
-// applied, since their adds may not be owned. A card's pinned printing is taken first, then the
-// printing with the most available copies, as exports choose it, then the rest in collection order.
+// applied, since their adds may not be owned. A card's pinned printing is taken first, then nonfoil
+// copies, then the printing with the most available copies, then the rest in collection order.
 // Proxies are never taken: a text list can't mark them. With unlimited_basics, basics the collections
 // lack come from untracked basics instead. Returns takes ({ row, card, quantity, isCommander }),
 // untracked ({ card, quantity }), and problems, which mean nothing should be built.

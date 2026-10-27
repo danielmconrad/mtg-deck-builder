@@ -48,6 +48,28 @@ test('planBuild takes the pinned printing, then the one with most copies, and ne
   ]);
 });
 
+test('planBuild takes nonfoil copies before foil ones, unless a foil printing is pinned', () => {
+  const collections = {
+    available: [
+      sourceRow(leader, 1),
+      sourceRow(spellReprint, 3, { finish: 'foil' }),
+      sourceRow(spell, 2),
+      sourceRow(spell, 1, { finish: 'etched' }),
+      sourceRow(forest, 60),
+    ],
+  };
+  assert.deepEqual(takenSummary(planBuild(deck(), collections, index)).slice(1, 4), [
+    [spell.id, 2],
+    [spellReprint.id, 2],
+    [forest.id, 55],
+  ]);
+  const pinned = deck({ mainboard: [entry(spell.name, 4, { scryfall_id: spellReprint.id }), entry(forest.name, 55)] });
+  assert.deepEqual(takenSummary(planBuild(pinned, collections, index)).slice(1, 3), [
+    [spellReprint.id, 3],
+    [spell.id, 1],
+  ]);
+});
+
 test('planBuild reports shortfalls, and fills basics from untracked ones only with unlimited_basics', () => {
   const collections = { available: [sourceRow(leader, 1), sourceRow(spell, 4), sourceRow(forest, 50)] };
   assert.deepEqual(planBuild(deck(), collections, index).problems, ['Forest: need 55, 50 non-proxy copies available']);

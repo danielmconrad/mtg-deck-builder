@@ -1,0 +1,242 @@
+# yaml-language-server: $schema=../../../schemas/deck.schema.json
+schema_version: 1
+name: Bifur's Dwarven Company
+format: commander-60
+status: built
+bracket: 2
+allow_proxies: false
+unlimited_basics: true
+collection_source:
+  - 'collections/conrad/**'
+collection_destination: collections/conrad/decks/custom/Bifur's Dwarven Company.txt
+max_card_price:
+  amount: 1
+  currency: USD
+budget:
+  amount: 20
+  currency: USD
+primer: >-
+  Boros Dwarves and Equipment in 60-card Commander, with no card over $1. Curve out with cheap legendary Dwarves (Thorin, Dwalin, Kíli, Óin, Bofur) and Equipment to reach an enduring story fast, so Thorin gives the team ward and Kíli makes the first equip free each turn. Then cast Bifur, who doubles every Dwarf trigger: Dori makes two Treasures, Glóin adds four red mana, Fíli makes two tokens per Dwarf, Dwalin puts two hone counters on each Equipment and Dáin's Company digs twice. Win by attacking with a wide, suited-up board, using Bruenor, Dáin Ironfoot's double strike and Thorin's Last Stand to finish.
+power_notes: >-
+  Aimed at Bracket 2 (Core): no Game Changers, mass land denial, extra turns or two-card combos. The $1 cap rules out Sol Ring, Swords to Plowshares and the like, so the ramp is Talismans, Relic of Legends and Treasure-making Dwarves. Bifur costs six, so the deck has to work as an aggressive Dwarf deck before he lands.
+commanders:
+  - name: Bifur, Melodic Rider
+    quantity: 1
+mainboard:
+  # Lands
+  - name: 'Iron Hills'
+    quantity: 1
+    role: land
+  - name: 'Wind-Scarred Crag'
+    quantity: 1
+    role: land
+  - name: 'Dedicated Commons'
+    quantity: 1
+    role: land
+  - name: 'The Lonely Mountain'
+    quantity: 1
+    role: land
+  - name: 'Evolving Wilds'
+    quantity: 1
+    role: land
+  - name: 'Vibrant Cityscape'
+    quantity: 1
+    role: land
+  - name: 'Mountain'
+    quantity: 7
+    role: land
+  - name: 'Plains'
+    quantity: 9
+    role: land
+  # Ramp
+  - name: 'Talisman of Conviction'
+    quantity: 1
+    role: ramp
+  - name: 'Relic of Legends'
+    quantity: 1
+    role: ramp
+  - name: 'Hot Dog Cart'
+    quantity: 1
+    role: ramp
+  - name: "Thrór's Map"
+    quantity: 1
+    role: ramp,draw
+  - name: 'Dori, Bearer of Friends'
+    quantity: 1
+    role: ramp,synergy
+  - name: 'Glóin the Mighty // Easy Pickings'
+    quantity: 1
+    role: ramp,wipe,synergy
+  # Dwarves
+  - name: 'Bofur, Reliable Guardian // Concerted Care'
+    quantity: 1
+    role: protection,synergy
+  - name: "Dáin's Company"
+    quantity: 1
+    role: draw,synergy
+  - name: 'Dwalin, Weaponmaster'
+    quantity: 1
+    role: synergy
+  - name: 'Iron Hills Blacksmith'
+    quantity: 1
+    role: synergy
+  - name: 'Kíli the Resourceful'
+    quantity: 1
+    role: draw,synergy
+  - name: 'Óin the Brave'
+    quantity: 1
+    role: draw,synergy
+  - name: 'Thorin Oakenshield'
+    quantity: 1
+    role: protection,synergy
+  - name: 'Dáin Ironfoot'
+    quantity: 1
+    role: wincon,synergy
+  - name: 'Bruenor Battlehammer'
+    quantity: 1
+    role: wincon,synergy
+  - name: 'Fíli the Pathfinder'
+    quantity: 1
+    role: wincon,synergy
+  - name: 'Iron Hills Stalwart'
+    quantity: 1
+    role: synergy
+  # Equipment
+  - name: 'Dwarven Mattock'
+    quantity: 1
+    role: synergy
+  - name: 'Ragged Short Spear'
+    quantity: 1
+    role: draw,synergy
+  - name: "Sting, Bilbo's Sword"
+    quantity: 1
+    role: synergy
+  - name: 'Dwarven Shortsword'
+    quantity: 1
+    role: synergy
+  - name: 'Web-Shooters'
+    quantity: 1
+    role: synergy
+  - name: 'Hexgold Hoverwings'
+    quantity: 1
+    role: wincon,synergy
+  - name: 'The Black Arrow'
+    quantity: 1
+    role: removal,synergy
+  # Draw
+  - name: 'Danitha, Sword of Hope'
+    quantity: 1
+    role: draw
+  - name: 'Errand-Rider of Gondor'
+    quantity: 1
+    role: draw
+  - name: 'Romantic Rendezvous'
+    quantity: 1
+    role: draw
+  # Removal
+  - name: 'Solitary Cell'
+    quantity: 1
+    role: removal,draw
+  - name: 'Banishing Light'
+    quantity: 1
+    role: removal
+  - name: 'Web Up'
+    quantity: 1
+    role: removal
+  - name: 'Celebrate the Mountain-king'
+    quantity: 1
+    role: removal
+  - name: 'Abrade'
+    quantity: 1
+    role: removal
+  - name: 'Lightning Strike'
+    quantity: 1
+    role: removal
+  - name: 'Fulminous Forte'
+    quantity: 1
+    role: removal,wipe
+  # Protection and finishers
+  - name: 'Spectacular Tactics'
+    quantity: 1
+    role: protection,removal
+  - name: 'Stone by Sunlight'
+    quantity: 1
+    role: protection,removal
+  - name: "Thorin's Last Stand"
+    quantity: 1
+    role: wincon,removal
+
+upgrades:
+  - add:
+      name: 'Swords to Plowshares'
+      quantity: 1
+      role: removal
+    cut:
+      name: 'Lightning Strike'
+      quantity: 1
+    reason: 'One-mana unconditional exile, the best removal under the cap; Lightning Strike misses most big threats.'
+  - add:
+      name: 'Generous Gift'
+      quantity: 1
+      role: removal
+    cut:
+      name: 'Abrade'
+      quantity: 1
+    reason: 'Answers any permanent type, including enchantments and planeswalkers the deck otherwise cannot touch.'
+  - add:
+      name: 'Fairgrounds Warden'
+      quantity: 1
+      role: removal,synergy
+    cut:
+      name: 'Web Up'
+      quantity: 1
+    reason: 'A Dwarf whose exile trigger Bifur doubles, and a body for Fíli and Kíli triggers.'
+  - add:
+      name: 'Fearless Skald'
+      quantity: 1
+      role: synergy
+    cut:
+      name: 'Iron Hills Stalwart'
+      quantity: 1
+    reason: 'Cheaper Dwarf whose backup gives an attacker double strike, which stacks well with Equipment.'
+  - add:
+      name: 'Arcane Signet'
+      quantity: 1
+      role: ramp
+    cut:
+      name: 'Hot Dog Cart'
+      quantity: 1
+    reason: 'Two-mana rock instead of three, so Bifur comes down a turn earlier.'
+  - add:
+      name: 'Command Tower'
+      quantity: 1
+      role: land
+    cut:
+      name: 'Dedicated Commons'
+      quantity: 1
+    reason: 'Commons almost always enters tapped here (no planeswalkers); Tower is untapped fixing.'
+  - add:
+      name: 'Path of Ancestry'
+      quantity: 1
+      role: land
+    cut:
+      name: 'Wind-Scarred Crag'
+      quantity: 1
+    reason: 'Same fixing, plus a scry whenever it casts a Dwarf.'
+  - add:
+      name: 'Clifftop Retreat'
+      quantity: 1
+      role: land
+    cut:
+      name: 'Mountain'
+      quantity: 1
+    reason: 'Untapped dual land in a two-color deck.'
+  - add:
+      name: 'Furycalm Snarl'
+      quantity: 1
+      role: land
+    cut:
+      name: 'Plains'
+      quantity: 1
+    reason: 'Untapped dual land in a two-color deck.'
+playtests: []

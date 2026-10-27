@@ -1,5 +1,4 @@
 1 Abomination, Terrifying Titan (MSH) 198
-1 Abrade (SOC) 234
 1 Absorbing Man (MSH) 199
 1 Act of Treason (M20) 124
 1 Additive Evolution (SOS) 139 *F*
@@ -60,7 +59,6 @@
 1 Balustrade Spy (RVR) 66
 1 Banishing Betrayal (SOS) 38
 1 Banishing Betrayal (SOS) 38 *F*
-1 Banishing Light (FDN) 138
 1 Banon, the Returners' Leader (FIC) 78
 3 Bard the Bowman (HOB) 145
 1 Bard the Bowman (HOB) 145 *F*
@@ -82,7 +80,7 @@
 1 Beorn's Hospitality (HOB) 120 *F*
 3 Bestow Greatness (DFT) 155
 1 Betor, Kin to All (TDM) 172
-3 Bifur, Melodic Rider (HOB) 147
+2 Bifur, Melodic Rider (HOB) 147
 1 Bifur, Melodic Rider (HOB) 147 *F*
 1 Big Play (STX) 122
 4 Bilbo Baggins, Burglar // Take a Glance (HOB) 34
@@ -114,7 +112,6 @@
 1 Blitz Leech (IKO) 74
 1 Bloodfire Expert (KTK) 101
 1 Blue Mage's Cane (FIC) 35
-1 Bofur, Reliable Guardian // Concerted Care (HOB) 6
 2 Bofur, Reliable Guardian // Concerted Care (HOB) 215 *F*
 1 Boggart Arsonists (SHM) 85
 1 Bogwater Lumaret (SOS) 177
@@ -143,7 +140,6 @@
 2 Brilliance Unleashed (TMT) 141
 1 Broadcast Rambler (DFT) 293
 1 Broadside Barrage (DFT) 192 *F*
-1 Bruenor Battlehammer (AFR) 219
 1 Budding Insurgent (FRA) 99 *F*
 1 Bullseye, Death Dealer (MSH) 325 *F*
 1 Bulwark Giant (RVR) 11
@@ -168,7 +164,6 @@
 1 Carom (RVR) 12
 1 Casey Jones, Jury-Rig Justiciar (TMT) 87
 1 Casey Jones, Jury-Rig Justiciar (TMT) 87 *F*
-1 Celebrate the Mountain-king (HOB) 7 *F*
 1 Chaos Spewer (ECL) 210
 1 Charge the Sanctum (FRA) 125 *F*
 2 Cheering Crowd (SPM) 126
@@ -220,14 +215,12 @@
 1 Culvert Ambusher (MKM) 158
 1 Cut a Deal (FIC) 238
 3 Daily Bugle Reporters (SPM) 6
-1 Dáin Ironfoot (HOB) 91
 2 Dáin, Lord of the Iron Hills (HOB) 8
 1 Dáin, Lord of the Iron Hills (HOB) 8 *F*
-2 Dáin's Company (HOB) 212
+1 Dáin's Company (HOB) 212
 1 Dancer's Chakrams (FIC) 17
 1 Dancing from Dark to Dawn (HOB) 123
 1 Danitha, Spear of Agony (FRA) 227 *F*
-1 Danitha, Sword of Hope (FRA) 196 *F*
 1 Daredevil, Man Without Fear (MSH) 213
 2 Daring Mechanic (DFT) 11
 1 Dark Endurance (EOE) 93
@@ -276,7 +269,7 @@
 1 Donatello, Gadget Master (TMT) 35
 1 Doom Reigns Supreme (MSH) 96
 1 Doomfall (MSC) 795
-5 Dori, Bearer of Friends (HOB) 94
+4 Dori, Bearer of Friends (HOB) 94
 1 Down in the Valley (HOB) 124
 3 Down, Down to Goblin-town (HOB) 65
 1 Draconic Lore (TDC) 151
@@ -295,13 +288,12 @@
 1 Dual-Sun Technique (EOE) 13
 2 Dubious Delicacy (EOE) 96
 5 Duskwatch Hunter (HOB) 153
-1 Dwalin, Weaponmaster (HOB) 154 *F*
-2 Dwarven Mattock (HOB) 172
+1 Dwarven Mattock (HOB) 172
 1 Dwarven Mattock (HOB) 172 *F*
 2 Dwarven Mauler (HOB) 95
 4 Dwarven Provisioner (HOB) 9
 2 Dwarven Provisioner (HOB) 9 *F*
-4 Dwarven Shortsword (HOB) 10
+3 Dwarven Shortsword (HOB) 10
 1 Dynamite Diver (DFT) 123
 1 Eagle of the Great Shelf (HOB) 11
 2 Eagle's Rescue (HOB) 155
@@ -334,7 +326,6 @@
 1 Entrust the Spark (FRA) 350
 1 EPF Point Squad (TMT) 145
 1 Epic Fight (MSH) 166
-1 Errand-Rider of Gondor (LTR) 11
 3 Esgaroth Garrison (HOB) 13
 1 Esgaroth Garrison (HOB) 13 *F*
 1 Estinien Varlineau (FIC) 82
@@ -362,7 +353,7 @@
 1 Festering Goblin (DMR) 85
 1 Fierce Guardianship (CMM) 94
 1 Fíli and Kíli, Joyous (HOC) 1
-2 Fíli the Pathfinder (HOB) 14
+1 Fíli the Pathfinder (HOB) 14
 1 Final Judgment (FIC) 243
 2 Fire // Ice (DMR) 215
 1 Fire // Ice (MH2) 290
@@ -394,7 +385,6 @@
 1 Front Porch Sentries (HOB) 67 *F*
 1 Frostbite Pyromental (FRA) 135
 1 Frozen in Ice (MSH) 54
-1 Fulminous Forte (FRA) 84 *F*
 1 G'raha Tia, Scion Reborn (FIC) 3 *F*
 1 Galadhrim Bow (LTR) 167 *F*
 1 Galadhrim Guide (LTR) 168
@@ -429,7 +419,7 @@
 1 Gleaming Splendor (HOB) 239
 1 Glintwing Invoker (DMR) 52
 1 Glitch Ghost Surveyor (DFT) 44
-2 Glóin the Mighty // Easy Pickings (HOB) 99
+1 Glóin the Mighty // Easy Pickings (HOB) 99
 1 Glóin the Mighty // Easy Pickings (HOB) 99 *F*
 1 Glóin the Mighty // Easy Pickings (HOB) 227
 1 Glowspore Shaman (RVR) 184
@@ -491,11 +481,10 @@
 1 Heroes for Hire (MSC) 688 *F*
 2 Heroes' Hangout (SPM) 79
 1 Hex Magic (MSH) 133
-1 Hexgold Hoverwings (ONE) 14
 2 High-Flying Ace (TMT) 9
 3 Hobgoblin, Mantled Marauder (SPM) 80
 2 Horseshoe Crab (DMR) 55
-2 Hot Dog Cart (SPM) 164
+1 Hot Dog Cart (SPM) 164
 1 Hour of Defeat (MSH) 99
 1 Howl from Beyond (DMR) 88
 1 Hraesvelgr of the First Brood (FIC) 37
@@ -543,10 +532,9 @@
 1 Irenicus's Vile Duplication (CLB) 78
 1 Iron Fist, Living Weapon (MSH) 138 *F*
 1 Iron Giant (FIN) 260
-1 Iron Hills Blacksmith (HOB) 16
 1 Iron Hills Blacksmith (HOB) 16 *F*
 1 Iron Hills Blacksmith (HOB) 216
-3 Iron Hills Stalwart (HOB) 102
+2 Iron Hills Stalwart (HOB) 102
 1 Iron Lad, Diverging Destiny (MSH) 59
 1 Iron-Shield Elf (ECL) 108
 1 Island (EOE) 263
@@ -572,7 +560,6 @@
 1 Key to the Side-Door (HOB) 175
 1 Key to the Side-Door (HOB) 175 *F*
 1 Kid Loki (MSH) 63
-1 Kíli the Resourceful (HOB) 17 *F*
 1 King of the Oathbreakers (LTR) 211
 1 Kiora of Salt and Sand (FRA) 273 *F*
 1 Kithkeeper (ECL) 23
@@ -608,7 +595,6 @@
 2 Lifecraft Engine (DFT) 234
 1 Light of Judgment (FIN) 144
 1 Lightning Reflexes (DMR) 128
-1 Lightning Strike (MSH) 142
 3 Lightshield Parry (DFT) 19
 1 Lightwheel Enhancements (DFT) 20
 1 Liminal Hold (ECL) 24
@@ -728,7 +714,7 @@
 1 North Wind Avatar (TMT) 162
 1 Now for Wrath, Now for Ruin! (LTR) 24
 1 Observed Stasis (FIC) 40
-4 Óin the Brave (HOB) 106
+3 Óin the Brave (HOB) 106
 2 Old Fat Spider (HOB) 132
 1 Old Fat Spider Can't See Me (HOB) 50 *F*
 1 Old Man Willow (LTR) 217
@@ -827,7 +813,7 @@
 4 Rage into the Valley (HOB) 79
 1 Rage into the Valley (HOB) 79 *F*
 2 Rage into the Valley (HOB) 200
-5 Ragged Short Spear (HOB) 108
+4 Ragged Short Spear (HOB) 108
 1 Ragost, Deft Gastronaut (EOE) 224 *F*
 1 Rakdos Charm (EOC) 125
 1 Rampaging Monument (GRN) 239
@@ -848,7 +834,6 @@
 1 Refute Destiny (FRA) 361 *F*
 2 Regal Imperiosaur (DFT) 177
 1 Relentless X-ATM092 (FIN) 268
-1 Relic of Legends (FIC) 354
 1 Render Silent (GK2) 18
 1 Renewed Faith (DMR) 23
 1 Rent Is Due (SPM) 11
@@ -883,7 +868,7 @@
 2 Robotics Mastery (SPM) 41
 1 Roc Charger (CLU) 70
 2 Rock Soldiers (TMT) 107
-2 Romantic Rendezvous (SPM) 86
+1 Romantic Rendezvous (SPM) 86
 1 Rook Turret (FIN) 69
 1 Roxxon Brutes (MSH) 113
 1 Run Away Together (ECL) 67
@@ -971,14 +956,13 @@
 2 Snowslope Hunter (HOB) 112
 1 Snuff Out (FIC) 285
 1 Soaring Stoneglider (SOS) 32
-1 Solitary Cell (FRA) 355
 1 Something Worth Saving (FRA) 114 *F*
 1 Soul's Fire (CMR) 200
 3 Sound the Trumpets (HOB) 55
 1 SP//dr, Piloted by Peni (SPM) 147
 2 Spark Spray (DMR) 141
 1 Specimen Freighter (EOE) 76 *F*
-3 Spectacular Tactics (SPM) 15
+2 Spectacular Tactics (SPM) 15
 1 Specter of the Fens (STX) 87
 1 Spectral Denial (TDM) 58
 1 Spectral Lynx (DMR) 28
@@ -1025,13 +1009,12 @@
 3 Stegron the Dinosaur Man (SPM) 95
 1 Stegron the Dinosaur Man (SPM) 95 *F*
 1 Stickytongue Sentinel (BLB) 193
-1 Sting, Bilbo's Sword (HOB) 178
 1 Sting, Bilbo's Sword (HOB) 178 *F*
 4 Stir Up Trouble (HOB) 84
 1 Stock Up (DFT) 67
 1 Stoic Grove-Guide (ECL) 243
 1 Stolen Stark Tech (MSH) 114
-2 Stone by Sunlight (HOB) 27
+1 Stone by Sunlight (HOB) 27
 1 Stone by Sunlight (HOB) 27 *F*
 1 Stonewood Invoker (DMR) 178
 5 Stony-Voiced Goblins (HOB) 85
@@ -1076,7 +1059,6 @@
 1 Tackle Artist (SOS) 133
 1 Tainted Treats (TMT) 170
 1 Tale of Tinúviel (LTR) 34
-1 Talisman of Conviction (TDC) 329
 1 Talisman of Dominance (FIC) 364
 1 Talisman of Progress (FIC) 367
 1 Tam, Observant Sequencer // Deep Sight (SOS) 237
@@ -1101,7 +1083,6 @@
 1 Thancred Waters (FIC) 31
 1 Thaumaton Torpedo (EOE) 246
 1 The Astonishing Ant-Man (MSH) 204
-1 The Black Arrow (HOB) 171
 1 The Black Arrow (HOB) 171 *F*
 1 The Black Breath (LTR) 78
 2 The Chief Warg (HOB) 150
@@ -1127,11 +1108,10 @@
 1 Thief's Knife (FIN) 81
 1 Thieving Magpie (DMR) 68
 1 Thirst for Knowledge (MSH) 79
-1 Thorin Oakenshield (HOB) 165
 1 Thorin Oakenshield (HOB) 202
 1 Thorin, King of Durin's Folk (HOC) 3 *F*
 1 Thorin, Mountain-king (HOB) 114 *F*
-3 Thorin's Last Stand (HOB) 28
+2 Thorin's Last Stand (HOB) 28
 1 Thorin's Last Stand (HOB) 209
 1 Thornplate Intimidator (BLB) 117
 1 Thought Erasure (GRN) 206
@@ -1144,7 +1124,6 @@
 2 Thranduil's Company (HOB) 168
 4 Thranduil's Decree (HOB) 56
 1 Three Tree Mascot (FDN) 682
-1 Thrór's Map (HOB) 179
 1 Thunder Magic (FIN) 165
 1 Thunderdrum Soloist (SOS) 134
 1 Thundering Broodwagon (DFT) 225
@@ -1234,8 +1213,8 @@
 1 Way of the Warlord (FRA) 255 *F*
 1 We Say Thee Nay! (MSH) 82
 1 Web Up (MSH) 41
-2 Web Up (SPM) 21
-2 Web-Shooters (SPM) 22
+1 Web Up (SPM) 21
+1 Web-Shooters (SPM) 22
 1 Web-Warriors (SPM) 159
 1 Web-Warriors (SPM) 159 *F*
 4 Well-Worn Spatula (HOB) 180
