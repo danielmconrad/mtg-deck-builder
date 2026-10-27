@@ -8,7 +8,7 @@
     "schema_version": { "const": 1 },
     "name": { "$ref": "#/definitions/text" },
     "format": { "enum": ["commander", "commander-60", "casual-60"] },
-    "status": { "enum": ["example", "draft", "ready"] },
+    "status": { "enum": ["example", "draft", "built"] },
     "allow_proxies": { "type": "boolean" },
     "unlimited_basics": { "type": "boolean" },
     "bracket": { "enum": [1, 2, 3, 4, 5] },

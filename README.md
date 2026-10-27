@@ -156,7 +156,7 @@ See [the example](builds/example/deck.yaml) and [the schema](schemas/deck.schema
 | Field                               | Meaning                                                                                                                                     |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | `format`                            | `commander` (exactly 100 including commanders), `commander-60` (exactly 60, Commander rules) or `casual-60` (at least 60)                   |
-| `status`                            | `draft` or `ready`; `example` is for the template only                                                                                      |
+| `status`                            | `draft` or `built`; `example` is for the template only                                                                                      |
 | `commanders`                        | One or two entries with quantity 1; `[]` for casual                                                                                         |
 | `mainboard`                         | Everything else, including lands                                                                                                            |
 | card entry                          | `name`, `quantity`, optional `role` (comma-separated labels) and `scryfall_id` (pins the printing used for pricing)                         |

@@ -2,7 +2,7 @@
 schema_version: 1
 name: Edgar's Blood Tithe
 format: commander
-status: ready
+status: built
 bracket: 2
 allow_proxies: false
 unlimited_basics: true

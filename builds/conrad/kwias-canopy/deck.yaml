@@ -2,7 +2,7 @@
 schema_version: 1
 name: Kwia's Canopy
 format: commander
-status: ready
+status: built
 bracket: 3
 allow_proxies: false
 unlimited_basics: true
