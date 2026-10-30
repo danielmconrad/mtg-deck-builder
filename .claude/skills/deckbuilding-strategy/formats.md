@@ -6,11 +6,11 @@ Where a **Scryfall key** is given, every cached card has that legality (`legal`,
 
 ## Repo formats
 
-| `format` in `deck.yaml` | Repo rules                                                                                                   | Closest Moxfield format                                                                                    |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
-| `commander`             | Exactly 100 with commanders, singleton                                                                       | Commander / EDH                                                                                            |
-| `standard-brawl`        | Exactly 60 with commanders, singleton, Standard Brawl legality (`standardbrawl` key), planeswalkers can lead | Standard Brawl. Moxfield's plain **Brawl** is MTG Arena's 100-card format, which the repo doesn't support. |
-| `casual-60`             | At least 60, up to 4 copies, no sanctioned rules                                                             | None (Moxfield's "None")                                                                                   |
+| `format` in `deck.yaml` | Repo rules                                                                                                                                  | Closest Moxfield format                                                                 |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `commander`             | Exactly 100 with commanders, singleton                                                                                                      | Commander / EDH                                                                         |
+| `custom-dollar-brawl`   | House format: exactly 60 with commanders, singleton, Commander legality, no card over 1 USD (cheapest printing; `max_card_price` overrides) | None. Commander's rules at 60 cards; Moxfield's Brawl formats use different card pools. |
+| `casual-60`             | At least 60, up to 4 copies, no sanctioned rules                                                                                            | None (Moxfield's "None")                                                                |
 
 ## Commander-style formats
 

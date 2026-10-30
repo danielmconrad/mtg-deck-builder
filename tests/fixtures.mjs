@@ -24,7 +24,7 @@ export function card(name, fields = {}) {
     keywords: [],
     colorIdentity: [],
     producedMana: [],
-    legalities: { commander: 'legal', standardbrawl: 'legal' },
+    legalities: { commander: 'legal' },
     gameChanger: false,
     prices: { usd: '1.00', eur: null },
     defaultPrinting: false,

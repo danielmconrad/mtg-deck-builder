@@ -32,13 +32,15 @@ test('Commander deck size counts the commander', () => {
   ]);
 });
 
-test('Standard Brawl needs exactly 60 cards, singleton, within the commander color identity', () => {
-  const sixty = (mainboard) => commanderDeck({ format: 'standard-brawl', mainboard });
-  assert.equal(check(sixty([entry(forest.name, 59)])).outcome, 'pass');
-  assert.deepEqual(messages(check(sixty([entry(forest.name, 60)])), 'error'), [
-    'Standard Brawl requires 60 cards including commanders; found 61',
+test('Custom Dollar Brawl needs exactly 60 cards, singleton, within the commander color identity', () => {
+  const sixty = (mainboard) => commanderDeck({ format: 'custom-dollar-brawl', mainboard });
+  const cheap = { ...spell, prices: { usd: '0.50', eur: null } };
+  const cards = [forest, leader, cheap];
+  assert.equal(check(sixty([entry(forest.name, 59)]), { cards }).outcome, 'pass');
+  assert.deepEqual(messages(check(sixty([entry(forest.name, 60)]), { cards }), 'error'), [
+    'Custom Dollar Brawl requires 60 cards including commanders; found 61',
   ]);
-  const blue = { ...spell, colorIdentity: ['U'] };
+  const blue = { ...cheap, colorIdentity: ['U'] };
   const report = check(sixty([entry(forest.name, 57), entry(spell.name, 2)]), { cards: [forest, leader, blue] });
   assert.deepEqual(messages(report, 'error'), [
     'Example Spell: 2 copies exceeds limit 1',
@@ -46,26 +48,23 @@ test('Standard Brawl needs exactly 60 cards, singleton, within the commander col
   ]);
 });
 
-test('Standard Brawl checks Standard Brawl legality and lets a planeswalker lead', () => {
-  const brawl = (fields) => commanderDeck({ format: 'standard-brawl', mainboard: [entry(forest.name, 59)], ...fields });
-  const rotated = { ...spell, legalities: { commander: 'legal', standardbrawl: 'not_legal' } };
-  const report = check(brawl({ mainboard: [entry(forest.name, 58), entry(spell.name)] }), {
-    cards: [forest, leader, rotated],
-  });
-  assert.deepEqual(messages(report, 'error'), ['Example Spell: not_legal in Standard Brawl']);
+test('Custom Dollar Brawl uses Commander legality and commanders, and caps cards at 1 USD', () => {
+  const brawl = (fields) =>
+    commanderDeck({ format: 'custom-dollar-brawl', mainboard: [entry(forest.name, 58), entry(spell.name)], ...fields });
+  const banned = { ...spell, prices: { usd: '0.50', eur: null }, legalities: { commander: 'banned' } };
+  assert.deepEqual(messages(check(brawl(), { cards: [forest, leader, banned] }), 'error'), [
+    'Example Spell: banned in Custom Dollar Brawl',
+  ]);
+  assert.deepEqual(messages(check(brawl()), 'error'), [
+    'Example Spell: cheapest printing 2.50 USD exceeds the Custom Dollar Brawl cap 1.00 USD',
+  ]);
+  assert.equal(check(brawl({ max_card_price: { amount: 3, currency: 'USD' } })).outcome, 'pass');
   const walker = card('Example Walker', { typeLine: 'Legendary Planeswalker — Test', colorIdentity: ['G'] });
   const collections = { available: [row(forest, 100), row(walker, 1)], protected: [] };
-  assert.equal(
-    check(brawl({ commanders: [entry(walker.name)] }), { collections, cards: [forest, walker] }).outcome,
-    'pass',
-  );
-  assert.deepEqual(
-    messages(
-      check(commanderDeck({ commanders: [entry(walker.name)] }), { collections, cards: [forest, walker] }),
-      'error',
-    ),
-    ['Example Walker: not an eligible commander'],
-  );
+  const walkerDeck = brawl({ commanders: [entry(walker.name)], mainboard: [entry(forest.name, 59)] });
+  assert.deepEqual(messages(check(walkerDeck, { collections, cards: [forest, walker] }), 'error'), [
+    'Example Walker: not an eligible commander',
+  ]);
 });
 
 test('max_card_price fails cards whose cheapest printing costs more, including upgrade adds', () => {

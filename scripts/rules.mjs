@@ -1,11 +1,11 @@
-import { ageInDays, hasCommanderText, isBackground, isBasic, isLegendaryCreature, isPlaneswalker } from './card.mjs';
+import { ageInDays, hasCommanderText, isBackground, isBasic, isLegendaryCreature } from './card.mjs';
 import { availableCopies, holdingsNote, ownedCounts, protectedHoldings } from './collection.mjs';
 import { COMMANDER_DECK_SIZES, deckEntries, isCommanderFormat, resolveEntries } from './deck.mjs';
 import { CENTS_PER_UNIT, cheapestQuote } from './upgrades.mjs';
 
 const RULES_WARN_AGE_DAYS = 30;
 const CASUAL_MIN_DECK_SIZE = 60;
-const DEFAULT_COPY_LIMIT = { commander: 1, 'standard-brawl': 1, 'casual-60': 4 };
+const DEFAULT_COPY_LIMIT = { commander: 1, 'custom-dollar-brawl': 1, 'casual-60': 4 };
 const NUMBER_WORDS = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10 };
 const ANY_NUMBER_TEXT = /A deck can have any number of cards named /i;
 const UP_TO_TEXT = /A deck can have up to (\w+) cards named /i;
@@ -41,9 +41,11 @@ function copyLimit(card, format) {
   return DEFAULT_COPY_LIMIT[format];
 }
 
-const FORMAT_LABELS = { commander: 'Commander', 'standard-brawl': 'Standard Brawl' };
-// Scryfall's legality key for each commander format.
-const LEGALITY_KEYS = { commander: 'commander', 'standard-brawl': 'standardbrawl' };
+const FORMAT_LABELS = { commander: 'Commander', 'custom-dollar-brawl': 'Custom Dollar Brawl' };
+// Scryfall's legality key for each commander format. Custom Dollar Brawl is a house format with Commander's card pool.
+const LEGALITY_KEYS = { commander: 'commander', 'custom-dollar-brawl': 'commander' };
+// The price cap a format sets when the deck has no max_card_price of its own.
+const FORMAT_PRICE_CAPS = { 'custom-dollar-brawl': { amount: 1, currency: 'USD' } };
 
 function sizeFindings(format, total) {
   const commanderSize = COMMANDER_DECK_SIZES[format];
@@ -74,16 +76,15 @@ function isRecognizedPairing(first, second) {
   );
 }
 
-// A Background is only eligible as the second half of a pair. Brawl also lets any planeswalker lead.
-function isEligibleCommander(card, commanderCount, format) {
+// A Background is only eligible as the second half of a pair.
+function isEligibleCommander(card, commanderCount) {
   const isPairedBackground = commanderCount === 2 && isBackground(card);
-  const isBrawlPlaneswalker = format === 'standard-brawl' && isPlaneswalker(card);
-  return isLegendaryCreature(card) || isPairedBackground || isBrawlPlaneswalker || hasCommanderText(card);
+  return isLegendaryCreature(card) || isPairedBackground || hasCommanderText(card);
 }
 
-function commanderFindings(commanders, format) {
+function commanderFindings(commanders) {
   const findings = commanders
-    .filter((card) => !isEligibleCommander(card, commanders.length, format))
+    .filter((card) => !isEligibleCommander(card, commanders.length))
     .map((card) => error(`${card.name}: not an eligible commander`));
   if (commanders.length !== 2) return findings;
   const [first, second] = commanders;
@@ -160,8 +161,10 @@ const formatMoney = (cents, currency) => `${(cents / CENTS_PER_UNIT).toFixed(2)}
 // Judges each card by its cheapest printing, so a pricey printing in the collection doesn't break the cap.
 // Upgrade adds are checked too, since applying them must keep the deck under the cap.
 function priceCapFindings(deck, tallies, index, now) {
-  if (!deck.max_card_price) return [];
-  const { amount, currency } = deck.max_card_price;
+  const cap = deck.max_card_price ?? FORMAT_PRICE_CAPS[deck.format];
+  if (!cap) return [];
+  const { amount, currency } = cap;
+  const capName = deck.max_card_price ? 'max_card_price' : `the ${FORMAT_LABELS[deck.format]} cap`;
   const capCents = Math.round(amount * CENTS_PER_UNIT);
   const upgradeCards = (deck.upgrades ?? []).map(({ add }) => index.lookup(add).card).filter(Boolean);
   const cards = new Map([...tallies.values()].map(({ card }) => [card.oracleId, card]));
@@ -174,7 +177,7 @@ function priceCapFindings(deck, tallies, index, now) {
       if (quote.unitCents <= capCents) return [];
       return [
         error(
-          `${card.name}: cheapest printing ${formatMoney(quote.unitCents, currency)} exceeds max_card_price ${formatMoney(capCents, currency)}`,
+          `${card.name}: cheapest printing ${formatMoney(quote.unitCents, currency)} exceeds ${capName} ${formatMoney(capCents, currency)}`,
         ),
       ];
     });
@@ -209,7 +212,7 @@ export function checkDeck(deck, collections, index, { now = Date.now() } = {}) {
   const findings = uniqueFindings([
     ...problems.map(incomplete),
     ...sizeFindings(deck.format, total),
-    ...commanderFindings(commanders, deck.format),
+    ...commanderFindings(commanders),
     ...cardFindings,
     ...ownershipFindings(tallies, collections, index, deck),
     ...(commanderRules ? gameChangerFindings(tallies, deck.bracket) : []),

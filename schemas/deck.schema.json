@@ -7,7 +7,7 @@
   "properties": {
     "schema_version": { "const": 1 },
     "name": { "$ref": "#/definitions/text" },
-    "format": { "enum": ["commander", "standard-brawl", "casual-60"] },
+    "format": { "enum": ["commander", "custom-dollar-brawl", "casual-60"] },
     "status": { "enum": ["example", "draft", "built"] },
     "allow_proxies": { "type": "boolean" },
     "unlimited_basics": { "type": "boolean" },
@@ -17,7 +17,7 @@
     "notes": { "type": "string" },
     "budget": { "$ref": "#/definitions/money" },
     "max_card_price": {
-      "description": "Most any one card may cost, judged by its cheapest cached printing. Basic lands are exempt.",
+      "description": "Most any one card may cost, judged by its cheapest cached printing. Basic lands are exempt. Defaults to 1 USD in custom-dollar-brawl.",
       "$ref": "#/definitions/money"
     },
     "collection_source": {
@@ -62,7 +62,7 @@
   },
   "allOf": [
     {
-      "if": { "properties": { "format": { "enum": ["commander", "standard-brawl"] } } },
+      "if": { "properties": { "format": { "enum": ["commander", "custom-dollar-brawl"] } } },
       "then": {
         "properties": { "commanders": { "minItems": 1, "items": { "properties": { "quantity": { "const": 1 } } } } }
       },

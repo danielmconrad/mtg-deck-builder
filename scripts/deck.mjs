@@ -12,7 +12,7 @@ const DEFAULT_SCHEMA_PATH = '../../schemas/deck.schema.json';
 const PRIMER_PLACEHOLDER = 'Describe the game plan.';
 
 // Formats played with commanders, and their exact deck size including the commanders.
-export const COMMANDER_DECK_SIZES = { commander: 100, 'standard-brawl': 60 };
+export const COMMANDER_DECK_SIZES = { commander: 100, 'custom-dollar-brawl': 60 };
 export const isCommanderFormat = (format) => Object.hasOwn(COMMANDER_DECK_SIZES, format);
 
 export const deckEntries = (deck) => [...deck.commanders, ...deck.mainboard];

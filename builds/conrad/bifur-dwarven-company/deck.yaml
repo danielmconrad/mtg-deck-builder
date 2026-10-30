@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=../../../schemas/deck.schema.json
 schema_version: 1
 name: Bifur's Dwarven Company
-format: standard-brawl
+format: custom-dollar-brawl
 status: built
 bracket: 2
 allow_proxies: false
@@ -16,7 +16,7 @@ budget:
   amount: 20
   currency: USD
 primer: >-
-  Boros Dwarves and Equipment in Standard Brawl, with no card over $1. Curve out with cheap legendary Dwarves (Thorin, Dwalin, Kíli, Óin, Bofur) and Equipment to reach an enduring story fast, so Thorin gives the team ward and Kíli makes the first equip free each turn. Then cast Bifur, who doubles every Dwarf trigger: Dori makes two Treasures, Glóin adds four red mana, Fíli makes two tokens per Dwarf, Dwalin puts two hone counters on each Equipment and Dáin's Company digs twice. Win by attacking with a wide, suited-up board, using Bruenor, Dáin Ironfoot's double strike and Thorin's Last Stand to finish.
+  Boros Dwarves and Equipment in Custom Dollar Brawl: 60 cards, with no card over $1. Curve out with cheap legendary Dwarves (Thorin, Dwalin, Kíli, Óin, Bofur) and Equipment to reach an enduring story fast, so Thorin gives the team ward and Kíli makes the first equip free each turn. Then cast Bifur, who doubles every Dwarf trigger: Dori makes two Treasures, Glóin adds four red mana, Fíli makes two tokens per Dwarf, Dwalin puts two hone counters on each Equipment and Dáin's Company digs twice. Win by attacking with a wide, suited-up board, using Bruenor, Dáin Ironfoot's double strike and Thorin's Last Stand to finish.
 power_notes: >-
   Aimed at Bracket 2 (Core): no Game Changers, mass land denial, extra turns or two-card combos. The $1 cap rules out Sol Ring, Swords to Plowshares and the like, so the ramp is Talismans, Relic of Legends and Treasure-making Dwarves. Bifur costs six, so the deck has to work as an aggressive Dwarf deck before he lands.
 commanders:

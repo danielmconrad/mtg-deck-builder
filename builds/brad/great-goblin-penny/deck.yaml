@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=../../../schemas/deck.schema.json
 schema_version: 1
 name: Great Goblin Penny Horde
-format: standard-brawl
+format: custom-dollar-brawl
 status: draft
 bracket: 2
 allow_proxies: false
@@ -14,7 +14,7 @@ max_card_price:
 budget:
   amount: 20
   currency: USD
-primer: 'Standard Brawl with every card at $1 or less (cheapest printing). Amass Goblins and Orcs every turn and blight your own Goblins, since every time counters go on a Goblin, Orc or Army, The Great Goblin deals 2 damage to an opponent; when they die, he exiles cards to play. Win by stacking those triggers with a growing Army, Sting-Slinger, Boggart Cursecrafter and Misty Mountains Raider while cheap removal clears the way.'
+primer: 'Custom Dollar Brawl (60 cards) with every card at $1 or less (cheapest printing). Amass Goblins and Orcs every turn and blight your own Goblins, since every time counters go on a Goblin, Orc or Army, The Great Goblin deals 2 damage to an opponent; when they die, he exiles cards to play. Win by stacking those triggers with a growing Army, Sting-Slinger, Boggart Cursecrafter and Misty Mountains Raider while cheap removal clears the way.'
 power_notes: 'Bracket 2. No Game Changers, tutors, extra turns or combos. Grindy aggro-burn; the damage engine is the commander, so losing him slows the deck badly.'
 commanders:
   - name: The Great Goblin

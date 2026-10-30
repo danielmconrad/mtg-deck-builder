@@ -488,7 +488,7 @@ const COMMANDS = {
       format: {
         type: 'string',
         placeholder: 'FORMAT',
-        description: 'commander (default), standard-brawl or casual-60',
+        description: 'commander (default), custom-dollar-brawl or casual-60',
       },
       name: { type: 'string', placeholder: 'TEXT', description: 'Deck name; defaults to the slug in title case' },
     },
