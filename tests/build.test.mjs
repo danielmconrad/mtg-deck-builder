@@ -11,7 +11,7 @@ const spell = { ...fixtures.spell, collectorNumber: '3' };
 const spellReprint = card('Example Spell', { id: 'example-spell-reprint', set: 'rpt', collectorNumber: '7' });
 const index = indexOf(forest, leader, spell, spellReprint);
 const deck = (fields = {}) => ({
-  format: 'commander-60',
+  format: 'standard-brawl',
   unlimited_basics: false,
   commanders: [entry(leader.name)],
   mainboard: [entry(spell.name, 4), entry(forest.name, 55)],

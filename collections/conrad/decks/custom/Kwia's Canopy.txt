@@ -6,7 +6,7 @@ Deck
 1 Blossoming Sands (DFT) 252
 1 Gathering Place (MSH) 266
 1 Suburban Sanctuary (SPM) 185 *F*
-1 Evolving Wilds (LTC) 306
+1 Evolving Wilds (FIC) 389
 1 Ash Barrens (FIC) 374
 1 Vibrant Cityscape (SPM) 188
 1 Crossroads Village (FIN) 276
@@ -52,7 +52,7 @@ Deck
 1 Boughside Wanderers (HOB) 121
 1 Belladonna Took (HOB) 4 *F*
 1 Inspiring Call (FDN) 226
-1 Tome of Legends (FIC) 369
+1 Peregrin Took (LTR) 315
 1 Warg Tactics (HOB) 139
 1 Shattered Wings (EOE) 206
 1 Broken Wings (DFT) 156
@@ -81,7 +81,7 @@ Deck
 1 Primordial Pachyderm (TMT) 129
 1 Hazard of the Dunes (DFT) 165
 1 Migrating Ketradon (DFT) 170
-1 Lashwhip Predator (EOE) 195
+1 Flowering of the White Tree (LTR) 15
 1 Old Fat Spider (HOB) 132
 1 Spider-Rex, Daring Dino (SPM) 116
 1 Wildvine Pummeler (ECL) 203

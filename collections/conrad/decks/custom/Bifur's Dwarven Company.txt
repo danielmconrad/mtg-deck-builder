@@ -7,7 +7,7 @@ Deck
 1 Wind-Scarred Crag (TDM) 271 *F*
 1 Dedicated Commons (FRA) 175 *F*
 1 The Lonely Mountain (HOB) 187
-1 Evolving Wilds (FIC) 389
+1 Cori Mountain Monastery (TDM) 252
 1 Vibrant Cityscape (SPM) 188
 3 Mountain (DFT) 275
 2 Mountain (HOB) 197

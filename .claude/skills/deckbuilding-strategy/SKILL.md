@@ -7,6 +7,8 @@ description: Established Magic deckbuilding frameworks (Commander Brackets, the 
 
 These are the frameworks experienced players lean on, with how to check each one here. They are starting points and conversation tools, not rules. When a deck departs from them, say why. When you cite a number, name the framework it comes from. Researched October 2026; the sources are at the end.
 
+For format names and rules (what Moxfield calls each format, deck sizes, card pools and Scryfall legality keys), see [formats.md](formats.md).
+
 ## 1. Start from the plan, not the card pool
 
 - **Say how the deck wins in one sentence** before picking cards. Record it in `primer`.

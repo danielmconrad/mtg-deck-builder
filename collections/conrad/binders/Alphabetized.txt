@@ -89,7 +89,7 @@
 1 Bilbo, Luckwearer // Burglar's Plot (HOB) 32 *F*
 1 Bilbo, Luckwearer // Burglar's Plot (HOB) 218
 1 Bilbo's Burglaring (HOC) 10
-3 Bilbo's Deadly Slice (HOB) 62
+4 Bilbo's Deadly Slice (HOB) 62
 2 Bilbo's Gambit (HOB) 5
 1 Binding the Old Gods (EOC) 52
 1 Biomechan Engineer (EOE) 213
@@ -135,7 +135,7 @@
 1 Brambleback Brute (ECL) 128
 2 Brave Brawler (MSH) 8
 1 Brave Brawler (MSH) 8 *F*
-1 Breaking of the Fellowship (LTR) 117
+2 Breaking of the Fellowship (LTR) 117
 1 Brigid's Command (ECL) 208 *F*
 2 Brilliance Unleashed (TMT) 141
 1 Broadcast Rambler (DFT) 293
@@ -215,6 +215,9 @@
 1 Culvert Ambusher (MKM) 158
 1 Cut a Deal (FIC) 238
 3 Daily Bugle Reporters (SPM) 6
+1 Dreadful as the Storm (LTR) 48
+1 Dredge the Mire (C20) 43
+1 Dunland Crebain (LTR) 411
 2 Dáin, Lord of the Iron Hills (HOB) 8
 1 Dáin, Lord of the Iron Hills (HOB) 8 *F*
 1 Dáin's Company (HOB) 212
@@ -298,6 +301,8 @@
 1 Eagle of the Great Shelf (HOB) 11
 2 Eagle's Rescue (HOB) 155
 1 Eardrum Rattler (FRA) 81
+1 East-Mark Cavalier (LTR) 9
+1 Eastfarthing Farmer (LTR) 8
 1 Eddie Brock // Venom, Lethal Protector (SPM) 55
 1 Eddie Brock // Venom, Lethal Protector (SPM) 224
 1 Edgar, Moonlit Sovereign (FRA) 257 *F*
@@ -344,7 +349,7 @@
 1 Fang-Druid Summoner (DFT) 163
 1 Fatehold Charm (FRA) 132
 1 Fatehold Chronologist // Peer Review (FRA) 133
-1 Fear, Fire, Foes! (LTR) 125
+2 Fear, Fire, Foes! (LTR) 125
 2 Fearsome Goblin Pair (HOB) 156
 1 Feed the Flames (ECL) 137
 1 Feed the Swarm (SOA) 29
@@ -352,6 +357,7 @@
 1 Ferocity of the Hunt (FRA) 134 *F*
 1 Festering Goblin (DMR) 85
 1 Fierce Guardianship (CMM) 94
+1 Foray of Orcs (LTR) 128
 1 Fíli and Kíli, Joyous (HOC) 1
 1 Fíli the Pathfinder (HOB) 14
 1 Final Judgment (FIC) 243
@@ -419,6 +425,7 @@
 1 Gleaming Splendor (HOB) 239
 1 Glintwing Invoker (DMR) 52
 1 Glitch Ghost Surveyor (DFT) 44
+1 Glorious Gale (LTR) 51
 1 Glóin the Mighty // Easy Pickings (HOB) 99
 1 Glóin the Mighty // Easy Pickings (HOB) 99 *F*
 1 Glóin the Mighty // Easy Pickings (HOB) 227
@@ -426,6 +433,7 @@
 2 Gnashing of Teeth (HOB) 69
 1 Go Nuts! (MSH) 168
 1 Go Nuts! (MSH) 168 *F*
+1 Goblin Fireleaper (HOC) 195
 1 Goblin Fireleaper (LTR) 133
 1 Goblin Medics (MOC) 283
 5 Goblin Plate Mail (HOB) 157
@@ -461,6 +469,7 @@
 1 Guerrilla Gorilla (MSH) 169
 1 Guidelight Pathmaker (DFT) 206
 4 Gundabad Opportunist (HOB) 101
+1 Gwaihir the Windlord (LTR) 210
 2 H.E.R.B.I.E. Scout Unit (MSH) 247
 1 Haazda Officer (M20) 305
 1 Hallway Heckler // Vicious Verse (FRA) 85 *F*
@@ -580,11 +589,13 @@
 2 Lake-town Mariners // Gone Fishing (HOB) 44
 3 Lake-town Toymaker (HOB) 19
 7 Lakeshore Apothecary (HOB) 43
+1 Landroval, Horizon Witness (HOC) 169
 1 Landroval, Horizon Witness (LTR) 21
 2 Large Bear (HOB) 159
 1 Lash of the Balrog (LTR) 92
 1 Lash of the Balrog (LTR) 408
 1 Lash Out (CMD) 127
+1 Lashwhip Predator (EOE) 195
 1 Last Light of Durin's Day (HOB) 103
 1 Last Light of Durin's Day (HOB) 103 *F*
 1 Laughing Mad (FIN) 143
@@ -648,11 +659,12 @@
 1 Melancholic Poet (SOS) 90
 2 Meltstrider's Gear (EOE) 198
 1 Meltstrider's Resolve (EOE) 199
+1 Meneldor, Swift Savior (LTR) 62
 3 Merciless Enforcers (SPM) 58
 1 Meriadoc Brandybuck (LTR) 177
 1 Michelangelo, Game Master (TMT) 118
 1 Might of the Meek (BLB) 144
-2 Millikin (TDC) 321
+1 Millikin (TDC) 321
 1 Mimeoplasm, Revered One (DFT) 214
 1 Mindspring Merfolk (DFT) 51 *F*
 1 Mirkwood Bats (LTR) 421 *F*
@@ -677,6 +689,7 @@
 1 Monoist Circuit-Feeder (EOE) 110 *F*
 1 Monstrous Rage (MAR) 72 *F*
 1 Moonlit Lamenter (ECL) 26
+1 Moonstone, Harsh Mistress (MSH) 107
 1 Morbius the Living Vampire (SPM) 137
 2 Morcant's Eyes (ECL) 185
 1 Mordor Trebuchet (LTR) 97
@@ -706,14 +719,20 @@
 1 Nightblade Brigade (TDM) 85
 2 Nighthowl Pursuer (HOB) 78
 1 Nightshade Peddler (AVR) 187
+1 Nimble Hobbit (LTR) 23
 1 Nimbus of the Isles (BBD) 124
 2 Ninja of the Hand (MSH) 108
 1 Nocturnal Hunger (BLB) 102
 2 Nomad Decoy (DMR) 17
 6 Nori, Teller of Tales (HOB) 161
 1 North Wind Avatar (TMT) 162
-1 Now for Wrath, Now for Ruin! (LTR) 24
+2 Now for Wrath, Now for Ruin! (LTR) 24
+1 Oath of the Grey Host (LTR) 101 *F*
 1 Observed Stasis (FIC) 40
+1 Rising of the Day (LTR) 145
+1 Sarkhan, Dragon Ascendant (TDM) 302
+1 Tome of Legends (FIC) 369
+1 Westfold Rider (HOC) 172
 3 Óin the Brave (HOB) 106
 2 Old Fat Spider (HOB) 132
 1 Old Fat Spider Can't See Me (HOB) 50 *F*
@@ -798,7 +817,7 @@
 1 Quantum Misalignment (MSC) 152
 6 Quarrel (HOB) 135
 1 Queen Brahne (FIN) 149
-1 Quickbeam, Upstart Ent (LTR) 183
+2 Quickbeam, Upstart Ent (LTR) 183
 2 Quicksilver Dagger (DMR) 195
 1 Quintessential Katana (TMT) 23
 1 Rabbit Response (BLB) 26

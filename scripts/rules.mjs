@@ -1,11 +1,11 @@
-import { ageInDays, hasCommanderText, isBackground, isBasic, isLegendaryCreature } from './card.mjs';
+import { ageInDays, hasCommanderText, isBackground, isBasic, isLegendaryCreature, isPlaneswalker } from './card.mjs';
 import { availableCopies, holdingsNote, ownedCounts, protectedHoldings } from './collection.mjs';
 import { COMMANDER_DECK_SIZES, deckEntries, isCommanderFormat, resolveEntries } from './deck.mjs';
 import { CENTS_PER_UNIT, cheapestQuote } from './upgrades.mjs';
 
 const RULES_WARN_AGE_DAYS = 30;
 const CASUAL_MIN_DECK_SIZE = 60;
-const DEFAULT_COPY_LIMIT = { commander: 1, 'commander-60': 1, 'casual-60': 4 };
+const DEFAULT_COPY_LIMIT = { commander: 1, 'standard-brawl': 1, 'casual-60': 4 };
 const NUMBER_WORDS = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10 };
 const ANY_NUMBER_TEXT = /A deck can have any number of cards named /i;
 const UP_TO_TEXT = /A deck can have up to (\w+) cards named /i;
@@ -41,7 +41,9 @@ function copyLimit(card, format) {
   return DEFAULT_COPY_LIMIT[format];
 }
 
-const FORMAT_LABELS = { commander: 'Commander', 'commander-60': '60-card Commander' };
+const FORMAT_LABELS = { commander: 'Commander', 'standard-brawl': 'Standard Brawl' };
+// Scryfall's legality key for each commander format.
+const LEGALITY_KEYS = { commander: 'commander', 'standard-brawl': 'standardbrawl' };
 
 function sizeFindings(format, total) {
   const commanderSize = COMMANDER_DECK_SIZES[format];
@@ -72,15 +74,16 @@ function isRecognizedPairing(first, second) {
   );
 }
 
-// A Background is only eligible as the second half of a pair.
-function isEligibleCommander(card, commanderCount) {
+// A Background is only eligible as the second half of a pair. Brawl also lets any planeswalker lead.
+function isEligibleCommander(card, commanderCount, format) {
   const isPairedBackground = commanderCount === 2 && isBackground(card);
-  return isLegendaryCreature(card) || isPairedBackground || hasCommanderText(card);
+  const isBrawlPlaneswalker = format === 'standard-brawl' && isPlaneswalker(card);
+  return isLegendaryCreature(card) || isPairedBackground || isBrawlPlaneswalker || hasCommanderText(card);
 }
 
-function commanderFindings(commanders) {
+function commanderFindings(commanders, format) {
   const findings = commanders
-    .filter((card) => !isEligibleCommander(card, commanders.length))
+    .filter((card) => !isEligibleCommander(card, commanders.length, format))
     .map((card) => error(`${card.name}: not an eligible commander`));
   if (commanders.length !== 2) return findings;
   const [first, second] = commanders;
@@ -98,11 +101,12 @@ function copyLimitFindings({ card, quantity }, format) {
   return [];
 }
 
-function commanderLegalityFindings(card, identity) {
-  const legality = card.legalities.commander;
+function commanderLegalityFindings(card, identity, format) {
+  const legality = card.legalities[LEGALITY_KEYS[format]];
+  const label = FORMAT_LABELS[format];
   const findings = [];
-  if (!legality) findings.push(incomplete(`${card.name}: Commander legality unknown`));
-  else if (legality !== 'legal') findings.push(error(`${card.name}: ${legality} in Commander`));
+  if (!legality) findings.push(incomplete(`${card.name}: ${label} legality unknown`));
+  else if (legality !== 'legal') findings.push(error(`${card.name}: ${legality} in ${label}`));
   if (identity && card.colorIdentity.some((color) => !identity.has(color))) {
     findings.push(error(`${card.name}: outside commander color identity`));
   }
@@ -200,12 +204,12 @@ export function checkDeck(deck, collections, index, { now = Date.now() } = {}) {
       : null;
   const cardFindings = [...tallies.values()].flatMap((tally) => [
     ...copyLimitFindings(tally, deck.format),
-    ...(commanderRules ? commanderLegalityFindings(tally.card, identity) : []),
+    ...(commanderRules ? commanderLegalityFindings(tally.card, identity, deck.format) : []),
   ]);
   const findings = uniqueFindings([
     ...problems.map(incomplete),
     ...sizeFindings(deck.format, total),
-    ...commanderFindings(commanders),
+    ...commanderFindings(commanders, deck.format),
     ...cardFindings,
     ...ownershipFindings(tallies, collections, index, deck),
     ...(commanderRules ? gameChangerFindings(tallies, deck.bracket) : []),

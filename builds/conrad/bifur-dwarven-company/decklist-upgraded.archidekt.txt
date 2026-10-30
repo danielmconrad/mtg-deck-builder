@@ -1,7 +1,7 @@
 1x Bifur, Melodic Rider (HOB) 147 [Commander{top}]
 1x Iron Hills (HOB) 185 [Land]
 1x The Lonely Mountain (HOB) 187 [Land]
-1x Evolving Wilds (FIC) 389 [Land]
+1x Cori Mountain Monastery (TDM) 252 [Land]
 1x Vibrant Cityscape (SPM) 188 [Land]
 6x Mountain (HOB) 197 [Land]
 8x Plains (MDD) 292 [Land]

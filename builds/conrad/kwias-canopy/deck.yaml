@@ -104,9 +104,9 @@ mainboard:
   - name: Inspiring Call
     quantity: 1
     role: draw, protection
-  - name: Tome of Legends
+  - name: Peregrin Took
     quantity: 1
-    role: draw
+    role: draw, synergy
   # Removal (flyer answers first)
   - name: Warg Tactics
     quantity: 1
@@ -195,9 +195,9 @@ mainboard:
   - name: Migrating Ketradon
     quantity: 1
     role: synergy
-  - name: Lashwhip Predator
+  - name: Flowering of the White Tree
     quantity: 1
-    role: synergy
+    role: synergy, wincon
   - name: Old Fat Spider
     quantity: 1
     role: synergy, draw

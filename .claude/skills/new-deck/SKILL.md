@@ -11,7 +11,7 @@ The rules in AGENTS.md still apply: only unprotected collections supply cards, p
 
 Ask only about what the user hasn't already said. Don't fill gaps with defaults.
 
-- **Format:** Commander, 60-card Commander (`commander-60`: Commander rules at exactly 60 cards) or casual-60.
+- **Format:** Commander, Standard Brawl (`standard-brawl`: exactly 60 cards, Standard-legal cards only, planeswalkers can lead) or casual-60.
 - **Commander or theme:** or "open to anything from my collection".
 - **Power level:** a Commander Bracket (1–5) or the playgroup's own terms. The bracket table is in the `deckbuilding-strategy` skill.
 - **Budget:** amount and currency for optional upgrades, and any per-card price cap (set `max_card_price` so `deck:check` enforces it).
@@ -72,12 +72,12 @@ Then **wait for the user to choose.** Don't run `deck:new` or write a list befor
 ## 4. Build the baseline
 
 ```sh
-mise run deck:new -- <slug> --commander "Name"     # repeat --commander for partners; add --format commander-60 for 60 cards
+mise run deck:new -- <slug> --commander "Name"     # repeat --commander for partners; add --format standard-brawl for Standard Brawl
 ```
 
 - **Header fields:** fill `primer` (the game plan, one line of YAML with no manual line breaks), `collection_source` (if the brief limits them), `power_notes`, `bracket`, `budget`, `allow_proxies` and `unlimited_basics` in the new `deck.yaml` (pass a nested slug such as `brad/<slug>` to `deck:new` to group decks by owner).
 - **Mainboard:** owned cards only. Give each entry a `role` from the vocabulary below.
-- **Size:** reach exactly 100 cards including commanders (exactly 60 for `commander-60`), or at least 60 for casual.
+- **Size:** reach exactly 100 cards including commanders (exactly 60 for `standard-brawl`), or at least 60 for casual.
 
 Role vocabulary (comma-separate several): `land`, `ramp`, `draw`, `removal`, `wipe`, `protection`, `wincon`, `synergy`. `deck:stats` counts them, and the Archidekt export turns them into categories.
 

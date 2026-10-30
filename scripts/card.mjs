@@ -15,6 +15,8 @@ export const isLand = (card) => card.frontType.includes('Land');
 export const isLegendaryCreature = (card) =>
   card.frontType.includes('Legendary') && card.frontType.includes('Creature');
 
+export const isPlaneswalker = (card) => card.frontType.includes('Planeswalker');
+
 export const isBackground = (card) => card.frontType.includes('Background');
 
 export const hasCommanderText = (card) => card.oracleText.includes('can be your commander');

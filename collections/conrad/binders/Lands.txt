@@ -4,7 +4,6 @@
 1 Blossoming Sands (DFT) 252 *F*
 1 Blossoming Sands (TDM) 251
 1 Capital City (FIN) 274
-1 Cori Mountain Monastery (TDM) 252
 2 Daily Bugle Building (SPM) 179
 1 Deserted Beach (FRA) 397
 1 Dragon-Cursed Halls (HOC) 8 *F*
@@ -47,15 +46,18 @@
 1 Island (FRA) 387 *F*
 1 Island (HOB) 190
 2 Island (HOB) 195
+1 Island (LTR) 264
 1 Island (SPM) 190
 1 Island (TMT) 192 *F*
 1 Izzet Guildgate (RVR) 405
 1 Jungle Hollow (DFT) 256
+1 Ketria Triome (IKO) 250
 4 Lake-town (HOB) 186
 1 Lindblum, Industrial Regency // Mage Siege (FIN) 285
 1 Los Diablos Missile Base (MSH) 270
 1 Los Diablos Missile Base (MSH) 270 *F*
 1 Meticulous Commons (FRA) 184 *F*
+1 Minas Tirith (LTR) 256
 5 Mirkwood (HOB) 188
 1 Mirkwood (HOB) 188 *F*
 1 Mishra's Factory (DMR) 251
@@ -81,6 +83,7 @@
 1 Northampton Farm (TMT) 188
 1 Ominous Asylum (SPM) 181
 1 Paradox Gardens (SOS) 258
+1 Plains (LTR) 263
 1 Prairie Stream (FIC) 413
 1 Reef Roads (DFT) 259
 1 Room of Refuge (FRA) 188
@@ -94,6 +97,7 @@
 1 Skycloud Expanse (FIC) 423
 1 Slippery Karst (DMR) 256
 1 Smoldering Crater (DMR) 257
+1 Soulstone Sanctuary (FDN) 133
 1 Stingerquill Annex (FRA) 190 *F*
 1 Subterranean Cavern (MSH) 273
 1 Surveillance Room (MSH) 274 *F*

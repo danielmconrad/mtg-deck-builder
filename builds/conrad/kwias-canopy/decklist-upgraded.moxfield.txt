@@ -25,12 +25,12 @@ Deck
 1 Boughside Wanderers (HOB) 121
 1 Belladonna Took (HOB) 214
 1 Inspiring Call (FDN) 226
-1 Tome of Legends (FIC) 369
+1 Peregrin Took (LTR) 181
 1 Warg Tactics (HOB) 139
 1 Shattered Wings (EOE) 206
 1 Broken Wings (DFT) 156
 1 Stingerfling Spider (CMR) 258
-1 Banishing Light (FDN) 138
+1 Banishing Light (BLB) 1
 1 Web Up (SPM) 21
 1 Memory Trap (FRA) 15
 1 Liminal Hold (ECL) 24
@@ -50,7 +50,7 @@ Deck
 1 Primordial Pachyderm (TMT) 129
 1 Hazard of the Dunes (DFT) 165
 1 Migrating Ketradon (DFT) 170
-1 Lashwhip Predator (EOE) 195
+1 Flowering of the White Tree (LTR) 15
 1 Old Fat Spider (HOB) 132
 1 Spider-Rex, Daring Dino (SPM) 116
 1 Wildvine Pummeler (ECL) 203

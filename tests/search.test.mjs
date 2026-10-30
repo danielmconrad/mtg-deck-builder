@@ -190,7 +190,7 @@ test("suggestedLands matches Karsten's worked examples", () => {
   const casual = suggestedLands({ format: 'casual-60', commanderCount: 0, averageManaValue: 2.5, cheapRampAndDraw: 4 });
   assert.equal(casual.toFixed(2), '23.22');
   const sixty = suggestedLands({
-    format: 'commander-60',
+    format: 'standard-brawl',
     commanderCount: 1,
     averageManaValue: 3,
     cheapRampAndDraw: 10,

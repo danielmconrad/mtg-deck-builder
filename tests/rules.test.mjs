@@ -32,11 +32,11 @@ test('Commander deck size counts the commander', () => {
   ]);
 });
 
-test('60-card Commander needs exactly 60 cards and keeps Commander rules', () => {
-  const sixty = (mainboard) => commanderDeck({ format: 'commander-60', mainboard });
+test('Standard Brawl needs exactly 60 cards, singleton, within the commander color identity', () => {
+  const sixty = (mainboard) => commanderDeck({ format: 'standard-brawl', mainboard });
   assert.equal(check(sixty([entry(forest.name, 59)])).outcome, 'pass');
   assert.deepEqual(messages(check(sixty([entry(forest.name, 60)])), 'error'), [
-    '60-card Commander requires 60 cards including commanders; found 61',
+    'Standard Brawl requires 60 cards including commanders; found 61',
   ]);
   const blue = { ...spell, colorIdentity: ['U'] };
   const report = check(sixty([entry(forest.name, 57), entry(spell.name, 2)]), { cards: [forest, leader, blue] });
@@ -44,6 +44,28 @@ test('60-card Commander needs exactly 60 cards and keeps Commander rules', () =>
     'Example Spell: 2 copies exceeds limit 1',
     'Example Spell: outside commander color identity',
   ]);
+});
+
+test('Standard Brawl checks Standard Brawl legality and lets a planeswalker lead', () => {
+  const brawl = (fields) => commanderDeck({ format: 'standard-brawl', mainboard: [entry(forest.name, 59)], ...fields });
+  const rotated = { ...spell, legalities: { commander: 'legal', standardbrawl: 'not_legal' } };
+  const report = check(brawl({ mainboard: [entry(forest.name, 58), entry(spell.name)] }), {
+    cards: [forest, leader, rotated],
+  });
+  assert.deepEqual(messages(report, 'error'), ['Example Spell: not_legal in Standard Brawl']);
+  const walker = card('Example Walker', { typeLine: 'Legendary Planeswalker — Test', colorIdentity: ['G'] });
+  const collections = { available: [row(forest, 100), row(walker, 1)], protected: [] };
+  assert.equal(
+    check(brawl({ commanders: [entry(walker.name)] }), { collections, cards: [forest, walker] }).outcome,
+    'pass',
+  );
+  assert.deepEqual(
+    messages(
+      check(commanderDeck({ commanders: [entry(walker.name)] }), { collections, cards: [forest, walker] }),
+      'error',
+    ),
+    ['Example Walker: not an eligible commander'],
+  );
 });
 
 test('max_card_price fails cards whose cheapest printing costs more, including upgrade adds', () => {

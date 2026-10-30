@@ -33,7 +33,7 @@ Deck
 1 Swamp (DFT) 283
 1 Swamp (DFT) 283 *F*
 1 Sol Ring (FIC) 359
-1 Arcane Signet (LTC) 273
+1 Millikin (TDC) 321
 1 Talisman of Hierarchy (FIC) 365
 1 Thought Vessel (FIC) 368
 1 Commander's Sphere (ECC) 139
@@ -59,7 +59,7 @@ Deck
 1 Stir Up Trouble (HOB) 84
 1 Lethal Scheme (FIC) 277
 1 Murderous Rider // Swift End (FIC) 279
-1 Bilbo's Deadly Slice (HOB) 62
+1 Shire Shirriff (LTR) 441
 1 Celebrate the Mountain-king (HOB) 7
 1 Your Fate Ends Here (FRA) 24 *F*
 1 Hour of Reckoning (GK1) 104
@@ -82,7 +82,7 @@ Deck
 1 Clachan Festival (ECL) 10
 1 Champions from Beyond (FIC) 11
 1 Hexhaven Battalion (FRA) 12 *F*
-1 Oath of the Grey Host (LTR) 101 *F*
+1 Gothmog, Morgul Lieutenant (LTR) 429
 1 Resolute Reinforcements (FDN) 145
 1 Inside Source (MKM) 19
 1 Hildibrand Manderville // Gentleman's Rise (FIC) 83

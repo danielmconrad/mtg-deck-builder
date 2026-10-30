@@ -58,9 +58,9 @@ mainboard:
   - name: Sol Ring
     quantity: 1
     role: ramp
-  - name: Arcane Signet
+  - name: Millikin
     quantity: 1
-    role: ramp
+    role: ramp,synergy
   - name: Talisman of Hierarchy
     quantity: 1
     role: ramp
@@ -138,9 +138,9 @@ mainboard:
   - name: Murderous Rider // Swift End
     quantity: 1
     role: removal
-  - name: "Bilbo's Deadly Slice"
+  - name: Shire Shirriff
     quantity: 1
-    role: removal
+    role: removal,synergy
   - name: Celebrate the Mountain-king
     quantity: 1
     role: removal
@@ -212,7 +212,7 @@ mainboard:
   - name: Hexhaven Battalion
     quantity: 1
     role: synergy
-  - name: Oath of the Grey Host
+  - name: Gothmog, Morgul Lieutenant
     quantity: 1
     role: synergy
   - name: Resolute Reinforcements
@@ -301,7 +301,7 @@ upgrades:
       quantity: 1
       role: synergy
     cut:
-      name: Oath of the Grey Host
+      name: Gothmog, Morgul Lieutenant
       quantity: 1
     reason: "Combo: Karmic Guide's partner. When it leaves it returns Karmic Guide and a sacrifice outlet; also good value after a wipe."
   - add:
@@ -453,9 +453,9 @@ upgrades:
       quantity: 1
       role: removal
     cut:
-      name: "Bilbo's Deadly Slice"
+      name: "Chainer's Edict"
       quantity: 1
-    reason: 'Instant-speed kill for 2 instead of 3.'
+    reason: 'Instant-speed kill of the creature you choose, instead of a sorcery edict that lets the opponent pick.'
   - add:
       name: Path to Exile
       quantity: 1

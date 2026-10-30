@@ -19,7 +19,7 @@ const CHEAP_ROLES = ['ramp', 'draw'];
 // Frank Karsten's regression on winning decklists ("How Many Lands Do You Need in Your Deck? An Updated
 // Analysis", ChannelFireball). Each cheap ramp or draw spell replaces about 0.28 lands; the Commander
 // version scales the 60-card fit to the library size and credits the free mulligan and the commander.
-// For 60-card Commander the same adjustment is an extrapolation, not one of Karsten's fits.
+// For Standard Brawl the same adjustment is an extrapolation, not one of Karsten's fits.
 export function suggestedLands({ format, commanderCount, averageManaValue, cheapRampAndDraw }) {
   const cheapCredit = 0.28 * cheapRampAndDraw;
   const deckSize = COMMANDER_DECK_SIZES[format];

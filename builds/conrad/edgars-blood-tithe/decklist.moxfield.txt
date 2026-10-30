@@ -13,7 +13,7 @@ Deck
 13 Plains (DFT) 278
 13 Swamp (HOB) 191
 1 Sol Ring (FIC) 359
-1 Arcane Signet (FIC) 335
+1 Millikin (TDC) 321
 1 Talisman of Hierarchy (FIC) 365
 1 Thought Vessel (FIC) 368
 1 Black Market Connections (MSC) 155
@@ -25,9 +25,9 @@ Deck
 1 Swords to Plowshares (FIC) 256
 1 Vindicate (FIC) 330
 1 Fatal Push (FCA) 9
-1 Chainer's Edict (DMR) 425
 1 Stir Up Trouble (HOB) 84
 1 Murderous Rider // Swift End (FIC) 279
+1 Shire Shirriff (LTR) 441
 1 Hour of Reckoning (GK1) 104
 1 Lightning Greaves (LTC) 281
 1 Swiftfoot Boots (MSC) 216
@@ -51,10 +51,10 @@ Sideboard
 1 Authority of the Consuls (FIC) 232
 1 Spiteful Squad (STX) 237
 1 Hexhaven Battalion (FRA) 12
-1 Oath of the Grey Host (LTR) 101
+1 Gothmog, Morgul Lieutenant (LTR) 429
 1 Unburied Earthcarver (TDM) 95
 1 Winter, Tormented Loner (FRA) 240
-1 Belladonna Took (HOB) 4
+1 Belladonna Took (HOB) 214
 1 Send in the Pest (SOS) 100
 1 Hop to It (BLB) 16
 1 Inside Source (MKM) 19
@@ -70,7 +70,7 @@ Sideboard
 1 Clachan Festival (ECL) 10
 1 Teyo, Lightshield Expert (FRA) 295
 1 Resolute Reinforcements (FDN) 145
-1 Bilbo's Deadly Slice (HOB) 62
+1 Chainer's Edict (DMR) 425
 1 Erode (SOS) 15
 1 Troop of Ponies (HOB) 3
 1 Rent Is Due (SPM) 11
