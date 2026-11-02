@@ -19,7 +19,7 @@ Deck
 1 Iron Hills Blacksmith (HOB) 16
 1 Kíli the Resourceful (HOB) 17
 1 Óin the Brave (HOB) 106
-1 Thorin Oakenshield (HOB) 202
+1 Thorin Oakenshield (HOB) 165
 1 Dáin Ironfoot (HOB) 91
 1 Bruenor Battlehammer (AFR) 219
 1 Fíli the Pathfinder (HOB) 14
@@ -34,7 +34,7 @@ Deck
 1 Errand-Rider of Gondor (LTR) 11
 1 Romantic Rendezvous (SPM) 86
 1 Solitary Cell (FRA) 355
-1 Banishing Light (FDN) 138
+1 Banishing Light (BLB) 1
 1 Celebrate the Mountain-king (HOB) 7
 1 Fulminous Forte (FRA) 84
 1 Spectacular Tactics (SPM) 15
@@ -53,12 +53,12 @@ Sideboard
 1 Plains (MDD) 292
 
 Considering
-1 Swords to Plowshares (FRC) 37
+1 Swords to Plowshares (FIC) 256
 1 Generous Gift (MSC) 133
 1 Fairgrounds Warden (KLD) 13
 1 Fearless Skald (MOM) 138
-1 Arcane Signet (FRC) 20
-1 Command Tower (FRC) 22
-1 Path of Ancestry (MBC) 80
-1 Clifftop Retreat (FRC) 67
-1 Furycalm Snarl (MSC) 247
+1 Arcane Signet (FIC) 335
+1 Command Tower (FIC) 382
+1 Path of Ancestry (FIC) 411
+1 Clifftop Retreat (TRC) 518
+1 Furycalm Snarl (TRC) 534

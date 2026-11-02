@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { readCache, writeCache } from './card-cache.mjs';
 import { cardIndex } from './card-index.mjs';
 import { holdDeckCards, parseCollection, parseTextCollection, resolveTextRows } from './collection.mjs';
-import { parseDeck, serializeDeck, withDeckField } from './deck.mjs';
+import { parseDeck, serializeDeck, withDeckChanges, withDeckField } from './deck.mjs';
 
 const PROJECT_ROOT = fileURLToPath(new URL('..', import.meta.url));
 // A deck is named by its folder under builds/, which may be nested (brad/bruenor-forge). Each part
@@ -115,6 +115,13 @@ export function openWorkspace(root = PROJECT_ROOT) {
     );
   }
 
+  // Sets or removes existing fields in a deck's deck.yaml, keeping its comments; see withDeckChanges.
+  async function changeDeckFields(slug, changes) {
+    const deckId = await resolveDeckId(slug);
+    const path = join(decksFolder, deckId, DECK_FILE);
+    await writeFile(path, withDeckChanges(await readFile(path, 'utf8'), changes, { source: deckLabel(deckId) }));
+  }
+
   // Where deck:build puts a deck's own cards by default, named after the deck: builds/brad/elves,
   // named Elf Ball, keeps them in collections/brad/decks/Elf Ball.txt, and an unnested builds/elves
   // in collections/decks/Elf Ball.txt. Characters that aren't safe in a file name become hyphens.
@@ -151,7 +158,7 @@ export function openWorkspace(root = PROJECT_ROOT) {
     return nested.flat().sort((first, second) => first.localeCompare(second));
   }
 
-  // Collection files are edited only by deck:build. Paths are relative to the project root.
+  // Collection files are edited only by deck:build and deck:teardown. Paths are relative to the project root.
   const readCollectionFile = (path) => readFile(join(root, path), 'utf8');
   const writeCollectionFile = (path, text) => writeFile(join(root, path), text);
   const removeCollectionFile = (path) => rm(join(root, path));
@@ -229,6 +236,7 @@ export function openWorkspace(root = PROJECT_ROOT) {
     writeDeckFile,
     removeDeckFile,
     setDeckField,
+    changeDeckFields,
     resolveDeckId,
     defaultDeckCollection,
     loadCollections,

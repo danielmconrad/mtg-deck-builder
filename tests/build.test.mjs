@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { deckCollectionText, planBuild, removeCsvCopies, removeTextCopies } from '../scripts/build.mjs';
+import { addTextCopies, deckCollectionText, planBuild, removeCsvCopies, removeTextCopies } from '../scripts/build.mjs';
 import { parseTextCollection, resolveTextRows } from '../scripts/collection.mjs';
 import { card, entry, forest, indexOf, row } from './fixtures.mjs';
 import * as fixtures from './fixtures.mjs';
@@ -142,4 +142,42 @@ test('removeTextCopies lowers or drops card lines and keeps headings and comment
   ]);
   assert.equal(removeTextCopies(list, everything), null);
   assert.throws(() => removeTextCopies(list, new Map([[6, 3]])), /line 7: cannot take more copies than its 2/);
+});
+
+test('addTextCopies raises a matching line, or adds one in name order when the list is sorted', () => {
+  const list = '﻿// binder\n1 Example Leader (TST) 2\n2 Example Spell (TST) 3 *F*\n3 Forest (TST) 1\n';
+  assert.equal(
+    addTextCopies(list, [
+      { card: forest, finish: 'normal', quantity: 2 },
+      { card: spell, finish: 'normal', quantity: 1 },
+      { card: spellReprint, finish: 'normal', quantity: 1 },
+      { card: spell, finish: 'normal', quantity: 1 },
+    ]),
+    '﻿// binder\n1 Example Leader (TST) 2\n2 Example Spell (TST) 3 *F*\n2 Example Spell (TST) 3\n1 Example Spell (RPT) 7\n5 Forest (TST) 1\n',
+  );
+  const unsorted = '3 Forest (TST) 1\n1 Example Leader (TST) 2';
+  assert.equal(
+    addTextCopies(unsorted, [{ card: spell, finish: 'foil', quantity: 1 }]),
+    '3 Forest (TST) 1\n1 Example Leader (TST) 2\n1 Example Spell (TST) 3 *F*\n',
+  );
+  const rows = resolveTextRows(
+    parseTextCollection(addTextCopies(list, [{ card: leader, finish: 'normal', quantity: 1 }])),
+    index,
+  );
+  assert.deepEqual(
+    rows.map(({ scryfallId, quantity }) => [scryfallId, quantity]),
+    [
+      [leader.id, 2],
+      [spell.id, 2],
+      [forest.id, 3],
+    ],
+  );
+});
+
+test('addTextCopies still places new lines by name when only a few lines are out of order', () => {
+  const names = ['Ápex', ...'BCDEFGHIJKLMNOPQRSTUVWXY'.split('').map((letter) => `${letter}rook`), 'Árbol'];
+  const list = names.map((name, position) => `1 ${name} (TST) ${position + 10}\n`).join('');
+  const added = card('Cameo', { collectorNumber: '99' });
+  const lines = addTextCopies(list, [{ card: added, finish: 'normal', quantity: 1 }]).split('\n');
+  assert.deepEqual(lines.slice(1, 4), ['1 Brook (TST) 11', '1 Cameo (TST) 99', '1 Crook (TST) 12']);
 });

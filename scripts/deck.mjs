@@ -45,6 +45,19 @@ export function withDeckField(text, key, value, { after, source = 'deck' } = {})
   return updated;
 }
 
+// Changes fields of a deck's deck.yaml in place, keeping its comments and field order: each key is set
+// to its value, or removed when the value is undefined. The result must still be a valid deck.
+export function withDeckChanges(text, changes, { source = 'deck' } = {}) {
+  const document = parseDocument(text, { uniqueKeys: true });
+  for (const [key, value] of Object.entries(changes)) {
+    if (value === undefined) document.delete(key);
+    else document.set(key, value);
+  }
+  const updated = document.toString({ lineWidth: 0 });
+  parseDeck(updated, source);
+  return updated;
+}
+
 // A nested slug (brad/green-value) is titled from its last part.
 const titleFromSlug = (slug) =>
   slug

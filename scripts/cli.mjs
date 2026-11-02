@@ -1,9 +1,18 @@
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
-import { deckCollectionText, nameLine, planBuild, printingLine, removeCsvCopies, removeTextCopies } from './build.mjs';
+import {
+  addTextCopies,
+  deckCollectionText,
+  nameLine,
+  planBuild,
+  printingLine,
+  removeCsvCopies,
+  removeTextCopies,
+} from './build.mjs';
 import { emptyCache } from './card-cache.mjs';
 import { cardIndex } from './card-index.mjs';
-import { summarize } from './collection.mjs';
+import { isLand } from './card.mjs';
+import { parseTextCollection, resolveTextRows, summarize } from './collection.mjs';
 import { copyToClipboard } from './clipboard.mjs';
 import { applyUpgrades, deckEntries, newDeck, splitUpgrades } from './deck.mjs';
 import { EXPORT_FORMAT_NAMES, PASTE_HINTS, exportDeck, printingChooser } from './export.mjs';
@@ -315,6 +324,98 @@ async function deckBuild({ workspace, slug, options, write, warn }) {
   return 'pass';
 }
 
+// The copies in a built deck's own list, grouped by the text list each goes back to: lands to
+// --lands-to when it's given, everything else to --to. Lines without a printing are the untracked basics
+// deck:build lists under unlimited_basics, which no collection held, so they go nowhere.
+async function teardownPlan(workspace, deck, options) {
+  const own = deck.collection_destination;
+  const rows = resolveTextRows(
+    parseTextCollection(await workspace.readCollectionFile(own), own),
+    await workspace.loadCardIndex(),
+  );
+  const uncached = rows.filter((row) => row.set && !row.scryfallId);
+  if (uncached.length) {
+    const names = uncached.map((row) => row.name).join(', ');
+    throw new Error(`${own} has lines not in the card cache (${names}); run scryfall:refresh -- --missing`);
+  }
+  const index = await workspace.loadCardIndex();
+  const returns = new Map();
+  const untracked = [];
+  for (const row of rows) {
+    if (!row.set) {
+      untracked.push(row);
+      continue;
+    }
+    const card = index.byId.get(row.scryfallId);
+    const path = options['lands-to'] && isLand(card) ? options['lands-to'] : options.to;
+    returns.set(path, [...(returns.get(path) ?? []), { card, finish: row.finish, quantity: row.quantity }]);
+  }
+  return { returns, untracked };
+}
+
+function teardownLines({ returns, untracked }, verb) {
+  const lines = [`${verb}:`];
+  for (const [path, copies] of returns) {
+    lines.push(`  to ${path}:`);
+    for (const { card, finish, quantity } of copies) lines.push(`    ${printingLine(quantity, card, finish)}`);
+  }
+  if (untracked.length) {
+    lines.push('  nowhere, as untracked basics (unlimited_basics):');
+    for (const { name, quantity } of untracked) lines.push(`    ${quantity} ${name}`);
+  }
+  return lines;
+}
+
+const readIfExists = (workspace, path) =>
+  workspace.readCollectionFile(path).catch((error) => {
+    if (error.code === 'ENOENT') return null;
+    throw error;
+  });
+
+// Adds each list's copies to it, creating a list that doesn't exist yet.
+async function returnCopies(workspace, returns) {
+  for (const [path, copies] of returns) {
+    const existing = await readIfExists(workspace, path);
+    if (existing === null) {
+      const lines = copies.map(({ card, finish, quantity }) => printingLine(quantity, card, finish));
+      await workspace.createCollectionFile(path, `${lines.join('\n')}\n`);
+    } else {
+      await workspace.writeCollectionFile(path, addTextCopies(existing, copies));
+    }
+  }
+}
+
+// The reverse of deck:build: returns a built deck's cards from its own list to the text lists named,
+// deletes that list, and makes the deck a draft again. Without --apply it only prints the plan.
+async function deckTeardown({ workspace, slug, options, write, warn }) {
+  const deckId = await workspace.resolveDeckId(slug);
+  const deck = await workspace.loadDeck(deckId);
+  const own = deck.collection_destination;
+  if (!own) throw new Error(`${deckId} isn't built: it has no collection_destination`);
+  if (!options.to) throw new Error('deck:teardown needs --to PATH, the text list to return the cards to');
+  for (const path of [options.to, options['lands-to']].filter(Boolean)) {
+    if (!/^collections\/(?:[^/\\]+\/)*[^/\\]+\.txt$/.test(path) || path.split('/').includes('..')) {
+      throw new Error(`${path} must be a text list (.txt) under collections/`);
+    }
+    if (path === own) throw new Error(`${path} is the deck's own list`);
+    if (workspace.protects(path)) warn(`${path} is protected, so no deck will count the returned cards`);
+  }
+  const plan = await teardownPlan(workspace, deck, options);
+  printAll(write, teardownLines(plan, options.apply ? 'Returning' : 'Would return'));
+  const deckChanges = { collection_destination: undefined, ...(deck.status === 'built' ? { status: 'draft' } : {}) };
+  const changed = Object.keys(deckChanges).join(' and ');
+  if (!options.apply) {
+    write(`Would delete ${own} and change ${changed} in builds/${deckId}/deck.yaml.`);
+    write('Nothing changed; rerun with --apply to tear it down.');
+    return 'pass';
+  }
+  await returnCopies(workspace, plan.returns);
+  await workspace.removeCollectionFile(own);
+  await workspace.changeDeckFields(deckId, deckChanges);
+  write(`Returned the cards to ${[...plan.returns.keys()].join(', ')}, deleted ${own}, and changed ${changed}.`);
+  return 'pass';
+}
+
 async function decksCheck({ workspace, write }) {
   const loadedDecks = await workspace.loadAllDecks();
   const candidates = loadedDecks.filter(({ deck }) => deck && deck.status !== 'example');
@@ -547,6 +648,23 @@ const COMMANDS = {
         type: 'string',
         placeholder: 'PATH',
         description: "The deck's new text list; defaults to collections/<owner>/decks/<deck name>.txt",
+      },
+      ...COLLECTION_OPTIONS,
+    },
+  },
+  'deck:teardown': {
+    run: deckTeardown,
+    takesSlug: true,
+    summary: "Take apart a built deck: return its cards from its own list to the collection's text lists",
+    details:
+      "Only when the user says they've taken the deck apart. The reverse of deck:build: adds every card in the deck's collection_destination list to the text list --to names (lands to --lands-to, if given), raising the quantity of a line with the same printing and finish or adding a line, in name order when the list is mostly sorted by name. Then deletes the deck's list, removes collection_destination and sets a built deck back to draft. Untracked basics aren't returned. Without --apply, prints what it would return and changes nothing.",
+    options: {
+      apply: { type: 'boolean', description: 'Edit the collections and deck.yaml; without it, only print the plan' },
+      to: { type: 'string', placeholder: 'PATH', description: 'The text list under collections/ the cards go back to' },
+      'lands-to': {
+        type: 'string',
+        placeholder: 'PATH',
+        description: 'A separate text list for the lands; defaults to --to',
       },
       ...COLLECTION_OPTIONS,
     },

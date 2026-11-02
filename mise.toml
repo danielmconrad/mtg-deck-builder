@@ -49,6 +49,10 @@ run = "node scripts/cli.mjs deck:upgrades"
 description = "Physically build a finished deck: move its cards into its own collection list (-- <slug> --apply)"
 run = "node scripts/cli.mjs deck:build"
 
+[tasks."deck:teardown"]
+description = "Take apart a built deck: return its cards to the collection's text lists (-- <slug> --to PATH --apply)"
+run = "node scripts/cli.mjs deck:teardown"
+
 [tasks."decks:check"]
 description = "Check every deck independently; the example is schema-checked only"
 run = "node scripts/cli.mjs decks:check"

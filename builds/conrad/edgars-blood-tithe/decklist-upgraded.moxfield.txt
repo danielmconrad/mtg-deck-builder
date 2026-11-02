@@ -10,7 +10,7 @@ Deck
 1 Sunlit Marsh (FIC) 431
 1 Path of Ancestry (FIC) 411
 1 Exotic Orchard (FIC) 390
-13 Plains (DFT) 278
+13 Plains (MDD) 292
 13 Swamp (HOB) 191
 1 Sol Ring (FIC) 359
 1 Millikin (TDC) 321
@@ -59,7 +59,7 @@ Deck
 1 Teysa Karlov (CMM) 359
 1 Pitiless Plunderer (LCC) 208
 1 Ashnod's Altar (CMM) 368
-1 Skullclamp (MSC) 210
+1 Skullclamp (TRC) 498
 1 Dark Ritual (MSC) 793
 1 Orzhov Signet (TDC) 323
 1 Fellwar Stone (MBC) 74
@@ -69,11 +69,11 @@ Deck
 1 Grand Abolisher (BIG) 2
 1 Silence (M14) 35
 1 Infernal Grasp (SOC) 216
-1 Path to Exile (FRC) 30
+1 Path to Exile (TRC) 425
 1 Deadly Dispute (MSC) 794
 1 Village Rites (INR) 137
-1 Toxic Deluge (MSC) 161
-1 Anguished Unmaking (SOC) 293
+1 Toxic Deluge (TRC) 448
+1 Anguished Unmaking (TRC) 472
 1 Mortify (FDN) 662
 1 Midnight Reaper (FDN) 609
 1 Snuff Out (FIC) 285

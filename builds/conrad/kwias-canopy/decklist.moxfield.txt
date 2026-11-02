@@ -7,8 +7,8 @@ Deck
 1 Suburban Sanctuary (SPM) 185
 1 Evolving Wilds (FIC) 389
 1 Ash Barrens (FIC) 374
-17 Forest (HOB) 198
-12 Plains (FRA) 384
+17 Forest (DFT) 289
+12 Plains (MDD) 292
 1 Arcane Signet (FIC) 335
 1 Great Forest Druid (ECL) 178
 1 Three Tree Rootweaver (BLB) 198
@@ -23,9 +23,9 @@ Deck
 1 Garruk, Curse Breaker (FRA) 314
 1 Pictures of Spider-Man (SPM) 109
 1 Boughside Wanderers (HOB) 121
-1 Belladonna Took (HOB) 214
+1 Belladonna Took (HOB) 4
 1 Inspiring Call (FDN) 226
-1 Peregrin Took (LTR) 181
+1 Peregrin Took (LTR) 315
 1 Warg Tactics (HOB) 139
 1 Shattered Wings (EOE) 206
 1 Broken Wings (DFT) 156
@@ -40,7 +40,7 @@ Deck
 1 Cleansing Nova (FIC) 235
 1 Ori, Plate Stacker (HOC) 6
 1 Vigorbloom Charm (FRA) 160
-1 Snakeskin Veil (TDM) 159
+1 Snakeskin Veil (FDN) 233
 1 Bastion Protector (MSC) 122
 1 Bofur, Reliable Guardian // Concerted Care (HOB) 215
 1 Attercop (HOB) 116
@@ -73,20 +73,20 @@ Sideboard
 1 Take Up the Shield (MSH) 39
 1 Crossroads Village (FIN) 276
 1 Vibrant Cityscape (SPM) 188
-1 Plains (FRA) 384
+1 Plains (MDD) 292
 1 Phantom Flock (DMR) 20
 1 Radiant Strike (EOE) 29
 
 Considering
-1 Sol Ring (FRC) 21
-1 Swords to Plowshares (FRC) 37
-1 Beast Within (MSC) 169
-1 Nature's Lore (MSC) 177
-1 Farseek (MSC) 173
+1 Sol Ring (FIC) 359
+1 Swords to Plowshares (FIC) 256
+1 Beast Within (TRC) 459
+1 Nature's Lore (TRC) 467
+1 Farseek (TRC) 462
 1 Essence Warden (CMA) 106
-1 Heroic Intervention (CMM) 295
-1 Command Tower (FRC) 22
-1 Sunpetal Grove (MSC) 272
-1 Canopy Vista (MSC) 227
+1 Heroic Intervention (TRC) 465
+1 Command Tower (FIC) 382
+1 Sunpetal Grove (TRC) 565
+1 Canopy Vista (TRC) 515
 1 Archangel of Thune (2XM) 5
-1 Path to Exile (FRC) 30
+1 Path to Exile (TRC) 425

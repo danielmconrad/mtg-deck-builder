@@ -2,13 +2,12 @@
 schema_version: 1
 name: Kwia's Canopy
 format: commander
-status: built
+status: draft
 bracket: 3
 allow_proxies: false
 unlimited_basics: true
 collection_source:
   - 'collections/conrad/**'
-collection_destination: "collections/conrad/decks/custom/Kwia's Canopy.txt"
 primer: >-
   Selesnya reach wall with lifegain ramp. Shut the skies with reach Spiders and beasts (Attercop, Ancient Spider, Old Fat Spider, Spider-Rex, Hazard of the Dunes), reach Equipment and a stack of flyer-only removal, so flying decks can't attack you profitably. Meanwhile gain a little life every turn (Liliana the Faultless, Ajani Resolute, Old Thrush, lifelink creatures, Blossoming Sands) so Kwia makes a Lotus each turn, and use that mana to land big threats early: Ghalta, Wildvine Pummeler, Strength of the Pack. Win by attacking with a wide, oversized ground board backed by Kwia and a few lifelinking flyers, with Settle the Wreckage and Cleansing Nova as resets.
 power_notes: >-

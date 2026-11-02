@@ -1,0 +1,444 @@
+# yaml-language-server: $schema=../../../schemas/deck.schema.json
+schema_version: 1
+name: Kwia Lotus Engine
+format: commander
+status: built
+bracket: 3
+allow_proxies: false
+unlimited_basics: true
+primer: >-
+  Selesnya Food-and-tokens ramp. Accelerate into Kwia on turn three or four with dorks, rocks and land ramp, then gain life on every player's turn (Food sacrificed at instant speed, Squirrel Nest and flash tokens feeding Liliana, Daxos and Belladonna, Authority of the Consuls, Verdant Kraken's upkeep Tentacles) so Kwia makes a Lotus each turn. Peregrin Took turns every Lotus and token into an extra Food and Bilbo turns every Food into a Treasure, so the engine snowballs into mana, cards (Peregrin, Rent Is Due, Belladonna, Elven Chorus) and a wide board. Win by going wide and casting Strength of the Pack, Rabbit Response, Champions from Beyond or Garruk, or a cheap Ghalta, with Kwia flying over for lifelink damage; asymmetric wipes (Hour of Reckoning, Settle the Wreckage) and twelve spot removal spells keep the table in check.
+power_notes: >-
+  Bracket 3 (Upgraded). Built only from owned, unprotected cards: no Game Changers, mass land denial, extra turns or two-card infinite combos, so it fits Bracket 3 comfortably and sits near its top end. Pulls from the binders and from the three built custom decks (Kwia's Canopy, Bifur, Edgar), so building it dismantles parts of those. The One Ring and Seedborn Muse, plus staples like Path to Exile, Birds of Paradise, Cultivate, Beast Within, Heroic Intervention and the Selesnya duals, are only in protected collections. Caution on upgrades: Heliod, Sun-Crowned with Walking Ballista is a two-card infinite, which Bracket 3 forbids before turn six; agree on it with the table or swap one of them out before applying the upgrades.
+budget:
+  amount: 130
+  currency: USD
+commanders:
+  - name: Kwia Vigorbloom
+    quantity: 1
+mainboard:
+  # Lands
+  - name: 'Command Tower'
+    quantity: 1
+    role: land
+  - name: 'Gathering Place'
+    quantity: 1
+    role: land
+  - name: 'Blossoming Sands'
+    quantity: 1
+    role: land
+  - name: 'Suburban Sanctuary'
+    quantity: 1
+    role: land
+  - name: 'Evolving Wilds'
+    quantity: 1
+    role: land
+  - name: 'Vibrant Cityscape'
+    quantity: 1
+    role: land
+  - name: 'Hobbit Hole'
+    quantity: 1
+    role: land
+  - name: 'Ash Barrens'
+    quantity: 1
+    role: land
+  - name: 'Path of Ancestry'
+    quantity: 1
+    role: land
+  - name: 'Minas Tirith'
+    quantity: 1
+    role: land
+  - name: 'Surveillance Room'
+    quantity: 1
+    role: land
+  - name: Forest
+    quantity: 12
+    role: land
+  - name: Plains
+    quantity: 12
+    role: land
+  # ramp
+  - name: 'Sol Ring'
+    quantity: 1
+    role: ramp
+  - name: 'Arcane Signet'
+    quantity: 1
+    role: ramp
+  - name: 'Delighted Halfling'
+    quantity: 1
+    role: ramp
+  - name: 'Great Forest Druid'
+    quantity: 1
+    role: ramp
+  - name: 'Three Tree Rootweaver'
+    quantity: 1
+    role: ramp
+  - name: 'Frog Butler'
+    quantity: 1
+    role: ramp
+  - name: 'Undercover Skrull'
+    quantity: 1
+    role: ramp
+  - name: 'Goobbue Gardener'
+    quantity: 1
+    role: ramp
+  - name: 'Studious First-Year // Rampant Growth'
+    quantity: 1
+    role: ramp
+  - name: 'Wood Elves'
+    quantity: 1
+    role: ramp
+  - name: 'Entish Restoration'
+    quantity: 1
+    role: ramp
+  # ramp,synergy
+  - name: 'Many Partings'
+    quantity: 1
+    role: ramp,synergy
+  - name: 'Hot Dog Cart'
+    quantity: 1
+    role: ramp,synergy
+  - name: 'Bilbo, Fellow Conspirator'
+    quantity: 1
+    role: ramp,synergy
+  # ramp,draw
+  - name: 'Elven Chorus'
+    quantity: 1
+    role: ramp,draw
+  # synergy
+  - name: 'Peregrin Took'
+    quantity: 1
+    role: synergy
+  - name: 'Liliana the Faultless'
+    quantity: 1
+    role: synergy
+  - name: 'Daxos, Blessed by the Sun'
+    quantity: 1
+    role: synergy
+  - name: 'Authority of the Consuls'
+    quantity: 1
+    role: synergy
+  - name: 'Courier of Comestibles'
+    quantity: 1
+    role: synergy
+  - name: 'Resolute Reinforcements'
+    quantity: 1
+    role: synergy
+  - name: 'Squirrel Nest'
+    quantity: 1
+    role: synergy
+  - name: 'Hop to It'
+    quantity: 1
+    role: synergy
+  - name: 'Battle Screech'
+    quantity: 1
+    role: synergy
+  # synergy,draw
+  - name: 'Belladonna Took'
+    quantity: 1
+    role: synergy,draw
+  - name: 'Omni-Cheese Pizza'
+    quantity: 1
+    role: synergy,draw
+  - name: 'Bagel and Schmear'
+    quantity: 1
+    role: synergy,draw
+  # draw
+  - name: 'Tome of Legends'
+    quantity: 1
+    role: draw
+  - name: 'Gallant Citizen'
+    quantity: 1
+    role: draw
+  - name: 'Radagast the Brown'
+    quantity: 1
+    role: draw
+  - name: 'Pictures of Spider-Man'
+    quantity: 1
+    role: draw
+  - name: 'Rent Is Due'
+    quantity: 1
+    role: draw
+  # draw,wincon
+  - name: 'Garruk, Curse Breaker'
+    quantity: 1
+    role: draw,wincon
+  - name: 'Champions from Beyond'
+    quantity: 1
+    role: draw,wincon
+  # synergy,wincon
+  - name: 'Ajani Resolute'
+    quantity: 1
+    role: synergy,wincon
+  # removal
+  - name: 'Swords to Plowshares'
+    quantity: 1
+    role: removal
+  - name: 'Erode'
+    quantity: 1
+    role: removal
+  - name: 'Banishing Light'
+    quantity: 1
+    role: removal
+  - name: 'Memory Trap'
+    quantity: 1
+    role: removal
+  - name: 'Web Up'
+    quantity: 1
+    role: removal
+  - name: 'Celebrate the Mountain-king'
+    quantity: 1
+    role: removal
+  - name: 'Your Fate Ends Here'
+    quantity: 1
+    role: removal
+  - name: 'Make Your Move'
+    quantity: 1
+    role: removal
+  - name: 'Pest Infestation'
+    quantity: 1
+    role: removal
+  - name: 'Bite Down'
+    quantity: 1
+    role: removal
+  - name: 'Darksteel Mutation'
+    quantity: 1
+    role: removal
+  - name: 'Liminal Hold'
+    quantity: 1
+    role: removal
+  # wipe
+  - name: 'Hour of Reckoning'
+    quantity: 1
+    role: wipe
+  - name: 'Settle the Wreckage'
+    quantity: 1
+    role: wipe
+  - name: 'Cleansing Nova'
+    quantity: 1
+    role: wipe
+  # protection
+  - name: 'Swiftfoot Boots'
+    quantity: 1
+    role: protection
+  - name: 'Lightning Greaves'
+    quantity: 1
+    role: protection
+  - name: 'Snakeskin Veil'
+    quantity: 1
+    role: protection
+  - name: 'Spectacular Spider-Man'
+    quantity: 1
+    role: protection
+  - name: 'Bofur, Reliable Guardian // Concerted Care'
+    quantity: 1
+    role: protection
+  # protection,draw,removal
+  - name: 'Vigorbloom Charm'
+    quantity: 1
+    role: protection,draw,removal
+  # wincon
+  - name: 'Strength of the Pack'
+    quantity: 1
+    role: wincon
+  - name: 'Ghalta the Unstoppable'
+    quantity: 1
+    role: wincon
+  - name: 'Rabbit Response'
+    quantity: 1
+    role: wincon
+  - name: 'Verdant Kraken'
+    quantity: 1
+    role: wincon
+  - name: 'Chocobo Racetrack'
+    quantity: 1
+    role: wincon
+  - name: 'Dancing from Dark to Dawn'
+    quantity: 1
+    role: wincon
+  - name: 'Flowering of the White Tree'
+    quantity: 1
+    role: wincon
+  # wincon,removal
+  - name: "Thorin's Last Stand"
+    quantity: 1
+    role: wincon,removal
+upgrades:
+  - add:
+      name: 'Craterhoof Behemoth'
+      quantity: 1
+      role: wincon
+    cut:
+      name: 'Rabbit Response'
+      quantity: 1
+    reason: 'The best go-wide finisher in green: haste, trample and +X/+X for every creature, turning the token board into a one-turn kill. Lotus mana makes eight mana easy.'
+  - add:
+      name: 'Heliod, Sun-Crowned'
+      quantity: 1
+      role: synergy,wincon
+    cut:
+      name: 'Hop to It'
+      quantity: 1
+    reason: 'Every lifegain trigger also grows a creature, and with Walking Ballista it is a two-card infinite (give Ballista lifelink, ping, gain life, add a counter). Bracket 4 allows it.'
+  - add:
+      name: 'Walking Ballista'
+      quantity: 1
+      role: removal,wincon
+    cut:
+      name: 'Gallant Citizen'
+      quantity: 1
+    reason: "Flexible removal that scales with Lotus mana, and Heliod's combo partner."
+  - add:
+      name: 'Birds of Paradise'
+      quantity: 1
+      role: ramp
+    cut:
+      name: 'Goobbue Gardener'
+      quantity: 1
+    reason: 'One-mana dork for any color instead of a two-mana mono-green one; your only copy is in a protected precon.'
+  - add:
+      name: 'Llanowar Elves'
+      quantity: 1
+      role: ramp
+    cut:
+      name: 'Undercover Skrull'
+      quantity: 1
+    reason: 'Turn-one ramp toward a turn-three Kwia; cheapest dork in the format.'
+  - add:
+      name: 'Elvish Mystic'
+      quantity: 1
+      role: ramp
+    cut:
+      name: 'Wood Elves'
+      quantity: 1
+    reason: 'Another one-drop dork; a lower curve matters more than a three-mana land at this power level.'
+  - add:
+      name: 'Path to Exile'
+      quantity: 1
+      role: removal
+    cut:
+      name: 'Make Your Move'
+      quantity: 1
+    reason: 'One-mana instant exile for any creature instead of a conditional three-mana answer. Your copies are in protected precons.'
+  - add:
+      name: 'Beast Within'
+      quantity: 1
+      role: removal
+    cut:
+      name: 'Darksteel Mutation'
+      quantity: 1
+    reason: 'Instant answer to any permanent, not just creatures.'
+  - add:
+      name: 'Essence Warden'
+      quantity: 1
+      role: synergy
+    cut:
+      name: 'Resolute Reinforcements'
+      quantity: 1
+    reason: "One-mana lifegain on every creature entering, on any player's turn, so Kwia makes a Lotus nearly every turn."
+  - add:
+      name: 'Soul Warden'
+      quantity: 1
+      role: synergy
+    cut:
+      name: 'Rent Is Due'
+      quantity: 1
+    reason: 'Second copy of the Essence Warden effect for redundant every-turn Lotus triggers.'
+  - add:
+      name: 'Academy Manufactor'
+      quantity: 1
+      role: synergy
+    cut:
+      name: 'Chocobo Racetrack'
+      quantity: 1
+    reason: 'Every Food or Treasure becomes a Food, a Treasure and a Clue; with Peregrin and Bilbo each token turns into a pile of mana, lifegain and cards.'
+  - add:
+      name: 'Tireless Provisioner'
+      quantity: 1
+      role: ramp,synergy
+    cut:
+      name: 'Flowering of the White Tree'
+      quantity: 1
+    reason: 'Each land drop makes a Treasure or a Food, so it ramps and feeds instant-speed lifegain.'
+  - add:
+      name: 'Avenger of Zendikar'
+      quantity: 1
+      role: wincon
+    cut:
+      name: 'Dancing from Dark to Dawn'
+      quantity: 1
+    reason: 'A board of Plants that grow with every land drop; wins alongside Craterhoof or Strength of the Pack.'
+  - add:
+      name: 'Heroic Intervention'
+      quantity: 1
+      role: protection
+    cut:
+      name: 'Bite Down'
+      quantity: 1
+    reason: 'Instant-speed answer to a board wipe or targeted removal for the whole board.'
+  - add:
+      name: "Nature's Lore"
+      quantity: 1
+      role: ramp
+    cut:
+      name: 'Tome of Legends'
+      quantity: 1
+    reason: 'Two-mana untapped land ramp, better than a slow card-draw rock.'
+  - add:
+      name: 'Three Visits'
+      quantity: 1
+      role: ramp
+    cut:
+      name: 'Courier of Comestibles'
+      quantity: 1
+    reason: "Same as Nature's Lore; more early ramp means an earlier Kwia."
+  - add:
+      name: 'Canopy Vista'
+      quantity: 1
+      role: land
+    cut:
+      name: 'Path of Ancestry'
+      quantity: 1
+    reason: 'Green-white dual that usually enters untapped with basics, instead of a tapped land whose scry rarely triggers.'
+  - add:
+      name: 'Sunpetal Grove'
+      quantity: 1
+      role: land
+    cut:
+      name: 'Ash Barrens'
+      quantity: 1
+    reason: 'Untapped green-white dual instead of a colorless land that needs mana to fix.'
+  - add:
+      name: 'Archangel of Thune'
+      quantity: 1
+      role: synergy,wincon
+    cut:
+      name: 'Entish Restoration'
+      quantity: 1
+    reason: 'Flying lifelinker that puts a counter on every creature you control each time you gain life; with every-turn lifegain it grows the whole token board. The deck has plenty of ramp after the dork upgrades.'
+  - add:
+      name: 'Generous Gift'
+      quantity: 1
+      role: removal
+    cut:
+      name: 'Liminal Hold'
+      quantity: 1
+    reason: 'Two-mana instant answer to any permanent instead of a four-mana sorcery-speed enchantment that can be undone.'
+  - add:
+      name: 'Temple Garden'
+      quantity: 1
+      role: land
+    cut:
+      name: 'Hobbit Hole'
+      quantity: 1
+    reason: 'Untapped green-white dual that Three Visits can fetch (it is a Forest), instead of a land that sacrifices itself for a tapped basic.'
+  - add:
+      name: 'Brushland'
+      quantity: 1
+      role: land
+    cut:
+      name: 'Surveillance Room'
+      quantity: 1
+    reason: 'Untapped green-white source instead of a colorless land that costs {1} to fix.'
+playtests: []
+collection_destination: collections/conrad/protected/custom/Kwia Lotus Engine.txt

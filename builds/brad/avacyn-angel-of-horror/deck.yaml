@@ -1,0 +1,237 @@
+# yaml-language-server: $schema=../../../schemas/deck.schema.json
+schema_version: 1
+name: Avacyn's Endless Night
+format: commander
+status: draft
+bracket: 3
+allow_proxies: false
+unlimited_basics: true
+collection_source:
+  - 'collections/brad/*'
+primer: >-
+  Avacyn returns every nontoken creature of yours that dies at the beginning of the next end step, so the deck is built from creatures whose enter or death triggers are worth repeating: symmetrical edicts (Accursed Marauder, Chain Devil) that become one-sided, removal on a body (Azog, Elektra, Lamentation, Noxious Gearhulk, Archive Arbiter), drains (Gollum the Abandoned, Vampire Spawn, Cat-Gator), discard, Treasure and a repeatable tutor in Grim Servant. Free sacrifice outlets and sacrifice-as-cost removal let you loop them on every player's turn while Agent Venom, Massacre Girl and Al Bhed Salvagers turn each death into cards and damage. Villainous Wrath and The Echoverse Fulcrum become one-sided wipes with Avacyn out. Ramp hard to reach her eight mana; she returns herself when she dies, so leave her in the graveyard rather than paying commander tax.
+power_notes: >-
+  Bracket 3 (Upgraded). One Game Changer (Orcish Bowmasters) and no two-card combos, mass land denial or extra turns. Built only from Brad's "all cards" binder: the black aristocrats staples he owns (Blood Artist, Zulaport Cutthroat, Viscera Seer, Carrion Feeder, Gray Merchant, Skullclamp, Sol Ring, Arcane Signet, Dark Ritual) are all in his other decks, so the mana is slower and the drain payoffs thinner than the plan deserves.
+notes: >-
+  Brad's deck, built only from his collection (see collection_source).
+commanders:
+  - name: Avacyn, Angel of Horror
+    quantity: 1
+mainboard:
+  # Ramp
+  - name: The Soul Stone
+    quantity: 1
+    role: ramp
+  - name: Worn Powerstone
+    quantity: 1
+    role: ramp
+  - name: "Bender's Waterskin"
+    quantity: 1
+    role: ramp
+  - name: Inherited Envelope
+    quantity: 1
+    role: ramp
+  - name: Phyrexian Atlas
+    quantity: 1
+    role: ramp
+  - name: Murmuring Volume
+    quantity: 1
+    role: ramp
+  - name: Ring of the Lucii
+    quantity: 1
+    role: ramp
+  - name: "Thrór's Map"
+    quantity: 1
+    role: ramp
+  - name: Troop of Ponies
+    quantity: 1
+    role: ramp, synergy
+  - name: Long-Bodied Grey Dog
+    quantity: 1
+    role: ramp, synergy
+  - name: Changeling Wayfinder
+    quantity: 1
+    role: ramp, synergy
+  - name: Skullport Merchant
+    quantity: 1
+    role: ramp, draw, synergy
+  - name: H.E.R.B.I.E. Scout Unit
+    quantity: 1
+    role: ramp, draw, synergy
+
+  # Sacrifice outlets
+  - name: Hammerhead, Maggia Boss
+    quantity: 1
+    role: synergy
+  - name: Umbral Collar Zealot
+    quantity: 1
+    role: synergy
+  - name: Unrooted Ancestor
+    quantity: 1
+    role: synergy, protection
+  - name: "Kingpin's Enforcers"
+    quantity: 1
+    role: draw, synergy
+  - name: Ahriman
+    quantity: 1
+    role: draw, synergy
+
+  # Death payoffs
+  - name: Agent Venom
+    quantity: 1
+    role: draw, synergy
+  - name: Massacre Girl, Most Wanted
+    quantity: 1
+    role: wincon, synergy
+  - name: Al Bhed Salvagers
+    quantity: 1
+    role: wincon, synergy
+  - name: "Fang, Fearless l'Cie"
+    quantity: 1
+    role: draw, synergy
+
+  # Enter-the-battlefield creatures to loop
+  - name: Gollum the Abandoned
+    quantity: 1
+    role: wincon, synergy
+  - name: Vampire Spawn
+    quantity: 1
+    role: wincon, synergy
+  - name: Orcish Bowmasters
+    quantity: 1
+    role: removal, synergy
+  - name: Hecteyes
+    quantity: 1
+    role: synergy
+  - name: Tinybones, Pocket Nuisance
+    quantity: 1
+    role: wincon, synergy
+  - name: The Sackville-Bagginses
+    quantity: 1
+    role: draw, ramp, synergy
+  - name: Accursed Marauder
+    quantity: 1
+    role: removal, synergy
+  - name: Chain Devil
+    quantity: 1
+    role: removal, synergy
+  - name: Winter, Tormented Loner
+    quantity: 1
+    role: removal, synergy
+  - name: "Azog, Moria's Ruin"
+    quantity: 1
+    role: removal, synergy
+  - name: Elektra, Daughter of the Hand
+    quantity: 1
+    role: removal, synergy
+  - name: Ravenloft Adventurer
+    quantity: 1
+    role: draw, synergy
+  - name: Grim Servant
+    quantity: 1
+    role: synergy
+  - name: Voracious Fell Beast
+    quantity: 1
+    role: removal, synergy
+  - name: Lamentation
+    quantity: 1
+    role: removal, synergy
+  - name: Noxious Gearhulk
+    quantity: 1
+    role: removal, synergy
+  - name: Archive Arbiter
+    quantity: 1
+    role: removal, synergy
+  - name: Doctor Doom
+    quantity: 1
+    role: draw, synergy
+  - name: Cat-Gator
+    quantity: 1
+    role: wincon, removal, synergy
+
+  # Death-trigger fodder
+  - name: Shambling Ghast
+    quantity: 1
+    role: ramp, synergy
+  - name: Common Crook
+    quantity: 1
+    role: ramp, synergy
+  - name: Undercity Dire Rat
+    quantity: 1
+    role: ramp, synergy
+  - name: Guildsworn Prowler
+    quantity: 1
+    role: draw, synergy
+  - name: Magic Pot
+    quantity: 1
+    role: ramp, synergy
+
+  # Removal that sacrifices as a cost
+  - name: Fatal Push
+    quantity: 1
+    role: removal
+  - name: Worthy Cost
+    quantity: 1
+    role: removal, synergy
+  - name: Embrace Oblivion
+    quantity: 1
+    role: removal, synergy
+  - name: Stir Up Trouble
+    quantity: 1
+    role: removal, synergy
+  - name: Feed the Cycle
+    quantity: 1
+    role: removal
+  - name: Baleful Mastery
+    quantity: 1
+    role: removal
+  - name: Withering Torment
+    quantity: 1
+    role: removal
+
+  # Wipes, one-sided with Avacyn out
+  - name: Villainous Wrath
+    quantity: 1
+    role: wipe, wincon
+  - name: The Echoverse Fulcrum
+    quantity: 1
+    role: wipe
+  - name: Rise of the Deathbringer
+    quantity: 1
+    role: wipe, draw
+
+  # Draw, recursion, tutors and protection
+  - name: Plumb the Forbidden
+    quantity: 1
+    role: draw, synergy
+  - name: Tortured Existence
+    quantity: 1
+    role: synergy
+  - name: Summon Undead
+    quantity: 1
+    role: synergy
+  - name: "Splinter's Technique"
+    quantity: 1
+    role: synergy
+  - name: Pain 101
+    quantity: 1
+    role: protection
+  - name: "Vincent's Limit Break"
+    quantity: 1
+    role: protection
+
+  # Lands
+  - name: Plaza of Heroes
+    quantity: 1
+    role: land, protection
+  - name: Minas Morgul, Dark Fortress
+    quantity: 1
+    role: land
+  - name: Treasure Vault
+    quantity: 1
+    role: land
+  - name: Swamp
+    quantity: 34
+    role: land
+upgrades: []
+playtests: []

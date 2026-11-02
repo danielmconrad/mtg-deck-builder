@@ -2,13 +2,12 @@
 schema_version: 1
 name: Bifur's Dwarven Company
 format: custom-dollar-brawl
-status: built
+status: draft
 bracket: 2
 allow_proxies: false
 unlimited_basics: true
 collection_source:
   - 'collections/conrad/**'
-collection_destination: collections/conrad/decks/custom/Bifur's Dwarven Company.txt
 max_card_price:
   amount: 1
   currency: USD

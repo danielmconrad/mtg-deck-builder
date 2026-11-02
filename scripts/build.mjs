@@ -148,3 +148,68 @@ export function removeTextCopies(text, taken) {
   );
   return emptied ? null : `${bom}${kept.join('')}`;
 }
+
+// English alphabetical order, ignoring accents, which is how binder lists are sorted.
+const byName = (first, second) => first.localeCompare(second, 'en');
+// A list counts as sorted by name when at most 1 in 20 neighbouring lines are out of order, so a few
+// misfiled lines don't send every returned card to the end.
+const isMostlySorted = (rows) =>
+  rows.filter((row, position) => position && byName(rows[position - 1].name, row.name) > 0).length * 20 <= rows.length;
+const printingKey = (set, collectorNumber, finish) => `${set.toLowerCase()}|${collectorNumber}|${finish}`;
+
+// Copies of one printing and finish added together, by printingKey.
+function mergeCopies(copies) {
+  const merged = new Map();
+  for (const { card, finish, quantity } of copies) {
+    const key = printingKey(card.set, card.collectorNumber, finish);
+    const copy = merged.get(key) ?? { card, finish, quantity: 0 };
+    copy.quantity += quantity;
+    merged.set(key, copy);
+  }
+  return merged;
+}
+
+// Where copies go in a list's rows: added maps a matching line's position to the copies it gains, and
+// insertBefore maps a line position (end for the end of the list) to new copies placed before it.
+function placeCopies(rows, copies, end) {
+  const positionOf = new Map(
+    rows.filter((row) => row.set).map((row) => [printingKey(row.set, row.collectorNumber, row.finish), row.position]),
+  );
+  const isSorted = isMostlySorted(rows);
+  const added = new Map();
+  const insertBefore = new Map();
+  for (const [key, copy] of mergeCopies(copies)) {
+    const position = positionOf.get(key);
+    if (position !== undefined) {
+      added.set(position, copy.quantity);
+      continue;
+    }
+    const next = isSorted ? rows.find((row) => byName(row.name, copy.card.name) > 0) : undefined;
+    const before = next?.position ?? end;
+    insertBefore.set(before, [...(insertBefore.get(before) ?? []), copy]);
+  }
+  return { added, insertBefore };
+}
+
+// Returns copies ({ card, finish, quantity }) to a text list, the reverse of removeTextCopies. A line
+// already naming that printing and finish gets the copies added to its quantity; the rest become new
+// lines, placed by name when the list is (mostly) sorted by name and at the end otherwise. Every other line
+// keeps its exact text.
+export function addTextCopies(text, copies) {
+  const bom = text.startsWith('\uFEFF') ? '\uFEFF' : '';
+  const body = text.slice(bom.length);
+  const eol = body.includes('\r\n') ? '\r\n' : '\n';
+  const lines = body.split(/(?<=\n)/);
+  const { added, insertBefore } = placeCopies(parseTextCollection(text), copies, lines.length);
+  const newLines = (position) =>
+    (insertBefore.get(position) ?? [])
+      .toSorted((first, second) => byName(first.card.name, second.card.name))
+      .map(({ card, finish, quantity }) => `${printingLine(quantity, card, finish)}${eol}`);
+  const raise = (line, extra) =>
+    line.replace(LINE_QUANTITY, (_, indent, quantity) => `${indent}${Number(quantity) + extra}`);
+  const kept = lines.map((line, position) =>
+    [...newLines(position), added.has(position) ? raise(line, added.get(position)) : line].join(''),
+  );
+  const ending = insertBefore.has(lines.length) && body && !body.endsWith('\n') ? eol : '';
+  return `${bom}${kept.join('')}${ending}${newLines(lines.length).join('')}`;
+}

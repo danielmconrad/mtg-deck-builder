@@ -48,6 +48,7 @@ node scripts/cli.mjs --help         # every command, plus exit codes
 | `deck:export`       | Print or copy a paste-ready decklist                                |
 | `deck:files`        | Write the committed decklist files beside `deck.yaml`               |
 | `deck:build`        | Physically build a deck: move its cards into its own collection     |
+| `deck:teardown`     | Take a built deck apart: return its cards to the collection         |
 | `decks:check`       | Check every deck; the example is schema-checked only                |
 | `lint` / `fix`      | Check, or fix, linting and formatting                               |
 | `check`             | `lint`, `collection:check`, `test` and `decks:check`                |
@@ -119,6 +120,19 @@ mise run deck:build -- brad/great-goblin-penny --apply    # do it
 - **ManaBox exports:** the edited CSV now differs from ManaBox. Before your next export, move the same cards into a deck binder in ManaBox (whose cards are held back anyway) or out of the app, or the cards will count twice.
 - **What the text list keeps:** printing and finish. Purchase price, condition and language from a CSV row aren't carried over; they stay in Git history.
 
+### Taking a built deck apart
+
+When you take a built deck apart, return its cards to your collection's text lists:
+
+```sh
+mise run deck:teardown -- conrad/kwias-canopy --to collections/conrad/binders/Alphabetized.txt --lands-to collections/conrad/binders/Lands.txt          # dry run
+mise run deck:teardown -- conrad/kwias-canopy --to collections/conrad/binders/Alphabetized.txt --lands-to collections/conrad/binders/Lands.txt --apply  # do it
+```
+
+- **What it does:** adds every card in the deck's `collection_destination` list to the `--to` text list, and lands to `--lands-to` if given. A line with the same printing and finish gets its quantity raised. Otherwise a new line is added, in alphabetical order if the list is sorted by name (a few misfiled lines are fine), else at the end. Then it deletes the deck's list, removes `collection_destination` and sets `status: built` back to `draft`. The decklist in `deck.yaml` stays.
+- **Destinations:** text lists under `collections/` only, never ManaBox CSVs. A list that doesn't exist yet is created. Returning to a protected list gets a warning, since no deck would count those cards.
+- **Untracked basics** (name-only lines from `unlimited_basics`) aren't returned, since no collection held them.
+
 ### Formatting and linting
 
 Prettier formats, ESLint lints ([eslint.config.js](eslint.config.js)). Two things keep code tidy without thinking about it:
@@ -143,7 +157,7 @@ Prettier formats, ESLint lints ([eslint.config.js](eslint.config.js)). Two thing
 - To read only some collections, list patterns in `MTG_COLLECTIONS` in `.env`, e.g. `MTG_COLLECTIONS=collections/conrad*,collections/other*`, or pass `--collections PATTERNS` to one command. The rest are ignored entirely, and protection still applies to the ones read. Empty means every collection. `scryfall:refresh` always covers every collection, so changing the list never leaves card data missing.
 - ManaBox binder exports (with `Binder Name` and `Binder Type` columns) work too. A card named in any of the export's deck binders is in use: every copy of it, spares in other binders included, is shown as e.g. "3 in BradsCollection decks (protected)" and never fills a new deck.
 - `collection:check` lists the collections it reads and marks the protected ones. A pattern in either list that matches no collection gets a warning.
-- Never hand-edit ManaBox exports; replace them with fresh exports when the collection changes. `deck:build --apply` is the one tool that edits them (see above). Text lists can be edited by hand.
+- Never hand-edit ManaBox exports; replace them with fresh exports when the collection changes. `deck:build --apply` is the one tool that edits them (see above); `deck:teardown --apply` edits only text lists. Text lists can be edited by hand.
 - Every deck is checked on its own. Two decks can both use your only copy of a card, until one of them is built.
 - All printings and finishes of a card count together.
 - Proxy rows count only when the deck sets `allow_proxies: true`. An export without a `Proxy` column has no proxies.

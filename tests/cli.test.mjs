@@ -387,6 +387,38 @@ test('deck:build moves a deck into its own protected collection only with --appl
     );
   }));
 
+test('deck:teardown returns a built deck to a text list only with --apply, and makes it a draft', () =>
+  inWorkspace(async ({ root, cli, stdout, stderr }) => {
+    const deckPath = join(root, 'builds', 'fixture', 'deck.yaml');
+    const binder = join(root, 'collections', 'binders', 'Lands.txt');
+    await writeFile(deckPath, `# a comment\n${stringify({ ...casualDeck(), unlimited_basics: true })}`);
+    await assert.rejects(cli('deck:teardown', 'fixture', '--to', 'collections/binders/Lands.txt'), /isn't built/);
+    assert.equal(await cli('deck:build', 'fixture', '--protect', 'collections/precons.csv', '--apply'), 0);
+    const built = await readFile(deckPath, 'utf8');
+    await writeFile(deckPath, built.replace('status: draft', 'status: built'));
+    const own = join(root, 'collections', 'decks', 'Fixture.txt');
+    await writeFile(own, `${await readFile(own, 'utf8')}4 Forest\n`);
+    await mkdir(join(root, 'collections', 'binders'));
+    await writeFile(binder, '1 Forest (TST) 1\n');
+    await assert.rejects(cli('deck:teardown', 'fixture'), /needs --to PATH/);
+    await assert.rejects(cli('deck:teardown', 'fixture', '--to', 'collections/Organized.csv'), /must be a text list/);
+    assert.equal(await cli('deck:teardown', 'fixture', '--to', 'collections/binders/Lands.txt'), 0);
+    assert.match(
+      stdout.join('\n'),
+      /Would return:\n {2}to collections\/binders\/Lands.txt:\n {4}60 Forest \(TST\) 1\n {2}nowhere, as untracked basics \(unlimited_basics\):\n {4}4 Forest\n/,
+    );
+    assert.match(stdout.at(-1), /Nothing changed/);
+    assert.equal(await readFile(binder, 'utf8'), '1 Forest (TST) 1\n');
+    assert.equal(await cli('deck:teardown', 'fixture', '--to', 'collections/binders/Lands.txt', '--apply'), 0);
+    assert.equal(await readFile(binder, 'utf8'), '61 Forest (TST) 1\n');
+    await assert.rejects(readFile(own), /ENOENT/);
+    const tornDown = await readFile(deckPath, 'utf8');
+    assert.match(tornDown, /^# a comment\n(.|\n)*status: draft/);
+    assert.doesNotMatch(tornDown, /collection_destination/);
+    assert.ok(!stderr.some((line) => /is protected, so no deck/.test(line)));
+    assert.equal(await cli('deck:check', 'fixture'), 0);
+  }));
+
 test('scryfall:refresh covers every collection, whatever MTG_COLLECTIONS says', () =>
   inWorkspace(async ({ root, cliWithEnv }) => {
     const uncachedId = '00000000-0000-4000-8000-000000000002';
