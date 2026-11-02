@@ -480,6 +480,30 @@ test("deck:swap edits a draft deck.yaml, and moves a built deck's cards only wit
     assert.equal(await readFile(own, 'utf8'), 'Deck\n59 Forest (TST) 1\n1 New Draw (TST) 3\n');
   }));
 
+test('deck:candidates lists left-out cards with their considered reasons, and collection:search sorts by value', () =>
+  inWorkspace(async ({ root, cli, writeDeck, stdout }) => {
+    const ranked = card('Ranked Spell', { collectorNumber: '2', edhrecRank: 7, prices: { usd: '3.00', eur: null } });
+    const other = card('Other Spell', { collectorNumber: '3', prices: { usd: '9.00', eur: null } });
+    await writeCache(join(root, '.cache', 'cards.json'), cacheOf(forest, ranked, other));
+    await writeFile(join(root, 'collections', 'Spells.txt'), '1 Ranked Spell (TST) 2\n1 Other Spell (TST) 3\n');
+    await writeDeck({ ...casualDeck(), considered: [{ name: 'Other Spell', reason: 'Off plan' }] });
+    assert.equal(await cli('deck:candidates', 'fixture'), 0);
+    assert.match(
+      stdout.join('\n'),
+      /1x Ranked Spell {2}— Sorcery \(EDHREC #7, \$3\.00\)\n {4}not in considered\n1x Other Spell {2}— Sorcery \(EDHREC \?, \$9\.00\)\n {4}considered: Off plan\n2 of 2 available cards left out; 1 without a considered reason/,
+    );
+    assert.equal(await cli('deck:candidates', 'fixture', '--sort', 'price', '--limit', '1'), 0);
+    assert.match(stdout.at(-1), /^1 of 2 available cards left out/);
+    assert.match(stdout.at(-3), /Other Spell/);
+    await assert.rejects(cli('deck:candidates', 'fixture', '--limit', '0'), /--limit must be a positive integer/);
+    stdout.length = 0;
+    assert.equal(await cli('collection:search', '--nonland', '--sort', 'edhrec'), 0);
+    assert.deepEqual(stdout.slice(0, 2), [
+      '1x Ranked Spell  — Sorcery [C] (EDHREC #7, $3.00)',
+      '1x Other Spell  — Sorcery [C] (EDHREC ?, $9.00)',
+    ]);
+  }));
+
 test('scryfall:refresh covers every collection, whatever MTG_COLLECTIONS says', () =>
   inWorkspace(async ({ root, cliWithEnv }) => {
     const uncachedId = '00000000-0000-4000-8000-000000000002';

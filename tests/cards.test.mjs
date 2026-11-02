@@ -189,3 +189,8 @@ test('isCached checks IDs by printing and names by any printing', () => {
   assert.equal(index.isCached({ set: 'tst', collector_number: '2' }), false);
   assert.equal(index.printing('TST', '1').name, 'Bolt');
 });
+
+test('toCard records the EDHREC rank, or null for an unranked card', () => {
+  assert.equal(toCard({ id: 'r', oracle_id: 'o', name: 'Ranked', edhrec_rank: 42 }, 'fetched').edhrecRank, 42);
+  assert.equal(toCard({ id: 'u', oracle_id: 'o', name: 'Unranked' }, 'fetched').edhrecRank, null);
+});

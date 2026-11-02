@@ -1,6 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { countResults, groupResults, parseIdentity, searchCollection, searchFilters } from '../scripts/search.mjs';
+import {
+  countResults,
+  deckCandidates,
+  groupResults,
+  parseIdentity,
+  searchCollection,
+  searchFilters,
+  sortResults,
+} from '../scripts/search.mjs';
 import { deckStats, suggestedLands } from '../scripts/stats.mjs';
 import { identityLabel, orderedIdentity } from '../scripts/card.mjs';
 import { card, entry, forest, indexOf, leader, row, spell } from './fixtures.mjs';
@@ -219,4 +227,51 @@ test('deckStats counts cheap ramp and draw by role and mana value, then suggests
     stats.suggestedLands.toFixed(2),
     suggestedLands({ format: 'commander', commanderCount: 1, averageManaValue: 8 / 3, cheapRampAndDraw: 2 }).toFixed(2),
   );
+});
+
+test('sortResults orders by EDHREC rank or by price, highest first, with unknown values last', () => {
+  const ranked = card('Ranked', { edhrecRank: 10, prices: { usd: '0.10', eur: null } });
+  const popular = card('Popular', { edhrecRank: 2, prices: { usd: null, eur: null } });
+  const pricey = card('Pricey', { prices: { usd: '30.00', eur: null } });
+  const reprint = card('Pricey', { id: 'pricey-reprint', prices: { usd: '12.50', eur: null } });
+  const valueIndex = indexOf(ranked, popular, pricey, reprint);
+  const { results } = searchCollection(
+    { available: [row(ranked, 1), row(popular, 1), row(pricey, 1)], protected: [] },
+    valueIndex,
+  );
+  const names = (by) => sortResults(results, by).map((result) => result.card.name);
+  assert.deepEqual(names('edhrec'), ['Popular', 'Ranked', 'Pricey']);
+  assert.deepEqual(names('price'), ['Pricey', 'Ranked', 'Popular']);
+  assert.equal(results.find((result) => result.card.name === 'Pricey').priceUsd, 12.5);
+  assert.throws(() => sortResults(results, 'rarity'), /--sort must be one of: mv, edhrec, price/);
+});
+
+test('deckCandidates lists playable cards the deck leaves out, with their considered reasons', () => {
+  const pool = {
+    available: [row(elf, 2), row(ghoul, 1), row(banned, 1), row(spell, 1), row(forest, 5), row(leader, 1)],
+    protected: [],
+  };
+  const deck = {
+    format: 'commander',
+    commanders: [entry(leader.name)],
+    mainboard: [entry(spell.name)],
+    considered: [
+      { name: 'Llanowar Elves', reason: 'Too slow here' },
+      { name: 'Not Cached', reason: 'x' },
+    ],
+  };
+  const { results } = deckCandidates(deck, pool, index);
+  assert.deepEqual(
+    results.map((result) => [result.card.name, result.considered]),
+    [['Llanowar Elves', 'Too slow here']],
+  );
+  const withLands = deckCandidates(deck, pool, index, { lands: true }).results.map((result) => result.card.name);
+  assert.deepEqual(withLands.toSorted(), ['Forest', 'Llanowar Elves']);
+  const casual = deckCandidates({ ...deck, format: 'casual-60', commanders: [] }, pool, index).results;
+  assert.deepEqual(casual.map((result) => result.card.name).toSorted(), [
+    'Banned Thing',
+    'Example Leader',
+    'Grave Ghoul',
+    'Llanowar Elves',
+  ]);
 });

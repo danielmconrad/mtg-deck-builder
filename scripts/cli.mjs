@@ -18,6 +18,7 @@ import { copyToClipboard } from './clipboard.mjs';
 import { applyUpgrades, deckEntries, newDeck, resolveEntries, splitUpgrades } from './deck.mjs';
 import { EXPORT_FORMAT_NAMES, PASTE_HINTS, exportDeck, printingChooser } from './export.mjs';
 import {
+  candidateLines,
   checkLines,
   collectionSummaryLine,
   countLine,
@@ -29,7 +30,16 @@ import {
 } from './format.mjs';
 import { checkDeck, worstOutcome } from './rules.mjs';
 import { fetchBulkCards, fetchCards } from './scryfall.mjs';
-import { GROUP_BY_CHOICES, countResults, groupResults, searchCollection, searchFilters } from './search.mjs';
+import {
+  GROUP_BY_CHOICES,
+  SORT_CHOICES,
+  countResults,
+  deckCandidates,
+  groupResults,
+  searchCollection,
+  searchFilters,
+  sortResults,
+} from './search.mjs';
 import { deckStats } from './stats.mjs';
 import { commandHelp, overviewHelp, parseArgsOptions, withHelpOption } from './help.mjs';
 import { upgradeReport } from './upgrades.mjs';
@@ -61,7 +71,7 @@ async function collectionSearch({ workspace, options, write, warn }) {
   if (unresolvedRows) {
     warn(`${unresolvedRows} collection rows have no cached card data and were skipped; run scryfall:refresh`);
   }
-  printAll(write, searchOutput(results, options, collections.availableNames));
+  printAll(write, searchOutput(sortResults(results, options.sort), options, collections.availableNames));
   return 'pass';
 }
 
@@ -75,7 +85,8 @@ function searchOutput(results, options, availableNames) {
   if (options.count) {
     return options.json ? asJson(countResults(results)) : [countLine(countResults(results), availableNames)];
   }
-  return options.json ? [searchJson(results)] : searchLines(results, { withOracleText: options.oracle });
+  const withValues = options.sort === 'edhrec' || options.sort === 'price';
+  return options.json ? [searchJson(results)] : searchLines(results, { withOracleText: options.oracle, withValues });
 }
 
 // Scryfall identifiers for every collection row and every card a deck or upgrade names. Text list rows
@@ -236,6 +247,27 @@ async function deckFiles({ workspace, slug, warn, write }) {
   warnUncached();
   write(`Wrote ${written.join(', ')}.`);
   return 'pass';
+}
+
+const CANDIDATE_LIMIT = 20;
+
+// The deck's most valued left-out cards, so a review explains each exclusion rather than missing one.
+async function deckCandidatesCommand({ workspace, slug, options, write }) {
+  const deck = await workspace.loadDeck(slug);
+  const [collections, index] = await Promise.all([workspace.loadCollections(deck), workspace.loadCardIndex()]);
+  const limit = options.limit === undefined ? CANDIDATE_LIMIT : Number(options.limit);
+  if (!Number.isSafeInteger(limit) || limit < 1) throw new Error('--limit must be a positive integer');
+  const { results, unresolvedRows } = deckCandidates(deck, collections, index, {
+    texts: (options.text ?? []).map((source) => new RegExp(source, 'i')),
+    types: (options.type ?? []).map((source) => new RegExp(source, 'i')),
+    lands: options.lands,
+    sort: options.sort ?? 'edhrec',
+  });
+  if (results.length && results.every((result) => result.edhrecRank === null)) {
+    write('No EDHREC ranks cached yet; sorting falls back to price. Run scryfall:refresh to fetch them.');
+  }
+  printAll(write, candidateLines(results, { limit, withOracleText: options.oracle, unresolvedRows }));
+  return unresolvedRows ? 'incomplete' : 'pass';
 }
 
 async function deckUpgrades({ workspace, slug, write }) {
@@ -649,6 +681,11 @@ const SEARCH_OPTIONS = {
     description: `Count matches per group instead of listing them: ${GROUP_BY_CHOICES.join(' or ')}`,
   },
   json: { type: 'boolean', description: 'Print machine-readable JSON (list, count or groups)' },
+  sort: {
+    type: 'string',
+    placeholder: 'KEY',
+    description: `Order the list by ${SORT_CHOICES.join(', ')} (mana value, default; EDHREC rank; price, highest first); edhrec and price also print both`,
+  },
 };
 
 // Which collections to read and which not to dismantle. Each option wins over its .env variable
@@ -798,6 +835,22 @@ const COMMANDS = {
     summary: 'Write the decklist files kept beside deck.yaml',
     details: `Writes ${DECKLIST_FORMATS.map(decklistFile).join(' and ')} (the kept cards, upgrade cuts in the sideboard, adds under Considering or Maybeboard) and, if the deck has upgrades, ${DECKLIST_FORMATS.map(upgradedDecklistFile).join(' and ')} (the full deck with every swap made). Overwrites them; rerun after every deck edit. Does not validate the deck.`,
     options: COLLECTION_OPTIONS,
+  },
+  'deck:candidates': {
+    run: deckCandidatesCommand,
+    takesSlug: true,
+    summary: "List the deck's most valued left-out cards, so every exclusion has a reason",
+    details:
+      "Lists available cards the deck could play but leaves out (in its commanders' color identity and Commander-legal, for commander formats), most played on EDHREC first, then by price. Each shows its reason from the deck's considered list, or says it has none. Price and rank only flag cards for a second look; they don't judge fit. Ranks come from scryfall:refresh.",
+    options: {
+      limit: { type: 'string', placeholder: 'N', description: `How many to list; defaults to ${CANDIDATE_LIMIT}` },
+      sort: { type: 'string', placeholder: 'KEY', description: 'edhrec (default) or price, highest first' },
+      text: { ...SEARCH_OPTIONS.text },
+      type: { ...SEARCH_OPTIONS.type },
+      lands: { type: 'boolean', description: 'Include lands' },
+      oracle: SEARCH_OPTIONS.oracle,
+      ...COLLECTION_OPTIONS,
+    },
   },
   'deck:upgrades': {
     run: deckUpgrades,

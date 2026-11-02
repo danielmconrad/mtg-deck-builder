@@ -174,3 +174,9 @@ test('splitUpgrades moves cut copies, roles included, to swapOut and adds to con
   assert.deepEqual(split.considering, [entry('Sol Ring'), entry('Wastes')]);
   assert.equal(deck.mainboard[0].quantity, 3);
 });
+
+test('considered entries need a name and a reason', () => {
+  const considered = (items) => stringify(deck({ considered: items }));
+  assert.equal(parseDeck(considered([{ name: 'Sol Ring', reason: 'Saved for another deck' }])).considered.length, 1);
+  assert.throws(() => parseDeck(considered([{ name: 'Sol Ring' }])), /must have required property 'reason'/);
+});

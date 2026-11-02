@@ -21,6 +21,24 @@ For format names and rules (what Moxfield calls each format, deck sizes, card po
   - Decide which you are early, and play to it.
   - Combo decks still need a backup plan.
 
+## 1a. Map the engine, then find every card that feeds it
+
+Theme words find the obvious cards. The ones that get missed feed the engine one step removed, so search by resource rather than by theme.
+
+- **List the resources:** write down what the commander and the key engine cards use up and produce: life-gain events, Food, Treasure, Clues, any token, counters, spells cast, cards drawn, creatures dying. Note every owned card that turns one into another, e.g. "each token also makes a Food" or "each Food also makes a Treasure".
+- **Search each resource both ways:** find its makers and its payoffs. A card that makes a converted resource feeds the whole chain, even when its text never mentions the theme. In a Food-and-life-gain deck where Food becomes Treasure and every token brings a Food, a card that makes Treasure belongs on the shortlist.
+- **Artifact tokens are tokens:** Treasure, Food, Clue, Blood and Map tokens count for token doublers, "whenever you create a token" triggers and "for each artifact" payoffs.
+- **Count triggers off other players:** "whenever an opponent…" fires up to three times as often as "whenever you…" in a four-player game.
+- **Read every ability, and every target:** "two target players", "target player" and "each player" can include you. A symmetrical or group-hug effect is often a one-sided engine when you aim it at yourself, or when it hits opponents only off their turn. Weigh the help it gives opponents against what you get; don't skip it on reflex.
+
+### Price and EDHREC rank
+
+`collection:search --sort edhrec|price` and `deck:candidates` show each card's EDHREC rank (how often Commander decks play it; 1 is the most played) and cheapest USD price.
+
+- **Use them to flag cards for a second look, not to judge fit.** A popular or pricey card the deck leaves out needs a one-line reason, recorded in `considered`.
+- **Price is a noisy signal:** cEDH demand (fast tutors and free spells), collectors, foils and scarcity all inflate it. Rank is the better signal for Commander, but it's still popularity across all decks, not fit for this one.
+- **Ignore rarity:** plenty of mythics are weak, so it adds little beyond price.
+
 ## 2. Agree on power level: Commander Brackets
 
 Wizards' Commander Brackets (beta) exist to guide the pregame conversation with a playgroup. They aren't a matchmaking law. Set `bracket` in `deck.yaml` once the user picks one.
@@ -88,7 +106,8 @@ Go through these in order and report what you find:
 4. **Mana:** compare lands with Karsten's suggestion, look at the curve shape, and compare color sources with pips.
 5. **Win conditions:** are there enough, and are they owned? Can the deck still win if the commander is removed?
 6. **Resilience:** protection for key pieces, recursion, and how the deck recovers after a wipe.
-7. **Cuts:** remove the cards that serve no role or the weakest role first. Use `upgrades` for purchases.
+7. **Left-out cards:** run `mise run deck:candidates -- <slug> --oracle`, and again with `--text` for each engine resource. Every card it lists needs a place in the deck or a `considered` reason, and its summary counts those without one. A strong left-out card means a weak inclusion should go.
+8. **Cuts:** remove the cards that serve no role or the weakest role first. Use `upgrades` for purchases.
 
 Base claims on `deck:stats` output and card text from the cache, never on memory. A few games or goldfishing don't establish win rates.
 

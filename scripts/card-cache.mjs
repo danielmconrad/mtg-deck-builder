@@ -1,7 +1,9 @@
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 
-// Bump whenever the card model in scryfall.mjs changes shape, so stale caches are rejected.
+// Bump whenever the card model in scryfall.mjs changes shape, so stale caches are rejected. edhrecRank was
+// added without a bump: caches written before it lack the field, which reads as an unknown rank until the
+// next refresh, so adding it didn't force a 105 MB download.
 export const CACHE_VERSION = 6;
 
 export const emptyCache = () => ({ version: CACHE_VERSION, cards: {} });

@@ -31,8 +31,9 @@ Deck
 1 Omni-Cheese Pizza (TMT) 176
 1 Bagel and Schmear (SPM) 161
 1 Gleaming Splendor (HOB) 239
+1 Tataru Taru (FIC) 30
 1 Radagast the Brown (LTR) 184
-1 Pictures of Spider-Man (SPM) 109
+1 Defense of the Heart (MAR) 76
 1 Garruk, Curse Breaker (FRA) 314
 1 Champions from Beyond (FIC) 11
 1 Ajani Resolute (FRA) 291
@@ -42,13 +43,12 @@ Deck
 1 Memory Trap (FRA) 15
 1 Web Up (SPM) 21
 1 Celebrate the Mountain-king (HOB) 7
-1 Your Fate Ends Here (FRA) 24
 1 Pest Infestation (SOC) 282
 1 Hour of Reckoning (GK1) 104
 1 Settle the Wreckage (HOB) 26
 1 Cleansing Nova (FIC) 235
 1 Swiftfoot Boots (MSC) 216
-1 Lightning Greaves (LTC) 281
+1 Bastion Protector (MSC) 122
 1 Snakeskin Veil (FDN) 233
 1 Spectacular Spider-Man (SPM) 14
 1 Bofur, Reliable Guardian // Concerted Care (HOB) 215

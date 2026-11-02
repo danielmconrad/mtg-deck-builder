@@ -45,6 +45,7 @@ node scripts/cli.mjs --help         # every command, plus exit codes
 | `deck:check`        | Check rules and ownership for one deck                              |
 | `deck:stats`        | Curve, card types, color pips, land sources and roles               |
 | `deck:upgrades`     | Price the upgrade package and any shortfalls against the budget     |
+| `deck:candidates`   | List the deck's most valued left-out cards and why they're out      |
 | `deck:export`       | Print or copy a paste-ready decklist                                |
 | `deck:files`        | Write the committed decklist files beside `deck.yaml`               |
 | `deck:build`        | Physically build a deck: move its cards into its own collection     |
@@ -72,7 +73,18 @@ mise run collection:search -- --identity WR --group-by creature-type            
 mise run collection:search -- --identity WR --nonland --text 'destroy target' --count
 ```
 
+`--sort edhrec` lists the most played cards on EDHREC first, and `--sort price` the most valuable (cheapest cached USD printing), each line showing both numbers. They flag cards worth a second look; they don't say a card fits. Ranks are fetched by `scryfall:refresh`, so a cache from before they were added shows `?` until the next refresh.
+
 See `mise run collection:search -- --help` for the full list.
+
+### Reviewing left-out cards
+
+```sh
+mise run deck:candidates -- conrad/kwia-lotus-engine --oracle               # the top 20 owned cards the deck could play but doesn't
+mise run deck:candidates -- conrad/kwia-lotus-engine --text treasure --limit 50
+```
+
+It lists available cards in the commanders' color identity (and Commander-legal) that aren't in the deck, ordered by EDHREC rank and then price (`--sort price` reverses that). Each shows its reason from the deck's `considered` list, or `not in considered`, and the last line counts the cards without a reason. Lands are left out unless you pass `--lands`.
 
 ### Viewing a deck on Moxfield or Archidekt
 
@@ -196,6 +208,7 @@ See [the example](builds/example/deck.yaml) and [the schema](schemas/deck.schema
 | `collection_destination`            | The deck's own text list once physically built, set by `deck:build --apply`, e.g. `collections/brad/decks/elves.txt`                                                                                                                                                                                                              |
 | `budget`                            | `amount` and `currency` (`USD`/`EUR`), needed for `deck:upgrades`                                                                                                                                                                                                                                                                 |
 | `max_card_price`                    | Optional `amount` and `currency`; `deck:check` fails any card (upgrade adds included) whose cheapest printing costs more. Basics are exempt                                                                                                                                                                                       |
+| `considered`                        | Owned cards weighed and left out, each a `name` and `reason`; `deck:candidates` shows them                                                                                                                                                                                                                                        |
 | `upgrades`                          | Paired `add`/`cut`/`reason` swaps; never applied automatically                                                                                                                                                                                                                                                                    |
 | `playtests`                         | `date` (`"YYYY-MM-DD"`), `notes`, optional `changes`                                                                                                                                                                                                                                                                              |
 | `primer`, `power_notes`, `notes`    | Free text                                                                                                                                                                                                                                                                                                                         |

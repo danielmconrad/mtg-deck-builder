@@ -147,15 +147,15 @@ mainboard:
     quantity: 1
     role: synergy,draw
   # draw
-  - name: 'Gallant Citizen'
+  - name: Tataru Taru
     quantity: 1
     role: draw
   - name: 'Radagast the Brown'
     quantity: 1
     role: draw
-  - name: 'Pictures of Spider-Man'
+  - name: Defense of the Heart
     quantity: 1
-    role: draw
+    role: draw,wincon
   - name: 'Rent Is Due'
     quantity: 1
     role: draw
@@ -221,7 +221,7 @@ mainboard:
   - name: 'Swiftfoot Boots'
     quantity: 1
     role: protection
-  - name: 'Lightning Greaves'
+  - name: Bastion Protector
     quantity: 1
     role: protection
   - name: 'Snakeskin Veil'
@@ -263,6 +263,45 @@ mainboard:
   - name: "Thorin's Last Stand"
     quantity: 1
     role: wincon,removal
+considered:
+  - name: 'Bag End Banquet'
+    reason: 'With Peregrin and Bilbo it enters as four Food and three Treasure, but at six mana it competes with Kwia on the curve, the deck has plenty of late mana, and its tap ability shrinks as Food is sacrificed for life.'
+  - name: 'Thought Vessel'
+    reason: 'A colorless two-mana rock; the deck already has Sol Ring and Arcane Signet, its double-white and green costs want colored mana, and it rarely needs the hand size.'
+  - name: "Commander's Sphere"
+    reason: 'A three-mana rock comes too late to speed up Kwia; the ramp is built from one- and two-mana pieces.'
+  - name: 'Relic of Legends'
+    reason: "A three-mana rock, too slow for the same reason as Commander's Sphere, even with the deck's legendary creatures."
+  - name: 'Explore'
+    reason: 'Needs a land in hand to ramp; the deck prefers ramp that fetches lands or stays as a dork.'
+  - name: 'Springleaf Drum'
+    reason: 'Turns a creature into mana rather than adding a source, and the deck has few creatures before turn three.'
+  - name: 'Millikin'
+    reason: 'Colorless creature mana that is worse than the green dorks the deck already runs.'
+  - name: "Archaeomancer's Map"
+    reason: 'Two Plains to hand is card advantage, not mana the turn it lands; fifteen faster ramp pieces are in already.'
+  - name: 'Aftermath Analyst'
+    reason: 'Land recursion with little to return: only Evolving Wilds and Ash Barrens put lands in the graveyard.'
+  - name: 'Inspiring Call'
+    reason: 'The baseline puts few +1/+1 counters on creatures; revisit if the Heliod and Archangel of Thune upgrades go in.'
+  - name: 'Whispersilk Cloak'
+    reason: 'Kwia already flies and has ward {2}; Swiftfoot Boots and Lightning Greaves protect it for less and grant haste.'
+  - name: 'Darksteel Plate'
+    reason: 'Indestructible does not stop exile, bounce or Hour of Reckoning-style sacrifice effects, and the equip cost competes with the Boots and Greaves.'
+  - name: 'Forge Anew'
+    reason: 'Only Swiftfoot Boots and Lightning Greaves are Equipment, so it has nothing to work with.'
+  - name: 'Wall of Omens'
+    reason: 'A cantrip body like Tataru Taru, but a defender can not attack with Strength of the Pack or Rabbit Response, and it makes no Treasure.'
+  - name: 'Cut a Deal'
+    reason: 'Close call: three cards for three mana in a four-player game, and the opponents drawing on your turn triggers Tataru Taru, but it gives each opponent a card; Rent Is Due and the Food draws are repeatable.'
+  - name: "Hunter's Insight"
+    reason: 'Needs one big attacker to connect; the go-wide plan does not guarantee that before its finishers resolve.'
+  - name: 'Requisition Raid'
+    reason: 'Close call: flexible artifact and enchantment removal that can also put a counter on each of your creatures, but Pest Infestation and the four exile enchantments cover those targets.'
+  - name: 'Coveted Jewel'
+    reason: 'Six mana, and any opponent who attacks you unblocked takes it and draws three cards.'
+  - name: 'Lithoform Engine'
+    reason: "Copying Kwia's Lotus trigger costs two mana to gain three, a slow return on a four-mana artifact."
 upgrades:
   - add:
       name: 'Craterhoof Behemoth'
@@ -285,9 +324,9 @@ upgrades:
       quantity: 1
       role: removal,wincon
     cut:
-      name: 'Gallant Citizen'
+      name: 'Your Fate Ends Here'
       quantity: 1
-    reason: "Flexible removal that scales with Lotus mana, and Heliod's combo partner."
+    reason: "Flexible removal that scales with Lotus mana, and Heliod's combo partner. It replaces the narrowest removal spell: three mana, and only for creatures and planeswalkers of mana value 3 or more."
   - add:
       name: 'Birds of Paradise'
       quantity: 1
@@ -445,4 +484,12 @@ playtests:
     notes: >-
       Not a playtest: a list review. Tome of Legends rarely gains page counters with a six-mana commander, while Gleaming Splendor is a cheaper repeatable draw outlet. Activated on an opponent's turn after their draw, targeting yourself and them, it draws a card and makes a Treasure, which Peregrin Took and Bilbo turn into Food and more Treasure. The Nature's Lore upgrade now cuts Three Tree Rootweaver.
     changes: '-Tome of Legends, +Gleaming Splendor'
+  - date: '2026-11-02'
+    notes: >-
+      Not a playtest: a review of the strongest left-out cards (deck:candidates). Tataru Taru replaces Gallant Citizen: the same two-mana cantrip body, plus a Treasure once each turn when an opponent draws off their turn, which Gleaming Splendor's ability and Tataru's own enter trigger can cause. The Walking Ballista upgrade now cuts Your Fate Ends Here. The other top-20 cards and Bag End Banquet are recorded in considered.
+    changes: '-Gallant Citizen, +Tataru Taru'
+  - date: '2026-11-02'
+    notes: >-
+      Not a playtest: two more swaps from the deck:candidates review. Bastion Protector makes Kwia indestructible, so it survives the deck's own Hour of Reckoning; Lightning Greaves goes, since its shroud stops the deck's own protection spells and Swiftfoot Boots stays. Defense of the Heart usually triggers in a four-player game and puts two creatures such as Ghalta and Verdant Kraken, or Peregrin and Bilbo, onto the battlefield; Pictures of Spider-Man goes, as the weaker way to find creatures.
+    changes: '-Lightning Greaves, +Bastion Protector, -Pictures of Spider-Man, +Defense of the Heart'
 collection_destination: collections/conrad/protected/custom/Kwia Lotus Engine.txt

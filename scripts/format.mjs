@@ -22,20 +22,44 @@ export function checkLines(slug, { total, findings, outcome }) {
   ];
 }
 
-export function searchLines(results, { withOracleText = false } = {}) {
-  const lines = results.flatMap(({ card, available, protectedIn }) => {
+// EDHREC rank and cheapest USD price, with ? for unknown, e.g. "EDHREC #1234, $0.25".
+const valueNote = ({ edhrecRank, priceUsd }) =>
+  `EDHREC ${edhrecRank === null ? '?' : `#${edhrecRank}`}, ${priceUsd === null ? '$?' : `$${priceUsd.toFixed(2)}`}`;
+
+const oracleLines = (card) => card.oracleText.split('\n').map((line) => `    ${line}`);
+
+export function searchLines(results, { withOracleText = false, withValues = false } = {}) {
+  const lines = results.flatMap((result) => {
+    const { card, available, protectedIn } = result;
     const protectedNote = protectedIn.length ? ` (+${holdingsNote(protectedIn)}, protected)` : '';
-    const summary = `${available}x ${card.name} ${card.manaCost} — ${card.typeLine} [${identityLabel(card)}]${protectedNote}`;
-    const rulesText = withOracleText ? card.oracleText.split('\n').map((line) => `    ${line}`) : [];
-    return [summary, ...rulesText];
+    const values = withValues ? ` (${valueNote(result)})` : '';
+    const summary = `${available}x ${card.name} ${card.manaCost} — ${card.typeLine} [${identityLabel(card)}]${values}${protectedNote}`;
+    return [summary, ...(withOracleText ? oracleLines(card) : [])];
   });
   return [...lines, `${results.length} cards`];
+}
+
+// deck:candidates: the most valued cards the deck leaves out, each with its considered reason if any.
+export function candidateLines(results, { limit, withOracleText = false, unresolvedRows = 0 }) {
+  const shown = results.slice(0, limit);
+  const unexplained = results.filter((result) => !result.considered).length;
+  const lines = shown.flatMap((result) => {
+    const { card, available } = result;
+    const summary = `${available}x ${card.name} ${card.manaCost} — ${card.typeLine} (${valueNote(result)})`;
+    const reason = result.considered ? `    considered: ${result.considered}` : '    not in considered';
+    return [summary, reason, ...(withOracleText ? oracleLines(card) : [])];
+  });
+  return [
+    ...lines,
+    `${shown.length} of ${results.length} available cards left out; ${unexplained} without a considered reason`,
+    ...(unresolvedRows ? [`${unresolvedRows} collection rows have no cached card data and were skipped`] : []),
+  ];
 }
 
 // JSON keeps snake_case to match the deck YAML that assistants read and write.
 export const searchJson = (results) =>
   JSON.stringify(
-    results.map(({ card, available, protected: protectedCopies, protectedIn }) => ({
+    results.map(({ card, available, protected: protectedCopies, protectedIn, priceUsd, edhrecRank }) => ({
       name: card.name,
       available,
       protected: protectedCopies,
@@ -45,6 +69,8 @@ export const searchJson = (results) =>
       type_line: card.typeLine,
       color_identity: orderedIdentity(card),
       oracle_text: card.oracleText,
+      price_usd: priceUsd,
+      edhrec_rank: edhrecRank,
     })),
     null,
     2,

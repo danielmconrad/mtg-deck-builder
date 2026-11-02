@@ -33,6 +33,19 @@
     },
     "commanders": { "type": "array", "maxItems": 2, "items": { "$ref": "#/definitions/card" } },
     "mainboard": { "type": "array", "items": { "$ref": "#/definitions/card" } },
+    "considered": {
+      "description": "Owned cards weighed for the deck and left out, each with why; deck:candidates shows the reasons.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "reason"],
+        "properties": {
+          "name": { "$ref": "#/definitions/text" },
+          "reason": { "$ref": "#/definitions/text" }
+        }
+      }
+    },
     "upgrades": {
       "type": "array",
       "items": {

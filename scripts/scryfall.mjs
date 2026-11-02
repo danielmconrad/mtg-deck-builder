@@ -41,6 +41,8 @@ export function toCard(scryfallCard, fetchedAt, { defaultPrinting = false } = {}
     producedMana: scryfallCard.produced_mana ?? [],
     legalities: scryfallCard.legalities ?? {},
     gameChanger: scryfallCard.game_changer === true,
+    // Popularity on EDHREC (1 is the most played card), the same for every printing; null when unranked.
+    edhrecRank: scryfallCard.edhrec_rank ?? null,
     prices: { usd: scryfallCard.prices?.usd ?? null, eur: scryfallCard.prices?.eur ?? null },
     defaultPrinting,
     fetchedAt,

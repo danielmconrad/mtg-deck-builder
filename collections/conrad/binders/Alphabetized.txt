@@ -69,7 +69,6 @@
 1 Bard's Company (HOB) 146 *F*
 1 Barkform Harvester (BLB) 243
 1 Bastion of Remembrance (FIC) 274
-1 Bastion Protector (MSC) 122
 1 Battle Screech (ONC) 59
 1 Baxter, Fly in the Ointment (TMC) 10
 1 Bayou Groff (STX) 121
@@ -260,7 +259,6 @@
 1 Declare Dominance (M19) 175
 1 Decoy Ploy (MSH) 94
 1 Defend the Rider (DFT) 157 *F*
-1 Defense of the Heart (MAR) 76
 1 Delighted Halfling (LTR) 158
 1 Delta Bloodflies (TDM) 77
 1 Deluge Virtuoso (SOS) 42
@@ -419,6 +417,7 @@
 1 Galadhrim Bow (LTR) 167
 1 Galadhrim Guide (LTR) 168
 2 Galion, Elvenking's Butler (HOB) 125
+1 Gallant Citizen (SPM) 129
 1 Gallia, Tragic Host (FRA) 228 *F*
 1 Galuf's Final Act (FIN) 186
 1 Galvanize (MKM) 128
@@ -641,6 +640,7 @@
 1 Lethal Scheme (FIC) 277
 2 Lifecraft Engine (DFT) 234
 1 Light of Judgment (FIN) 144
+1 Lightning Greaves (LTC) 281
 1 Lightning Reflexes (DMR) 128
 1 Lightning Strike (MSH) 142
 3 Lightshield Parry (DFT) 19
@@ -778,6 +778,7 @@
 1 Peregrin Took (LTR) 315
 1 Phantom Flock (DMR) 20
 1 Phial of Galadriel (LTR) 248
+1 Pictures of Spider-Man (SPM) 109
 1 Primordial Pachyderm (TMT) 129
 1 Relic of Legends (FIC) 354
 1 Rent Is Due (SPM) 11
@@ -1154,7 +1155,6 @@
 1 Tam, Observant Sequencer // Deep Sight (SOS) 237
 1 Tam's Resistance (FRA) 153 *F*
 1 Tamiyo, Upriser Crowned (FRC) 11
-1 Tataru Taru (FIC) 30
 2 Taxi Driver (SPM) 97
 1 Tear Asunder (EOC) 109
 1 Teferi's Reproach (FRC) 6

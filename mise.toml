@@ -41,6 +41,10 @@ run = "node scripts/cli.mjs deck:export"
 description = "Write the committed Archidekt and Moxfield decklist files beside deck.yaml: -- <slug>"
 run = "node scripts/cli.mjs deck:files"
 
+[tasks."deck:candidates"]
+description = "List the deck's most valued left-out cards and their considered reasons: -- <slug> [--limit N] [--sort edhrec|price]"
+run = "node scripts/cli.mjs deck:candidates"
+
 [tasks."deck:upgrades"]
 description = "Price the upgrade package and any shortfalls against the budget: -- <slug>"
 run = "node scripts/cli.mjs deck:upgrades"

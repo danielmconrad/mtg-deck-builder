@@ -1,5 +1,6 @@
 import { canBeCommander, creatureTypes, identityLabel, isLand } from './card.mjs';
 import { ownedCounts, protectedHoldings } from './collection.mjs';
+import { deckEntries, isCommanderFormat, resolveEntries } from './deck.mjs';
 
 const COLORS = 'WUBRG';
 const IDENTITY_PATTERN = /^[WUBRGC]+$/i;
@@ -67,6 +68,39 @@ const matches = (card, filters) => FILTER_PREDICATES.every((predicate) => predic
 const byManaValueThenName = (first, second) =>
   first.card.manaValue - second.card.manaValue || first.card.name.localeCompare(second.card.name);
 
+// The cheapest USD quote among a card's cached printings, whatever its age, and its EDHREC rank.
+// They only steer attention, so a stale price is fine here; deck:upgrades prices purchases.
+function cardValue(index, card) {
+  const prices = index
+    .printingsOf(card.oracleId)
+    .map((printing) => Number(printing.prices.usd))
+    .filter((price) => price > 0);
+  return { priceUsd: prices.length ? Math.min(...prices) : null, edhrecRank: card.edhrecRank ?? null };
+}
+
+// Unknown values sort last. EDHREC ranks ascend (1 is the most played), prices descend.
+const nullsLast = (first, second, compare) => {
+  if (first === null || second === null) return (first === null) - (second === null);
+  return compare(first, second);
+};
+const SORTS = {
+  mv: byManaValueThenName,
+  edhrec: (first, second) =>
+    nullsLast(first.edhrecRank, second.edhrecRank, (a, b) => a - b) ||
+    nullsLast(first.priceUsd, second.priceUsd, (a, b) => b - a) ||
+    byManaValueThenName(first, second),
+  price: (first, second) =>
+    nullsLast(first.priceUsd, second.priceUsd, (a, b) => b - a) ||
+    nullsLast(first.edhrecRank, second.edhrecRank, (a, b) => a - b) ||
+    byManaValueThenName(first, second),
+};
+export const SORT_CHOICES = Object.keys(SORTS);
+
+export function sortResults(results, by = 'mv') {
+  if (!Object.hasOwn(SORTS, by)) throw new Error(`--sort must be one of: ${SORT_CHOICES.join(', ')}`);
+  return results.toSorted(SORTS[by]);
+}
+
 // One result per card (oracle ID): copies in available collections, and protected copies by collection.
 export function searchCollection(collections, index, filters = {}) {
   const policy = { allowProxies: filters.allowProxies };
@@ -83,6 +117,7 @@ export function searchCollection(collections, index, filters = {}) {
       protectedIn: holdings.get(oracleId) ?? [],
     }))
     .filter(({ card }) => matches(card, filters))
+    .map((result) => ({ ...result, ...cardValue(index, result.card) }))
     .sort(byManaValueThenName);
   const unresolvedRows = owned.unresolvedRows + (filters.includeProtectedOnly ? protectedOwned.unresolvedRows : 0);
   return { results, unresolvedRows };
@@ -111,4 +146,40 @@ export function groupResults(results, by) {
   return [...groups.values()].sort(
     (first, second) => second.cards - first.cards || first.key.localeCompare(second.key),
   );
+}
+
+// Available cards a deck could play but doesn't: in its commanders' color identity and legal for a
+// commander format, not in the commanders or mainboard. Each keeps the reason from the deck's
+// considered list, if any. Lands are left out unless lands is set.
+export function deckCandidates(
+  deck,
+  collections,
+  index,
+  { texts = [], types = [], lands = false, sort = 'edhrec' } = {},
+) {
+  const commanderRules = isCommanderFormat(deck.format);
+  const commanders = deck.commanders.map((entry) => index.lookup(entry).card);
+  if (commanderRules && commanders.some((card) => !card)) {
+    throw new Error('Every commander must be in the card cache; run scryfall:refresh -- --missing');
+  }
+  const filters = {
+    texts,
+    types,
+    nonlandOnly: !lands,
+    ...(commanderRules
+      ? { identity: new Set(commanders.flatMap((card) => card.colorIdentity)), legalIn: 'commander' }
+      : {}),
+  };
+  const inDeck = resolveEntries(deckEntries(deck), index).tallies;
+  const reasons = new Map(
+    (deck.considered ?? []).flatMap(({ name, reason }) => {
+      const { card } = index.lookup({ name });
+      return card ? [[card.oracleId, reason]] : [];
+    }),
+  );
+  const { results, unresolvedRows } = searchCollection(collections, index, filters);
+  const candidates = results
+    .filter(({ card, available }) => available && !inDeck.has(card.oracleId))
+    .map((result) => ({ ...result, considered: reasons.get(result.card.oracleId) }));
+  return { results: sortResults(candidates, sort), unresolvedRows };
 }

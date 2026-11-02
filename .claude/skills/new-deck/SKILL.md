@@ -47,7 +47,15 @@ mise run collection:search -- --commander "$C" --nonland --text 'destroy target|
 mise run collection:search -- --commander "$C" --nonland --text '(destroy|exile) all|deals? (\d+|x) damage to each (creature|other creature)'  # wipe
 ```
 
-Add `--count` to any of these for a quick depth check.
+Add `--count` to any of these for a quick depth check. Add `--sort edhrec` or `--sort price` to see the most played or most valuable matches first, with both numbers on each line.
+
+Engine searches. Once a direction is chosen, search for whatever the deck's engine uses up and produces, not just its theme words (see "Map the engine" in `deckbuilding-strategy`). These catch cards whose value is one step removed:
+
+```sh
+mise run collection:search -- --commander "$C" --nonland --text 'create .*(treasure|food|clue|blood|map)'                 # artifact tokens, which token doublers and "whenever you create a token" cards also count
+mise run collection:search -- --commander "$C" --nonland --text 'whenever an opponent|each opponent|each player|target players?' --oracle  # triggers off other players; symmetrical effects you may aim at yourself
+mise run collection:search -- --commander "$C" --nonland --text 'for each (food|treasure|artifact|token|creature)'         # payoffs that count a resource
+```
 
 Check staples that may exist only in protected collections, so you can name them as protected alternatives:
 
@@ -55,7 +63,7 @@ Check staples that may exist only in protected collections, so you can name them
 mise run collection:search -- --include-protected --name '^(Sol Ring|Arcane Signet|Command Tower|Swords to Plowshares|Path to Exile|Cultivate|Beast Within|Counterspell)$'
 ```
 
-Writing a throwaway script over `--json` output is acceptable for one-off analysis in the scratchpad. If you need the same analysis twice, suggest a CLI option instead.
+Writing a throwaway script over `--json` output is acceptable for one-off analysis in the scratchpad. If you need the same analysis twice, suggest a CLI option instead. Don't choose the mainboard from one read of the whole pool, though: a 500-line dump can't be held in mind, and cards whose value is indirect get lost. Use the searches above to build a shortlist (step 4).
 
 ## 3. Propose two or three directions, then stop
 
@@ -76,7 +84,10 @@ mise run deck:new -- <slug> --commander "Name"     # repeat --commander for part
 ```
 
 - **Header fields:** fill `primer` (the game plan, one line of YAML with no manual line breaks), `collection_source` (if the brief limits them), `power_notes`, `bracket`, `budget`, `allow_proxies` and `unlimited_basics` in the new `deck.yaml` (pass a nested slug such as `brad/<slug>` to `deck:new` to group decks by owner).
+- **Engine map first:** before choosing cards, write down in the scratchpad what the commander and the key engine cards use up and produce (life-gain events, Food, Treasure, any token, counters, spells cast, cards drawn), and which owned cards convert one into another. Run an engine search (step 2) for each resource, both its makers and its payoffs.
+- **Shortlist, then choose:** write a candidate file in the scratchpad with one line per plausible card, grouped by role and engine resource, each with a one-line reason. Read every match's full rules text, including activated abilities. Then choose the mainboard from the shortlist, never straight from memory of the pool.
 - **Mainboard:** owned cards only. Give each entry a `role` from the vocabulary below.
+- **Considered:** record the strongest cards you left out in `considered` (`name` and `reason`), especially close calls and anything with a high EDHREC rank or price. Step 5 checks this list.
 - **Size:** reach exactly 100 cards including commanders (exactly 60 for `custom-dollar-brawl`), or at least 60 for casual.
 
 Role vocabulary (comma-separate several): `land`, `ramp`, `draw`, `removal`, `wipe`, `protection`, `wincon`, `synergy`. `deck:stats` counts them, and the Archidekt export turns them into categories.
@@ -88,7 +99,10 @@ Use the `deckbuilding-strategy` skill for the plan, role counts, land count and 
 ```sh
 mise run deck:check -- <slug>    # fix every ERROR; explain every INCOMPLETE. Exit 2 is not a pass.
 mise run deck:stats -- <slug>    # curve, roles, color sources and Karsten's suggested land count
+mise run deck:candidates -- <slug>    # the most played and most valuable owned cards the deck leaves out
 ```
+
+Read the top 20 of `deck:candidates` with `--oracle`. Every card on it needs a place in the deck or a `considered` reason, and the summary line counts those without one. Its ranking only flags cards for a second look: a high EDHREC rank or price says the card is popular or scarce, not that it fits this deck. Rerun it with `--text` for each engine resource (e.g. `--text treasure`). If every rank shows `?`, the cache predates EDHREC ranks; ask before refreshing.
 
 Then review it with the checklist in `deckbuilding-strategy`, and explain the deck to the user: the game plan, the mana base, key inclusions, hard cuts and known weaknesses. Point to the stats when you talk about curve or color sources.
 
