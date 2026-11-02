@@ -1,6 +1,6 @@
 ---
 name: new-deck
-description: Step-by-step workflow for brewing a new Commander, Custom Dollar Brawl or casual-60 deck from the user's collection in this repo, from the brief through the plan, the decklist and the hand-off, or for picking up a draft where it was left. Use when the user wants to build, brew or start a new deck, or to continue a draft. To only see which decks the collection supports, use collection-survey.
+description: Step-by-step workflow for brewing a new Commander, Custom Dollar Brawl or casual-60 deck from the user's collection in this repo, from the brief through the plan, the decklist and the hand-off, or for picking up a draft where it was left. Use when the user wants to build, brew or start a new deck, or to continue a draft. To only see which decks the collection supports, use collection-survey; to find a commander worth buying, commander-scout.
 ---
 
 # Brewing a new deck
@@ -8,6 +8,7 @@ description: Step-by-step workflow for brewing a new Commander, Custom Dollar Br
 The rules in AGENTS.md still apply: only unprotected collections supply cards, protected copies are only mentioned, and card data comes from the cache, never memory. This skill is the order of work. It hands parts of the job to other skills:
 
 - **collection-survey:** step 2, finding the directions the collection supports.
+- **commander-scout:** step 2 instead, when the user is open to buying a commander the collection supports.
 - **deckbuilding-strategy:** the frameworks behind the plan, role counts, land count and bracket.
 - **deck-review:** step 6, the check-and-fix loop.
 - **deck-upgrades:** step 8, purchases.
@@ -27,7 +28,7 @@ The rules in AGENTS.md still apply: only unprotected collections supply cards, p
 Ask only about what the user hasn't said. A default from `.env` or memory counts as an answer: state it in one line instead of asking.
 
 - **Format:** Commander, Custom Dollar Brawl (`custom-dollar-brawl`, a house format: exactly 60 cards, Commander-legal, none over $1) or casual-60.
-- **Commander or theme:** or "open to anything from my collection".
+- **Commander or theme:** a named one, "open to anything from my collection", or "a commander I'd buy". The last goes to `commander-scout` in step 2; ask what the commander may cost if the budget doesn't say.
 - **Power level:** a Commander Bracket (1–5) or the playgroup's own terms; the table is in `deckbuilding-strategy`. It becomes `target_bracket`, which changes only when the user asks.
 - **Table:** a four-player pod or 1v1. It changes what "whenever an opponent" triggers, symmetrical effects and wipes are worth.
 - **Play style:** what the deck should feel like to play, and what to avoid (combos, stax, extra turns, long turns).
@@ -39,7 +40,9 @@ Ask only about what the user hasn't said. A default from `.env` or memory counts
 
 ## 2. Survey, propose directions, then stop
 
-Follow the `collection-survey` skill: it sizes each candidate by role and engine depth and proposes two or three directions. Then **wait for the user to choose.** Don't run `deck:new` or write a list before they pick.
+Follow the `collection-survey` skill: it sizes each candidate by role and engine depth and proposes two or three directions. When the user is open to buying the commander, follow `commander-scout` instead: it ranks every commander in the cache, owned or not, by how much of the collection feeds it, and checks the best against EDHREC. Then **wait for the user to choose.** Don't run `deck:new` or write a list before they pick.
+
+**An unowned commander** goes in `commanders` like any other. Until the user adds it to a collection, `deck:check` reports it as `need 1, 0 available`, and `deck:upgrades` prices it as a shortfall against the budget. Build and review the rest of the deck as usual. Record the purchase in `notes` (the commander, its cached price and date) so a later session knows why the check fails. Don't add it to `upgrades`, which swaps mainboard cards.
 
 ## 3. Plan before choosing cards
 
@@ -98,6 +101,7 @@ The deck is done when:
 - **`deck:files` ran after the last edit,** which `deck:verify` confirms.
 - **`plays_like_bracket` is judged for the final list,** with the reasons in `power_notes`. `deck:files` removes it whenever the cards change, so judge it last (`deckbuilding-strategy` §2).
 - **The summary names what's still unknown:** unknown prices, uncached cards, and checks no tool makes.
+- **An unowned commander:** `deck:verify` can't exit 0 until it's bought. Hand the deck off as a draft whose only ERROR is the commander's ownership, say what it costs, and rerun `deck:verify` once the user's collection includes it.
 
 If the user wants to paste the deck into a site, run `mise run deck:export -- <slug> --copy` (add `--upgrades apply` for a playtest list) and say where to paste it. Don't commit unless asked.
 

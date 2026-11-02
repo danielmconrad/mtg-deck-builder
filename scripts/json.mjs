@@ -171,3 +171,30 @@ export const cacheStatusJson = ({ printings, cards, fromBulk, bulkBuiltAt, refre
   refreshed_at: refreshedAt,
   days_since_refresh: daysSinceRefresh,
 });
+
+// A commander's EDHREC page as collection:commanders scores it.
+const edhrecJson = (fit) =>
+  fit.missing
+    ? { missing: true, fetched_at: fit.fetchedAt }
+    : {
+        missing: false,
+        fetched_at: fit.fetchedAt,
+        decks: fit.decks,
+        listed: fit.listed,
+        owned: fit.owned,
+        synergy_share: fit.synergyShare,
+        deck_share: fit.deckShare,
+        top_owned: fit.topOwned,
+      };
+
+// One collection:commanders result.
+export const commanderJson = (result) => ({
+  ...searchResultJson(result),
+  leads: result.leads,
+  owned_spells: result.pool,
+  on_theme: result.cards,
+  expected: result.expected,
+  lift: result.lift,
+  themes: result.themes.map(({ name, cards, expected, lift }) => ({ name, cards, expected, lift })),
+  edhrec: result.edhrec && edhrecJson(result.edhrec),
+});

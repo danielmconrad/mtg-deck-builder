@@ -5,7 +5,7 @@ description: Survey the user's card collection in this repo to find which comman
 
 # Surveying the collection
 
-The rules in AGENTS.md apply: only unprotected collections supply cards, and protected copies are only mentioned. Every command here is read-only and offline. Start with counts and groups, and list cards only once a query is narrow: unfiltered lists run to hundreds of lines.
+The rules in AGENTS.md apply: only unprotected collections supply cards, and protected copies are only mentioned. Every command here is read-only and offline. This skill sizes commanders the user owns; for commanders they could buy, ranked by how much of the collection feeds them, use `commander-scout`. Start with counts and groups, and list cards only once a query is narrow: unfiltered lists run to hundreds of lines.
 
 ## 1. Find commander candidates
 
@@ -18,6 +18,8 @@ mise run card:show -- "Thorin, King of Durin's Folk" "Glóin, Dwarf Emissary"   
 ```
 
 Skip commanders that already lead a deck in `builds/` unless the user wants a second build: `grep -rh -A1 '^commanders:' builds --include=deck.yaml | grep name`.
+
+`mise run collection:commanders -- --owned` ranks the owned commanders by how much of the collection feeds the themes their rules text names, against an average collection; it's a quick way to pick which candidates to size below. `commander-scout` explains its output.
 
 ## 2. Size each candidate
 

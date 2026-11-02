@@ -1,5 +1,6 @@
 // The command table: each command's handler, help text and options.
 import { cardShow, collectionCheck, collectionDiff, collectionSearch } from './collection-commands.mjs';
+import { COMMANDER_LIMIT, collectionCommanders, edhrecRefresh } from './commander-commands.mjs';
 import {
   CANDIDATE_LIMIT,
   DECKLIST_FORMATS,
@@ -16,8 +17,9 @@ import {
   decksCheck,
   upgradedDecklistFile,
 } from './deck-commands.mjs';
-import { COLLECTION_OPTIONS, FORMAT_OPTION, JSON_OPTION, SEARCH_OPTIONS } from './options.mjs';
+import { COLLECTION_OPTIONS, COMMANDER_RANK_OPTIONS, FORMAT_OPTION, JSON_OPTION, SEARCH_OPTIONS } from './options.mjs';
 import { ROLE_VOCABULARY } from './deck.mjs';
+import { DEFAULT_MAX_AGE_DAYS } from './edhrec.mjs';
 import { BRACKETS, CURRENCIES, FORMAT_NAMES } from './formats.mjs';
 import { deckBuild, deckSwap, deckTeardown } from './physical.mjs';
 import { cardsRefresh } from './refresh.mjs';
@@ -36,6 +38,25 @@ export const COMMANDS = {
     details:
       'Searches every collection (ManaBox CSV or text list, at any depth under collections/) that MTG_COLLECTIONS or --collections selects, except protected ones, whose copies are shown alongside. Filters combine with AND.',
     options: { ...SEARCH_OPTIONS, ...COLLECTION_OPTIONS },
+  },
+  'collection:commanders': {
+    run: collectionCommanders,
+    summary:
+      'Rank commanders, owned or not, by how much of the collection feeds the themes their rules text cares about',
+    details:
+      "Reads each Commander-legal commander's rules text for the themes it cares about (tokens, Food, +1/+1 counters, the creature types it names...) and counts the available nonland cards in its color identity that feed them. Lift compares that with an average collection of the same size: owned cards drawn at random from every Commander-legal card. Commanders need --min-cards on-theme cards to be listed. The tests are rough rules-text patterns, so read a commander's cards before trusting its rank. With EDHREC pages cached by edhrec:refresh, each commander also shows how much of its EDHREC synergy and average deck you own. Unowned commanders need scryfall:refresh -- --bulk.",
+    options: {
+      ...COMMANDER_RANK_OPTIONS,
+      limit: {
+        type: 'string',
+        kind: 'integer',
+        placeholder: 'N',
+        description: `Show this many commanders (default ${COMMANDER_LIMIT})`,
+      },
+      oracle: { type: 'boolean', description: "Print each commander's rules text" },
+      json: JSON_OPTION,
+      ...COLLECTION_OPTIONS,
+    },
   },
   'collection:diff': {
     run: collectionDiff,
@@ -68,6 +89,36 @@ export const COMMANDS = {
         description: 'Keep only the collection and deck cards, dropping bulk data the cache holds',
       },
       json: JSON_OPTION,
+    },
+  },
+  'edhrec:refresh': {
+    run: edhrecRefresh,
+    summary: "Fetch EDHREC's commander pages for collection:commanders (network)",
+    details:
+      "Fetches each --commander's EDHREC page, and with --top N the N best-ranked commanders under the same filters as collection:commanders, one request a second, into .cache/edhrec.json. Pages fetched within --max-age days are kept. EDHREC's JSON isn't a documented API, so its shape is checked and a change fails loudly.",
+    options: {
+      commander: {
+        type: 'string',
+        multiple: true,
+        placeholder: 'NAME',
+        description: "Fetch this commander's page",
+      },
+      top: {
+        type: 'string',
+        kind: 'integer',
+        placeholder: 'N',
+        description: 'Fetch the N commanders collection:commanders ranks first with the same filters',
+      },
+      ...COMMANDER_RANK_OPTIONS,
+      'max-age': {
+        type: 'string',
+        kind: 'integer',
+        placeholder: 'DAYS',
+        description: `Keep pages fetched within this many days (default ${DEFAULT_MAX_AGE_DAYS})`,
+      },
+      force: { type: 'boolean', description: 'Fetch every page again, however recent' },
+      json: JSON_OPTION,
+      ...COLLECTION_OPTIONS,
     },
   },
   'deck:new': {

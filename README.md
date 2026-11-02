@@ -25,6 +25,7 @@ builds/<slug>/decklist*.txt  Generated Archidekt and Moxfield decklists, written
 scripts/                    CLI (cli.mjs) and the modules behind it
 tests/                      Offline tests on synthetic fixtures
 .cache/cards.json           Scryfall data, about 55 MB after a bulk refresh (ignored by Git)
+.cache/edhrec.json          EDHREC commander pages from edhrec:refresh, about 20 KB each (ignored by Git)
 ```
 
 ## Commands
@@ -36,34 +37,36 @@ mise run deck:export -- --help      # options for one command
 node scripts/cli.mjs --help         # every command, plus exit codes
 ```
 
-| Task                | What it does                                                        |
-| ------------------- | ------------------------------------------------------------------- |
-| `collection:check`  | Validate every collection and summarize it                          |
-| `collection:search` | Find owned cards by color identity, type, rules text and mana value |
-| `collection:diff`   | What each collection gained or lost since a Git commit              |
-| `card:show`         | Any card by name, owned or not, with copies and decks using it      |
-| `scryfall:refresh`  | Fetch Scryfall card data and prices (network); `--bulk` for all     |
-| `deck:new`          | Create a draft deck                                                 |
-| `deck:check`        | Check rules and ownership for one deck                              |
-| `deck:stats`        | Curve, card types, color pips, land sources and roles               |
-| `deck:show`         | List a deck's cards by role, with rules text on request             |
-| `deck:verify`       | Check a deck is ready to hand off                                   |
-| `deck:upgrades`     | Price the upgrade package and any shortfalls against the budget     |
-| `deck:candidates`   | List the deck's most valued left-out cards and why they're out      |
-| `deck:export`       | Print or copy a paste-ready decklist                                |
-| `deck:files`        | Write the committed decklist files beside `deck.yaml`               |
-| `deck:build`        | Physically build a deck: move its cards into its own collection     |
-| `deck:teardown`     | Take a built deck apart: return its cards to the collection         |
-| `deck:swap`         | Swap mainboard cards, moving a built deck's cards too               |
-| `decks:check`       | Check every deck, or `--status`/`--decks`; example is schema-only   |
-| `lint` / `fix`      | Check, or fix, linting and formatting                               |
-| `check`             | `lint`, `collection:check`, `test` and built decks' `decks:check`   |
+| Task                    | What it does                                                            |
+| ----------------------- | ----------------------------------------------------------------------- |
+| `collection:check`      | Validate every collection and summarize it                              |
+| `collection:search`     | Find owned cards by color identity, type, rules text and mana value     |
+| `collection:diff`       | What each collection gained or lost since a Git commit                  |
+| `collection:commanders` | Rank commanders, owned or not, by how much of the collection feeds them |
+| `edhrec:refresh`        | Fetch EDHREC commander pages for `collection:commanders` (network)      |
+| `card:show`             | Any card by name, owned or not, with copies and decks using it          |
+| `scryfall:refresh`      | Fetch Scryfall card data and prices (network); `--bulk` for all         |
+| `deck:new`              | Create a draft deck                                                     |
+| `deck:check`            | Check rules and ownership for one deck                                  |
+| `deck:stats`            | Curve, card types, color pips, land sources and roles                   |
+| `deck:show`             | List a deck's cards by role, with rules text on request                 |
+| `deck:verify`           | Check a deck is ready to hand off                                       |
+| `deck:upgrades`         | Price the upgrade package and any shortfalls against the budget         |
+| `deck:candidates`       | List the deck's most valued left-out cards and why they're out          |
+| `deck:export`           | Print or copy a paste-ready decklist                                    |
+| `deck:files`            | Write the committed decklist files beside `deck.yaml`                   |
+| `deck:build`            | Physically build a deck: move its cards into its own collection         |
+| `deck:teardown`         | Take a built deck apart: return its cards to the collection             |
+| `deck:swap`             | Swap mainboard cards, moving a built deck's cards too                   |
+| `decks:check`           | Check every deck, or `--status`/`--decks`; example is schema-only       |
+| `lint` / `fix`          | Check, or fix, linting and formatting                                   |
+| `check`                 | `lint`, `collection:check`, `test` and built decks' `decks:check`       |
 
 Exit codes: `0` passed, `1` a check failed or input is invalid, `2` incomplete (unknown cards, missing card data, unknown prices).
 
 ### JSON output
 
-Every command except `deck:export` prints text by default, or one line of JSON with `--json`: the read commands, `card:show`, `collection:diff`, `scryfall:refresh`, `deck:new`, `deck:files`, and the plans and results of `deck:build`, `deck:teardown` and `deck:swap`. A test pins each command's `data` keys:
+Every command except `deck:export` prints text by default, or one line of JSON with `--json`: the read commands, `card:show`, `collection:diff`, `scryfall:refresh`, `edhrec:refresh`, `deck:new`, `deck:files`, and the plans and results of `deck:build`, `deck:teardown` and `deck:swap`. A test pins each command's `data` keys:
 
 ```json
 {
@@ -100,6 +103,22 @@ mise run collection:search -- --identity WR --nonland --text 'destroy target' --
 - **Game Changers** are marked `[Game Changer]` in every list.
 
 See `mise run collection:search -- --help` for the full list.
+
+### Finding commanders to build or buy
+
+```sh
+mise run collection:commanders -- --unowned                         # commanders you don't own, best fit first
+mise run collection:commanders -- --owned --identity BG --limit 10
+mise run collection:commanders -- --unowned --theme Dwarf --sort cards
+mise run edhrec:refresh -- --top 15 --unowned                       # network: EDHREC pages for the top 15
+mise run collection:commanders -- --unowned --sort edhrec
+```
+
+- **Themes:** each Commander-legal commander's rules text is read for the themes it cares about (tokens, Food, +1/+1 counters, spells, lands and about 30 more) and the creature types it names, leaving out its own name and the tokens it makes. Its on-theme cards are the available nonland cards in its color identity that feed any of them. A commander needs `--min-cards` of them (30 by default) to be listed. The tests are rough, like `--role`: read the cards before trusting a rank.
+- **Lift:** on-theme cards divided by how many an average collection of the same size would hold in those colors, as if the owned cards were drawn at random from every Commander-legal card. It's the default sort, so five-color commanders don't win on pool size alone; `--sort cards` ranks by depth instead. Each theme gets its own count and lift.
+- **Decks:** a commander that already leads a deck says so (`leads conrad/...`). Protected copies are noted, as in `collection:search`.
+- **EDHREC:** `edhrec:refresh` fetches EDHREC's page for each `--commander` and, with `--top N`, the N best under the same filters, one request a second. It keeps pages for 30 days (`--max-age`, `--force`) and saves what it fetched even if a later request fails. With a page cached, a commander shows how many of the page's cards you own, their share of its positive synergy (its signature cards) and of an average deck (staples included), and the owned cards with the most synergy. `--sort edhrec` ranks by the synergy share. EDHREC's JSON isn't a documented API, so an unexpected shape fails loudly and a commander without a page is recorded as missing.
+- **Unowned commanders** need a bulk cache (`scryfall:refresh -- --bulk`). A deck can name one as its commander before it's bought: `deck:check` reports it as short until a collection holds it, and `deck:upgrades` prices it.
 
 ### Looking up any card
 
@@ -301,6 +320,7 @@ Point the assistant at [AGENTS.md](AGENTS.md) (Claude Code and Copilot load it a
 
 - [`new-deck`](.claude/skills/new-deck/SKILL.md): the step-by-step brewing process, from the brief to the hand-off.
 - [`collection-survey`](.claude/skills/collection-survey/SKILL.md): which commanders and themes the collection supports.
+- [`commander-scout`](.claude/skills/commander-scout/SKILL.md): which commanders you could buy that the collection already feeds.
 - [`deck-review`](.claude/skills/deck-review/SKILL.md): the check-and-fix loop for reviewing or finishing a deck.
 - [`deck-upgrades`](.claude/skills/deck-upgrades/SKILL.md): suggesting and pricing purchases.
 - [`physical-deck`](.claude/skills/physical-deck/SKILL.md): building, swapping or tearing down a deck's physical cards.

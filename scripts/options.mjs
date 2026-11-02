@@ -1,4 +1,5 @@
 // Option specs shared by several commands, and the collection scope every command reads through.
+import { COMMANDER_SORT_CHOICES, DEFAULT_MIN_CARDS } from './commanders.mjs';
 import { EXPORT_FORMAT_NAMES } from './export.mjs';
 import { GROUP_BY_CHOICES, ROLE_CHOICES, SORT_CHOICES } from './search.mjs';
 import { pathMatches } from './workspace.mjs';
@@ -110,6 +111,42 @@ export const SEARCH_OPTIONS = {
     choices: SORT_CHOICES,
     description:
       'Order the list by mana value (the default), EDHREC rank or price, highest first; edhrec and price also print both',
+  },
+};
+
+// The filters collection:commanders ranks by, which edhrec:refresh --top shares.
+export const COMMANDER_RANK_OPTIONS = {
+  identity: {
+    type: 'string',
+    placeholder: 'WUBRG',
+    description: 'Only commanders whose color identity fits within these colors; C means colorless only',
+  },
+  owned: { type: 'boolean', description: 'Only commanders with an available copy' },
+  unowned: { type: 'boolean', description: 'Only commanders without an available copy (protected copies are noted)' },
+  name: { type: 'string', placeholder: 'REGEX', description: 'Commander name must match (case-insensitive)' },
+  theme: {
+    type: 'string',
+    placeholder: 'REGEX',
+    description: 'Only commanders with a theme or creature type matching this (case-insensitive), e.g. food or Dwarf',
+  },
+  'max-price': {
+    type: 'string',
+    kind: 'number',
+    placeholder: 'USD',
+    description: "The commander's cheapest playable printing costs at most this; unknown prices are kept",
+  },
+  'min-cards': {
+    type: 'string',
+    kind: 'number',
+    placeholder: 'N',
+    description: `List only commanders with at least this many owned on-theme cards (default ${DEFAULT_MIN_CARDS}; 0 lists all)`,
+  },
+  sort: {
+    type: 'string',
+    placeholder: 'KEY',
+    choices: COMMANDER_SORT_CHOICES,
+    description:
+      'lift (the default): owned on-theme cards against an average collection; cards: the most on-theme cards; edhrec: the most of its EDHREC synergy owned',
   },
 };
 

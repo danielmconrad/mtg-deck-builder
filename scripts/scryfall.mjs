@@ -68,8 +68,9 @@ function retryAfterMs(response) {
 }
 
 // Sends a request, retrying rate limits, server errors and network failures. The last response is
-// returned whatever its status, so callers report it; the last network failure is thrown.
-async function withRetries(send, pause) {
+// returned whatever its status, so callers report it; the last network failure is thrown, naming the
+// service (edhrec.mjs uses this too).
+export async function withRetries(send, pause, service = 'Scryfall') {
   for (let attempt = 0; ; attempt += 1) {
     let response;
     let failure;
@@ -80,7 +81,9 @@ async function withRetries(send, pause) {
     }
     const retryable = failure !== undefined || isRetryable(response.status);
     if (!retryable || attempt === RETRY_PAUSES_MS.length) {
-      if (failure) throw new Error(`Scryfall request failed (${failure.message}); cache was not changed. Retry later.`);
+      if (failure) {
+        throw new Error(`${service} request failed (${failure.message}); cache was not changed. Retry later.`);
+      }
       return response;
     }
     await pause(retryAfterMs(response) ?? RETRY_PAUSES_MS[attempt]);

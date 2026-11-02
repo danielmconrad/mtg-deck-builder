@@ -4,6 +4,7 @@ Read [README.md](README.md) first, and the deck's `deck.yaml` (under `builds/`, 
 
 - **[new-deck](.claude/skills/new-deck/SKILL.md):** brewing a deck, or continuing a draft.
 - **[collection-survey](.claude/skills/collection-survey/SKILL.md):** which decks the collection supports.
+- **[commander-scout](.claude/skills/commander-scout/SKILL.md):** which commanders, owned or not, the collection feeds.
 - **[deck-review](.claude/skills/deck-review/SKILL.md):** reviewing, tuning or finishing a deck.
 - **[deck-upgrades](.claude/skills/deck-upgrades/SKILL.md):** suggesting and pricing purchases.
 - **[physical-deck](.claude/skills/physical-deck/SKILL.md):** building, swapping or tearing down a deck's physical cards.
@@ -20,7 +21,7 @@ Every command documents its options with `mise run <task> -- --help`. Ask before
 ## Brewing
 
 - Before building, settle the format, the commander or theme, playgroup power level, budget, proxy policy and whether basics are unlimited. Ask only about what's missing; `MTG_UNLIMITED_BASICS` and `MTG_ALLOW_PROXIES` in `.env` answer the last two when set. The collections hold very few basic lands, so without that default ask whether the user has untracked basics (`unlimited_basics: true`) rather than letting every deck fail ownership.
-- For open-ended requests, survey with `collection:search` (`--commanders`, `--count`, `--group-by`) and propose two or three directions the collection supports. Let the user choose before running `deck:new` or writing a list.
+- For open-ended requests, survey with `collection:search` (`--commanders`, `--count`, `--group-by`) and propose two or three directions the collection supports. If the user would buy a commander, rank them with `collection:commanders`. Let the user choose before running `deck:new` or writing a list.
 - Explain the game plan, mana base, key inclusions and weaknesses. Use `deck:stats` to back up claims about curve and color sources.
 - Choose cards from a shortlist built by searching for each role and each resource the deck's engine uses up and produces, never from one read of the whole pool. Give every card `deck:candidates` lists a place in the deck or a `considered` reason. EDHREC rank and price only flag cards for a second look.
 - A deck is ready to hand off when `deck:verify` exits 0 and every NOTE it prints is explained.
@@ -38,7 +39,7 @@ Every command documents its options with `mise run <task> -- --help`. Ask before
 - Run `mise run deck:check -- <slug>` after every deck edit, and read every ERROR and INCOMPLETE line. Exit code 2 is not a pass. Then run `mise run deck:files -- <slug>` so the committed decklist files match `deck.yaml`.
 - Read commands print text by default. Add `--json` (or set `MTG_OUTPUT=json`) when a script will consume the output: one line of `{ command, deck, outcome, data, warnings }`.
 - Project defaults such as the export format live in `.env` (copied from `.env.example`). Don't pass `--format` unless the user asks for a different one.
-- `scryfall:refresh` is the only command that uses the network. Run it when cards are missing (`-- --missing`) or prices are stale (a plain refresh, which keeps bulk data). `-- --bulk` downloads all of Scryfall's card data (about 105 MB), and `--prune` drops it, so run either only when the user asks. A second refresh stops while one is running.
+- `scryfall:refresh` and `edhrec:refresh` are the only commands that use the network. Run `scryfall:refresh` when cards are missing (`-- --missing`) or prices are stale (a plain refresh, which keeps bulk data). `-- --bulk` downloads all of Scryfall's card data (about 105 MB), and `--prune` drops it, so run either only when the user asks. A second refresh stops while one is running. `edhrec:refresh` fetches EDHREC commander pages (one request a second) for `collection:commanders`; ask before running it, and keep `--top` to a shortlist.
 - For code changes, run the relevant test file, then `mise run check`, which checks built decks only. Tests must stay offline and use only fixtures from `tests/fixtures.mjs`, never the real collection. Other people's unfinished decks may make the all-decks `decks:check` fail; say so rather than editing them.
 - Run `mise run fix` before finishing a code change; `check` fails on lint errors or unformatted files. Don't silence a lint rule without a comment saying why.
 - Use the existing CSV, YAML and schema libraries. Pin new dependencies through npm.

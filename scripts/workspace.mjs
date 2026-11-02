@@ -6,6 +6,7 @@ import { promisify } from 'node:util';
 import { readCache, writeCache } from './card-cache.mjs';
 import { cardIndex } from './card-index.mjs';
 import { holdDeckCards, parseCollection, parseTextCollection, resolveTextRows } from './collection.mjs';
+import { readEdhrecCache, writeEdhrecCache } from './edhrec.mjs';
 import { parseDeck, serializeDeck, withMainboardSwaps } from './deck.mjs';
 
 const PROJECT_ROOT = fileURLToPath(new URL('..', import.meta.url));
@@ -81,6 +82,7 @@ const exists = (path) =>
 // The project's on-disk layout: every path the tools read or write is defined here.
 export function openWorkspace(root = PROJECT_ROOT) {
   const cachePath = join(root, '.cache', 'cards.json');
+  const edhrecPath = join(root, '.cache', 'edhrec.json');
   const decksFolder = join(root, DECKS_FOLDER);
   const deckLabel = (deckId) => `${DECKS_FOLDER}/${deckId}/${DECK_FILE}`;
 
@@ -354,6 +356,10 @@ export function openWorkspace(root = PROJECT_ROOT) {
     indexPromise = undefined;
   }
 
+  // EDHREC commander pages, which only edhrec:refresh writes.
+  const loadEdhrec = () => readEdhrecCache(edhrecPath);
+  const saveEdhrec = (cache) => writeEdhrecCache(edhrecPath, cache);
+
   // scryfall:refresh holds this lock while it fetches and saves, so two refreshes can't overwrite each
   // other's cache. A lock whose process has ended is taken over.
   async function withRefreshLock(run) {
@@ -399,5 +405,7 @@ export function openWorkspace(root = PROJECT_ROOT) {
     loadCache,
     saveCache,
     loadCardIndex,
+    loadEdhrec,
+    saveEdhrec,
   };
 }

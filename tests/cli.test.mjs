@@ -786,6 +786,7 @@ test("every JSON command's data keeps its documented keys", () =>
     const contract = {
       'collection:check': ['cache', 'collections'],
       'collection:search': ['available_collections', 'cards'],
+      'collection:commanders': ['below_minimum', 'commanders', 'considered', 'listed', 'unthemed'],
       'card:show Forest': ['cards'],
       'scryfall:refresh --missing': ['fetched', 'mode', 'skipped_decks', 'unresolved'],
       'deck:check fixture': ['findings', 'outcome', 'total_cards'],
@@ -995,6 +996,43 @@ test('scryfall:refresh --bulk caches bulk data, then fetches only what it lacks 
     ]);
     assert.match(stdout.at(-1), /Cached 2 printings \(1 fetched/);
     await assert.rejects(cli('scryfall:refresh', '--bulk', '--missing'), /Use only one of --bulk, --missing/);
+  }));
+
+test('edhrec:refresh caches commander pages that collection:commanders then scores', () =>
+  inWorkspace(async ({ root, cli, stdout, stderr }) => {
+    const leader = card('Forest Lord', {
+      typeLine: 'Legendary Creature — Elf',
+      colorIdentity: ['G'],
+      oracleText: 'Whenever you gain life, draw a card.',
+    });
+    const healer = card('Healer', { collectorNumber: '2', colorIdentity: ['G'], oracleText: 'You gain 3 life.' });
+    // From bulk data, so unowned commanders count as every one there is.
+    const cache = { ...cacheOf(forest, leader, healer), bulkBuiltAt: '2026-10-15T00:00:00.000Z' };
+    await writeCache(join(root, '.cache', 'cards.json'), cache);
+    await writeFile(join(root, 'collections', 'Spells.txt'), '1 Healer (TST) 2\n');
+    const requested = [];
+    globalThis.fetch = async (url) => {
+      requested.push(url);
+      const cardviews = [{ name: 'Healer', num_decks: 5, potential_decks: 10, synergy: 0.4 }];
+      return Response.json({ container: { json_dict: { card: { num_decks: 10 }, cardlists: [{ cardviews }] } } });
+    };
+    await assert.rejects(cli('edhrec:refresh'), /--commander, or pass --top N/);
+    assert.equal(await cli('edhrec:refresh', '--commander', 'forest lord'), 0);
+    assert.deepEqual(requested, ['https://json.edhrec.com/pages/commanders/forest-lord.json']);
+    assert.match(stdout.at(-1), /1 fetched, 0 already fresh/);
+    assert.equal(await cli('edhrec:refresh', '--top', '1', '--min-cards', '0'), 0);
+    assert.equal(requested.length, 1, 'a page fetched within --max-age days is kept');
+    stdout.length = 0;
+    assert.equal(await cli('collection:commanders', '--min-cards', '0', '--json'), 0);
+    const [ranked] = JSON.parse(stdout.at(-1)).data.commanders;
+    assert.equal(ranked.name, 'Forest Lord');
+    assert.deepEqual(
+      ranked.themes.map(({ name, cards }) => [name, cards]),
+      [['lifegain', 1]],
+    );
+    assert.equal(ranked.edhrec.owned, 1);
+    assert.equal(ranked.edhrec.synergy_share, 1);
+    assert.deepEqual(stderr, []);
   }));
 
 test('a plain refresh keeps bulk data and fetches the collection and deck cards again; --prune drops it', () =>

@@ -17,6 +17,10 @@ run = "node scripts/cli.mjs collection:check"
 description = "Search owned cards by color identity, type, rules text and mana value (-- --help for filters)"
 run = "node scripts/cli.mjs collection:search"
 
+[tasks."collection:commanders"]
+description = "Rank commanders, owned or not, by how much of the collection feeds their themes (-- --help)"
+run = "node scripts/cli.mjs collection:commanders"
+
 [tasks."collection:diff"]
 description = "Show what each collection file gained or lost since a Git commit, and the decks naming those cards: -- [--ref REF]"
 run = "node scripts/cli.mjs collection:diff"
@@ -28,6 +32,10 @@ run = "node scripts/cli.mjs card:show"
 [tasks."scryfall:refresh"]
 description = "Fetch Scryfall card data and prices for every collection and deck (network; -- --help)"
 run = "node scripts/cli.mjs scryfall:refresh"
+
+[tasks."edhrec:refresh"]
+description = "Fetch EDHREC commander pages for collection:commanders (network): -- --commander NAME | --top N"
+run = "node scripts/cli.mjs edhrec:refresh"
 
 [tasks."deck:new"]
 description = "Create a draft deck: -- <slug> --commander NAME (-- --help for options)"

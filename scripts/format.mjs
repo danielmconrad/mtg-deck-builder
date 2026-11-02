@@ -229,3 +229,48 @@ export function collectionDiffLines(ref, changes, decks) {
       : ['No deck names a changed card.']),
   ];
 }
+
+// collection:commanders: each listed commander with its ownership, how the collection feeds its
+// themes against an average collection, and EDHREC's view when a page is cached.
+const lift = (value) => (value === null ? '?x' : `${value.toFixed(1)}x`);
+const TOP_OWNED_SHOWN = 5;
+
+function ownershipNote({ available, protectedIn, leads }) {
+  const copies = available ? `${available} owned` : 'unowned';
+  const protectedNote = protectedIn.length ? ` (+${holdingsNote(protectedIn)}, protected)` : '';
+  const leadsNote = leads.length ? `; leads ${leads.join(', ')}` : '';
+  return `${copies}${protectedNote}${leadsNote}`;
+}
+
+function edhrecLine(fit) {
+  if (!fit) return [];
+  if (fit.missing) return [`    EDHREC: no page (checked ${dateOf(fit.fetchedAt)})`];
+  const top = fit.topOwned.slice(0, TOP_OWNED_SHOWN).map(({ name }) => name);
+  const shares = [fit.synergyShare, fit.deckShare].map((value) => (value === null ? '?' : percent(value)));
+  return [
+    `    EDHREC: ${fit.owned} of ${fit.listed} listed cards owned, ${shares[0]} of its synergy and ${shares[1]} of an average deck (${fit.decks} decks, fetched ${dateOf(fit.fetchedAt)})`,
+    ...(top.length ? [`      most synergy owned: ${top.join(', ')}`] : []),
+  ];
+}
+
+export function commanderLines(
+  results,
+  { limit, withOracleText = false, sort, minCards, belowMinimum, unthemed, considered, themeFiltered = false },
+) {
+  const shown = results.slice(0, limit);
+  const lines = shown.flatMap((result, position) => {
+    const { card, themes } = result;
+    const themeNotes = themes.map(({ name, cards, lift: themeLift }) => `${name} ${cards} (${lift(themeLift)})`);
+    return [
+      `${position + 1}. ${card.name} ${card.manaCost} [${identityLabel(card)}]${gameChangerNote(card)} — ${ownershipNote(result)} (${valueNote(result)})`,
+      `    ${result.cards} on-theme cards of ${result.pool} owned spells, ${lift(result.lift)} an average collection (${Math.round(result.expected)} expected): ${themeNotes.join(', ')}`,
+      ...edhrecLine(result.edhrec),
+      ...(withOracleText ? oracleLines(card) : []),
+    ];
+  });
+  const unthemedNote = `${unthemed} have no theme these tests recognise${themeFiltered ? ' or none matching --theme' : ''}`;
+  return [
+    ...lines,
+    `${shown.length} of ${results.length} commanders shown, by ${sort}, of ${considered} the filters keep; ${belowMinimum} more have fewer than ${minCards} on-theme cards, and ${unthemedNote}`,
+  ];
+}
