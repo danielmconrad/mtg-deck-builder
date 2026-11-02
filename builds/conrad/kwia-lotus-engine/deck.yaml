@@ -143,10 +143,10 @@ mainboard:
   - name: 'Bagel and Schmear'
     quantity: 1
     role: synergy,draw
-  # draw
-  - name: 'Tome of Legends'
+  - name: 'Gleaming Splendor'
     quantity: 1
-    role: draw
+    role: synergy,draw
+  # draw
   - name: 'Gallant Citizen'
     quantity: 1
     role: draw
@@ -381,9 +381,9 @@ upgrades:
       quantity: 1
       role: ramp
     cut:
-      name: 'Tome of Legends'
+      name: 'Three Tree Rootweaver'
       quantity: 1
-    reason: 'Two-mana untapped land ramp, better than a slow card-draw rock.'
+    reason: 'Two-mana land ramp in place of a two-mana dork: the land survives Hour of Reckoning, Settle the Wreckage and opposing wipes, and the dork upgrades already supply the early creature mana.'
   - add:
       name: 'Three Visits'
       quantity: 1
@@ -440,5 +440,9 @@ upgrades:
       name: 'Surveillance Room'
       quantity: 1
     reason: 'Untapped green-white source instead of a colorless land that costs {1} to fix.'
-playtests: []
+playtests:
+  - date: '2026-11-02'
+    notes: >-
+      Not a playtest: a list review. Tome of Legends rarely gains page counters with a six-mana commander, while Gleaming Splendor is a cheaper repeatable draw outlet. Activated on an opponent's turn after their draw, targeting yourself and them, it draws a card and makes a Treasure, which Peregrin Took and Bilbo turn into Food and more Treasure. The Nature's Lore upgrade now cuts Three Tree Rootweaver.
+    changes: '-Tome of Legends, +Gleaming Splendor'
 collection_destination: collections/conrad/protected/custom/Kwia Lotus Engine.txt

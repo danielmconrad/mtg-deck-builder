@@ -1,5 +1,5 @@
 Commander
-1 Kwia Vigorbloom (FRA) 140
+1 Kwia Vigorbloom (FRA) 352
 
 Deck
 1 Command Tower (FIC) 382
@@ -15,14 +15,13 @@ Deck
 1 Arcane Signet (FIC) 335
 1 Delighted Halfling (LTR) 158
 1 Great Forest Druid (ECL) 178
-1 Three Tree Rootweaver (BLB) 198
 1 Frog Butler (TMT) 114
 1 Studious First-Year // Rampant Growth (SOS) 162
 1 Many Partings (LTR) 445
 1 Hot Dog Cart (SPM) 164
 1 Bilbo, Fellow Conspirator (HOC) 4
 1 Elven Chorus (HOC) 26
-1 Peregrin Took (LTR) 181
+1 Peregrin Took (LTR) 315
 1 Liliana the Faultless (FRA) 293
 1 Daxos, Blessed by the Sun (THB) 258
 1 Authority of the Consuls (FIC) 232
@@ -31,6 +30,7 @@ Deck
 1 Belladonna Took (HOB) 4
 1 Omni-Cheese Pizza (TMT) 176
 1 Bagel and Schmear (SPM) 161
+1 Gleaming Splendor (HOB) 239
 1 Radagast the Brown (LTR) 184
 1 Pictures of Spider-Man (SPM) 109
 1 Garruk, Curse Breaker (FRA) 314
@@ -38,7 +38,7 @@ Deck
 1 Ajani Resolute (FRA) 291
 1 Swords to Plowshares (FIC) 256
 1 Erode (SOS) 15
-1 Banishing Light (FDN) 138
+1 Banishing Light (BLB) 1
 1 Memory Trap (FRA) 15
 1 Web Up (SPM) 21
 1 Celebrate the Mountain-king (HOB) 7
@@ -73,7 +73,7 @@ Sideboard
 1 Flowering of the White Tree (LTR) 15
 1 Dancing from Dark to Dawn (HOB) 123
 1 Bite Down (FDN) 212
-1 Tome of Legends (FIC) 369
+1 Three Tree Rootweaver (BLB) 198
 1 Courier of Comestibles (TMT) 112
 1 Path of Ancestry (FIC) 411
 1 Ash Barrens (FIC) 374

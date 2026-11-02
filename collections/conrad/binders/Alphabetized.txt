@@ -448,7 +448,6 @@
 1 Gigastorm Titan (EOE) 57
 1 Glacial Fortress (FIC) 400
 1 Gleaming Barrier (FDN) 252
-1 Gleaming Splendor (HOB) 239
 1 Glintwing Invoker (DMR) 52
 1 Glitch Ghost Surveyor (DFT) 44
 1 Glorious Gale (LTR) 51
@@ -1226,6 +1225,7 @@
 1 Tireless Missionaries (M15) 39
 1 Tokka & Rahzar, Terrible Twos (TMT) 171
 2 Tombstone, Career Criminal (SPM) 70
+1 Tome of Legends (FIC) 369
 1 Tomik, Distinguished Advokist (RVR) 31
 1 Tony Stark // The Invincible Iron Man (MSH) 80
 1 Too Evil to Stay Dead (MSH) 118
