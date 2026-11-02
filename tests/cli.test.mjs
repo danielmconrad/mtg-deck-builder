@@ -419,6 +419,67 @@ test('deck:teardown returns a built deck to a text list only with --apply, and m
     assert.equal(await cli('deck:check', 'fixture'), 0);
   }));
 
+test("deck:swap edits a draft deck.yaml, and moves a built deck's cards only with --apply", () =>
+  inWorkspace(async ({ root, cli, writeDeck, stdout, stderr }) => {
+    const oldDraw = card('Old Draw', { collectorNumber: '2' });
+    const newDraw = card('New Draw', { collectorNumber: '3' });
+    const unowned = card('Unowned Card', { collectorNumber: '4' });
+    await writeCache(join(root, '.cache', 'cards.json'), cacheOf(forest, oldDraw, newDraw, unowned));
+    const deckPath = join(root, 'builds', 'fixture', 'deck.yaml');
+    const binder = join(root, 'collections', 'binders', 'Binder.txt');
+    const own = join(root, 'collections', 'decks', 'Fixture.txt');
+    const mainboard = [
+      { name: 'Forest', quantity: 59, role: 'land' },
+      { name: 'Old Draw', quantity: 1, role: 'draw' },
+    ];
+    const upgrades = [{ add: { name: 'Forest', quantity: 1 }, cut: { name: 'Old Draw', quantity: 1 }, reason: 'x' }];
+    await mkdir(join(root, 'collections', 'binders'));
+    await mkdir(join(root, 'collections', 'decks'));
+    await writeFile(binder, '1 Forest (TST) 1\n1 New Draw (TST) 3\n');
+
+    await writeDeck({ ...casualDeck(mainboard), upgrades });
+    await assert.rejects(cli('deck:swap', 'fixture', '--out', 'Old Draw'), /one --in NAME for each --out/);
+    await assert.rejects(
+      cli('deck:swap', 'fixture', '--out', 'Island', '--in', 'New Draw'),
+      /Island: not in card cache/,
+    );
+    await assert.rejects(
+      cli('deck:swap', 'fixture', '--out', 'Old Draw', '--in', 'New Draw', '--out', 'Old Draw', '--in', 'Forest'),
+      /Old Draw: the mainboard has 1, fewer than the 2/,
+    );
+    assert.equal(await cli('deck:swap', 'fixture', '--out', 'old draw', '--in', 'New Draw', '--apply'), 0);
+    assert.match(stdout.join('\n'), /Swapping in deck.yaml:\n {2}-1 Old Draw, \+1 New Draw\n/);
+    assert.match(stderr.join('\n'), /upgrade adding Forest cuts Old Draw, which the swap takes out/);
+    assert.match(await readFile(deckPath, 'utf8'), /- name: New Draw\n {4}quantity: 1\n {4}role: draw/);
+    assert.equal(await readFile(binder, 'utf8'), '1 Forest (TST) 1\n1 New Draw (TST) 3\n');
+
+    const ownText = 'Deck\n59 Forest (TST) 1\n1 Old Draw (TST) 2\n';
+    await writeFile(own, ownText);
+    await writeDeck({
+      ...casualDeck(mainboard),
+      status: 'built',
+      collection_destination: 'collections/decks/Fixture.txt',
+    });
+    const swap = ['deck:swap', 'fixture', '--out', 'Old Draw', '--in', 'New Draw'];
+    await assert.rejects(cli(...swap), /needs --to PATH for a built deck/);
+    await assert.rejects(cli(...swap, '--to', 'collections/decks/Fixture.txt'), /the deck's own list/);
+    assert.equal(await cli(...swap, '--to', 'collections/binders/Binder.txt'), 0);
+    assert.match(
+      stdout.join('\n'),
+      /Would swap into collections\/decks\/Fixture.txt:\n {2}from collections\/binders\/Binder.txt:\n {4}1 New Draw \(TST\) 3\nWould swap out of it:\n {2}to collections\/binders\/Binder.txt:\n {4}1 Old Draw \(TST\) 2\n/,
+    );
+    assert.match(stdout.at(-1), /Nothing changed/);
+    assert.equal(await readFile(own, 'utf8'), ownText);
+    assert.equal(await cli(...swap, '--to', 'collections/binders/Binder.txt', '--apply'), 0);
+    assert.equal(await readFile(own, 'utf8'), 'Deck\n59 Forest (TST) 1\n1 New Draw (TST) 3\n');
+    assert.equal(await readFile(binder, 'utf8'), '1 Forest (TST) 1\n1 Old Draw (TST) 2\n');
+    assert.match(await readFile(deckPath, 'utf8'), /- name: New Draw/);
+    assert.equal(await cli('deck:check', 'fixture'), 0);
+    assert.equal(await cli('deck:swap', 'fixture', '--out', 'New Draw', '--in', 'Unowned Card', '--apply'), 1);
+    assert.match(stdout.at(-1), /Not swapped: fixture is built/);
+    assert.equal(await readFile(own, 'utf8'), 'Deck\n59 Forest (TST) 1\n1 New Draw (TST) 3\n');
+  }));
+
 test('scryfall:refresh covers every collection, whatever MTG_COLLECTIONS says', () =>
   inWorkspace(async ({ root, cliWithEnv }) => {
     const uncachedId = '00000000-0000-4000-8000-000000000002';

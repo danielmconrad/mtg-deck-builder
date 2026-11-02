@@ -53,6 +53,10 @@ run = "node scripts/cli.mjs deck:build"
 description = "Take apart a built deck: return its cards to the collection's text lists (-- <slug> --to PATH --apply)"
 run = "node scripts/cli.mjs deck:teardown"
 
+[tasks."deck:swap"]
+description = "Swap mainboard cards, moving the physical cards for a built deck (-- <slug> --out NAME --in NAME [--to PATH] --apply)"
+run = "node scripts/cli.mjs deck:swap"
+
 [tasks."decks:check"]
 description = "Check every deck independently; the example is schema-checked only"
 run = "node scripts/cli.mjs decks:check"

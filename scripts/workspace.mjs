@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { readCache, writeCache } from './card-cache.mjs';
 import { cardIndex } from './card-index.mjs';
 import { holdDeckCards, parseCollection, parseTextCollection, resolveTextRows } from './collection.mjs';
-import { parseDeck, serializeDeck, withDeckChanges, withDeckField } from './deck.mjs';
+import { parseDeck, serializeDeck, withDeckChanges, withDeckField, withMainboardSwaps } from './deck.mjs';
 
 const PROJECT_ROOT = fileURLToPath(new URL('..', import.meta.url));
 // A deck is named by its folder under builds/, which may be nested (brad/bruenor-forge). Each part
@@ -122,6 +122,16 @@ export function openWorkspace(root = PROJECT_ROOT) {
     await writeFile(path, withDeckChanges(await readFile(path, 'utf8'), changes, { source: deckLabel(deckId) }));
   }
 
+  // Swaps mainboard cards in a deck's deck.yaml, keeping its comments; see withMainboardSwaps. Returns
+  // the swapped deck, and writes it only with apply.
+  async function swapDeckCards(slug, swaps, { apply = false } = {}) {
+    const deckId = await resolveDeckId(slug);
+    const path = join(decksFolder, deckId, DECK_FILE);
+    const { text, deck } = withMainboardSwaps(await readFile(path, 'utf8'), swaps, { source: deckLabel(deckId) });
+    if (apply) await writeFile(path, text);
+    return deck;
+  }
+
   // Where deck:build puts a deck's own cards by default, named after the deck: builds/brad/elves,
   // named Elf Ball, keeps them in collections/brad/decks/Elf Ball.txt, and an unnested builds/elves
   // in collections/decks/Elf Ball.txt. Characters that aren't safe in a file name become hyphens.
@@ -158,7 +168,7 @@ export function openWorkspace(root = PROJECT_ROOT) {
     return nested.flat().sort((first, second) => first.localeCompare(second));
   }
 
-  // Collection files are edited only by deck:build and deck:teardown. Paths are relative to the project root.
+  // Collection files are edited only by deck:build, deck:teardown and deck:swap. Paths are relative to the project root.
   const readCollectionFile = (path) => readFile(join(root, path), 'utf8');
   const writeCollectionFile = (path, text) => writeFile(join(root, path), text);
   const removeCollectionFile = (path) => rm(join(root, path));
@@ -237,6 +247,7 @@ export function openWorkspace(root = PROJECT_ROOT) {
     removeDeckFile,
     setDeckField,
     changeDeckFields,
+    swapDeckCards,
     resolveDeckId,
     defaultDeckCollection,
     loadCollections,

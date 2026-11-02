@@ -1,5 +1,5 @@
 import { parse } from 'csv-parse/sync';
-import { isBasic } from './card.mjs';
+import { hasName, isBasic } from './card.mjs';
 import { parseTextCollection } from './collection.mjs';
 import { deckEntries, resolveEntries } from './deck.mjs';
 
@@ -58,6 +58,34 @@ export function planBuild(deck, collections, index) {
       untracked.push({ card: index.byId.get(printingId) ?? card, quantity: needed });
     } else {
       problems.push(`${card.name}: need ${quantity}, ${quantity - needed} non-proxy copies available`);
+    }
+  }
+  return { takes, untracked, problems };
+}
+
+// Chooses which lines of a built deck's own list hold the copies a swap takes out: cuts maps an
+// oracle ID to { card, quantity, printingId }. The pinned printing goes first, then lines in list
+// order. Lines without a printing are untracked basics, which go nowhere. Returns takes ({ row, card,
+// quantity }), untracked ({ row, name, quantity }) and problems.
+export function planSwapOut(ownRows, cuts, index) {
+  const takes = [];
+  const untracked = [];
+  const problems = [];
+  for (const { card, quantity, printingId } of cuts.values()) {
+    const rows = ownRows.filter((row) =>
+      row.scryfallId ? index.byId.get(row.scryfallId)?.oracleId === card.oracleId : hasName(card, row.name),
+    );
+    const isPinned = (row) => Number(Boolean(row.set) && row.scryfallId === printingId);
+    let needed = quantity;
+    for (const row of rows.toSorted((first, second) => isPinned(second) - isPinned(first))) {
+      if (!needed) break;
+      const taken = Math.min(needed, row.quantity);
+      if (row.set) takes.push({ row, card: index.byId.get(row.scryfallId), quantity: taken });
+      else untracked.push({ row, name: row.name, quantity: taken });
+      needed -= taken;
+    }
+    if (needed) {
+      problems.push(`${card.name}: the deck's own list has ${quantity - needed} of the ${quantity} to swap out`);
     }
   }
   return { takes, untracked, problems };

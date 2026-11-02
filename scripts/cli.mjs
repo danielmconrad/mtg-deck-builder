@@ -5,6 +5,7 @@ import {
   deckCollectionText,
   nameLine,
   planBuild,
+  planSwapOut,
   printingLine,
   removeCsvCopies,
   removeTextCopies,
@@ -14,7 +15,7 @@ import { cardIndex } from './card-index.mjs';
 import { isLand } from './card.mjs';
 import { parseTextCollection, resolveTextRows, summarize } from './collection.mjs';
 import { copyToClipboard } from './clipboard.mjs';
-import { applyUpgrades, deckEntries, newDeck, splitUpgrades } from './deck.mjs';
+import { applyUpgrades, deckEntries, newDeck, resolveEntries, splitUpgrades } from './deck.mjs';
 import { EXPORT_FORMAT_NAMES, PASTE_HINTS, exportDeck, printingChooser } from './export.mjs';
 import {
   checkLines,
@@ -366,6 +367,17 @@ function teardownLines({ returns, untracked }, verb) {
   return lines;
 }
 
+// --to and --lands-to must name text lists under collections/ other than the deck's own.
+function checkReturnPaths(workspace, options, own, warn) {
+  for (const path of [options.to, options['lands-to']].filter(Boolean)) {
+    if (!/^collections\/(?:[^/\\]+\/)*[^/\\]+\.txt$/.test(path) || path.split('/').includes('..')) {
+      throw new Error(`${path} must be a text list (.txt) under collections/`);
+    }
+    if (path === own) throw new Error(`${path} is the deck's own list`);
+    if (workspace.protects(path)) warn(`${path} is protected, so no deck will count the returned cards`);
+  }
+}
+
 const readIfExists = (workspace, path) =>
   workspace.readCollectionFile(path).catch((error) => {
     if (error.code === 'ENOENT') return null;
@@ -393,13 +405,7 @@ async function deckTeardown({ workspace, slug, options, write, warn }) {
   const own = deck.collection_destination;
   if (!own) throw new Error(`${deckId} isn't built: it has no collection_destination`);
   if (!options.to) throw new Error('deck:teardown needs --to PATH, the text list to return the cards to');
-  for (const path of [options.to, options['lands-to']].filter(Boolean)) {
-    if (!/^collections\/(?:[^/\\]+\/)*[^/\\]+\.txt$/.test(path) || path.split('/').includes('..')) {
-      throw new Error(`${path} must be a text list (.txt) under collections/`);
-    }
-    if (path === own) throw new Error(`${path} is the deck's own list`);
-    if (workspace.protects(path)) warn(`${path} is protected, so no deck will count the returned cards`);
-  }
+  checkReturnPaths(workspace, options, own, warn);
   const plan = await teardownPlan(workspace, deck, options);
   printAll(write, teardownLines(plan, options.apply ? 'Returning' : 'Would return'));
   const deckChanges = { collection_destination: undefined, ...(deck.status === 'built' ? { status: 'draft' } : {}) };
@@ -413,6 +419,169 @@ async function deckTeardown({ workspace, slug, options, write, warn }) {
   await workspace.removeCollectionFile(own);
   await workspace.changeDeckFields(deckId, deckChanges);
   write(`Returned the cards to ${[...plan.returns.keys()].join(', ')}, deleted ${own}, and changed ${changed}.`);
+  return 'pass';
+}
+
+// The copies each out card loses, by oracle ID, refusing more than the mainboard has.
+function swapCuts(deck, pairs, index) {
+  const mainboard = resolveEntries(deck.mainboard, index).tallies;
+  const cuts = new Map();
+  for (const pair of pairs) {
+    if (pair.out.oracleId === pair.in.oracleId) throw new Error(`${pair.out.name} can't be swapped for itself`);
+    const { quantity: has = 0, printingId } = mainboard.get(pair.out.oracleId) ?? {};
+    const cut = cuts.get(pair.out.oracleId) ?? { card: pair.out, quantity: 0, printingId };
+    cut.quantity += 1;
+    if (cut.quantity > has) {
+      throw new Error(`${pair.out.name}: the mainboard has ${has}, fewer than the ${cut.quantity} to swap out`);
+    }
+    cuts.set(pair.out.oracleId, cut);
+  }
+  return cuts;
+}
+
+// Pairs each --out with the --in at the same place, as cached cards. The out card must be in the
+// mainboard with a copy for every swap, and every card must be cached.
+function swapPairs(deck, options, index) {
+  const outs = options.out ?? [];
+  const ins = options.in ?? [];
+  if (!outs.length || outs.length !== ins.length) {
+    throw new Error('deck:swap needs one --in NAME for each --out NAME');
+  }
+  const lookup = (name) => {
+    const { card, problem } = index.lookup({ name });
+    if (problem) throw new Error(problem);
+    return card;
+  };
+  const pairs = outs.map((out, position) => ({ out: lookup(out), in: lookup(ins[position]) }));
+  return { pairs, cuts: swapCuts(deck, pairs, index) };
+}
+
+// Upgrades the swap leaves stale: ones cutting more copies of an out card than the deck now has, and
+// ones adding a card the swap already put in.
+function staleUpgrades(swapped, pairs, index) {
+  const mainboard = resolveEntries(swapped.mainboard, index).tallies;
+  const outs = new Set(pairs.map((pair) => pair.out.oracleId));
+  const ins = new Set(pairs.map((pair) => pair.in.oracleId));
+  return (swapped.upgrades ?? []).flatMap(({ add, cut }) => {
+    const [added, removed] = [add, cut].map((entry) => index.lookup(entry).card);
+    const stale = [];
+    if (removed && outs.has(removed.oracleId) && (mainboard.get(removed.oracleId)?.quantity ?? 0) < cut.quantity) {
+      stale.push(`the upgrade adding ${add.name} cuts ${cut.name}, which the swap takes out; give it another cut`);
+    }
+    if (added && ins.has(added.oracleId)) stale.push(`the upgrade adding ${add.name} is done by the swap; remove it`);
+    return stale;
+  });
+}
+
+// Copies a built deck's swap moves: the in cards from the other available collections into the deck's
+// own list, and the out cards from that list back to --to (lands to --lands-to).
+function swapMoves(deck, collections, cuts, pairs, options, index) {
+  const own = collections.sources.find((source) => source.path === deck.collection_destination);
+  const outPlan = planSwapOut(own.rows, cuts, index);
+  const elsewhere = { available: collections.available.filter((row) => row.collection !== own.name) };
+  const ins = pairs.map((pair) => ({ name: pair.in.name, quantity: 1 }));
+  const inPlan = planBuild({ ...deck, commanders: [], mainboard: ins }, elsewhere, index);
+  const pathOf = new Map(collections.sources.map((source) => [source.name, source.path]));
+  const returns = new Map();
+  for (const { row, card, quantity } of outPlan.takes) {
+    const path = options['lands-to'] && isLand(card) ? options['lands-to'] : options.to;
+    returns.set(path, [...(returns.get(path) ?? []), { card, finish: row.finish, quantity }]);
+  }
+  return {
+    own,
+    outPlan,
+    inPlan,
+    takenFrom: Map.groupBy(inPlan.takes, ({ row }) => pathOf.get(row.collection)),
+    returns,
+    problems: [...outPlan.problems, ...inPlan.problems],
+  };
+}
+
+// The deck's own list with the out copies taken out and the in copies added, at the end of the list
+// unless a line of the same printing and finish is already there.
+function swappedOwnList(text, moves) {
+  const taken = new Map();
+  for (const { row, quantity } of [...moves.outPlan.takes, ...moves.outPlan.untracked]) {
+    taken.set(row.position, (taken.get(row.position) ?? 0) + quantity);
+  }
+  const copies = moves.inPlan.takes.map(({ row, card, quantity }) => ({ card, finish: row.finish, quantity }));
+  const basics = moves.inPlan.untracked.map(({ card, quantity }) => nameLine(quantity, card));
+  const kept = removeTextCopies(text, taken);
+  // Swapping out every card leaves no line for addTextCopies to place copies by, so they're appended.
+  const base = kept === null ? text.replace(/^\s*\d+x?\s.*(?:\r?\n|$)/gm, '') : addTextCopies(kept, copies);
+  const appended = [
+    ...(kept === null ? copies.map(({ card, finish, quantity }) => printingLine(quantity, card, finish)) : []),
+    ...basics,
+  ];
+  if (!appended.length) return base;
+  return `${base}${base && !base.endsWith('\n') ? '\n' : ''}${appended.join('\n')}\n`;
+}
+
+function swapLines(pairs, moves, verb) {
+  const lines = [`${verb} in deck.yaml:`, ...pairs.map((pair) => `  -1 ${pair.out.name}, +1 ${pair.in.name}`)];
+  if (!moves) return lines;
+  lines.push(...buildLines(moves.inPlan, moves.takenFrom, `${verb} into ${moves.own.path}`));
+  lines.push(...teardownLines({ returns: moves.returns, untracked: moves.outPlan.untracked }, `${verb} out of it`));
+  return lines;
+}
+
+// A built deck's moves, or the outcome after printing why it can't be swapped: the swapped deck must
+// pass deck:check, and every card must have real copies to move.
+function builtSwapPlan({ workspace, deckId, deck, collections, index, report, swap, options, write, warn }) {
+  if (report.outcome !== 'pass') {
+    printAll(write, [
+      ...checkLines(deckId, report),
+      `Not swapped: ${deckId} is built, so the swapped deck must pass deck:check.`,
+    ]);
+    return { outcome: report.outcome };
+  }
+  checkReturnPaths(workspace, options, deck.collection_destination, warn);
+  const moves = swapMoves(deck, collections, swap.cuts, swap.pairs, options, index);
+  if (moves.problems.length) {
+    printAll(write, [...moves.problems.map((problem) => `ERROR: ${problem}`), 'Not swapped.']);
+    return { outcome: 'fail' };
+  }
+  if (moves.returns.size && !options.to) {
+    throw new Error('deck:swap needs --to PATH for a built deck, the text list the swapped-out cards go back to');
+  }
+  return { moves };
+}
+
+// Swaps mainboard cards for others. A built deck's physical cards move too: each in card comes out of
+// the available collections into the deck's own list, and each out card goes from that list back to
+// --to. Without --apply it only prints the plan.
+async function deckSwap({ workspace, slug, options, write, warn }) {
+  const deckId = await workspace.resolveDeckId(slug);
+  const deck = await workspace.loadDeck(deckId);
+  const [collections, index] = await Promise.all([workspace.loadCollections(deck), workspace.loadCardIndex()]);
+  const swap = swapPairs(deck, options, index);
+  const swaps = swap.pairs.map((pair) => ({ out: pair.out.name, in: pair.in.name }));
+  const swapped = await workspace.swapDeckCards(deckId, swaps);
+  const report = checkDeck(swapped, collections, index);
+  const own = deck.collection_destination;
+  let moves;
+  if (own) {
+    const plan = builtSwapPlan({ workspace, deckId, deck, collections, index, report, swap, options, write, warn });
+    if (!plan.moves) return plan.outcome;
+    ({ moves } = plan);
+  } else if (options.to || options['lands-to']) {
+    warn(`${deckId} isn't built, so only deck.yaml changes and --to is ignored`);
+  }
+  printAll(write, swapLines(swap.pairs, moves, options.apply ? 'Swapping' : 'Would swap'));
+  for (const stale of staleUpgrades(swapped, swap.pairs, index)) warn(`WARNING: ${stale}`);
+  // A draft may be unfinished, so its check is shown rather than required.
+  if (!own) printAll(write, checkLines(deckId, report));
+  if (!options.apply) {
+    write('Nothing changed; rerun with --apply to swap.');
+    return 'pass';
+  }
+  if (moves) {
+    await workspace.writeCollectionFile(own, swappedOwnList(await workspace.readCollectionFile(own), moves));
+    await removeTakenCopies(workspace, moves.takenFrom, write);
+    await returnCopies(workspace, moves.returns);
+  }
+  await workspace.swapDeckCards(deckId, swaps, { apply: true });
+  write(`Swapped ${swaps.length} card${swaps.length === 1 ? '' : 's'}; rerun deck:files.`);
   return 'pass';
 }
 
@@ -665,6 +834,29 @@ const COMMANDS = {
         type: 'string',
         placeholder: 'PATH',
         description: 'A separate text list for the lands; defaults to --to',
+      },
+      ...COLLECTION_OPTIONS,
+    },
+  },
+  'deck:swap': {
+    run: deckSwap,
+    takesSlug: true,
+    summary: 'Swap mainboard cards for others, moving the physical cards too when the deck is built',
+    details:
+      "Each --out pairs with the --in at the same place and swaps one copy; repeat a pair to swap more copies. In deck.yaml a new card takes the out card's place and role, keeping comments. For a built deck, the swapped deck must pass deck:check; each in card is taken from the other available collections into the deck's collection_destination list (the same copy order as deck:build), and each out card goes from that list back to the text list --to names (lands to --lands-to, if given). Only when the user says they've swapped the physical cards. Warns about upgrades the swap leaves stale. Without --apply, prints the plan and changes nothing.",
+    options: {
+      out: { type: 'string', multiple: true, placeholder: 'NAME', description: 'A mainboard card to take out' },
+      in: { type: 'string', multiple: true, placeholder: 'NAME', description: 'The card to put in its place' },
+      apply: { type: 'boolean', description: 'Edit deck.yaml and, for a built deck, the collections' },
+      to: {
+        type: 'string',
+        placeholder: 'PATH',
+        description: 'For a built deck: the text list under collections/ the out cards go back to',
+      },
+      'lands-to': {
+        type: 'string',
+        placeholder: 'PATH',
+        description: 'A separate text list for out lands; defaults to --to',
       },
       ...COLLECTION_OPTIONS,
     },

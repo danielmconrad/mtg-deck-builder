@@ -10,6 +10,7 @@ import {
   roleLabels,
   splitUpgrades,
   withDeckField,
+  withMainboardSwaps,
 } from '../scripts/deck.mjs';
 import { entry, forest, indexOf, leader } from './fixtures.mjs';
 
@@ -40,6 +41,42 @@ test('withDeckField adds a field after another, keeping comments, and validates 
     () => withDeckField(text, 'collection_destination', 'elsewhere.csv'),
     /collection_destination must match/,
   );
+});
+
+test('withMainboardSwaps swaps copies in place, keeping roles and comments', () => {
+  const text = [
+    'schema_version: 1',
+    'name: Fixture',
+    'format: casual-60',
+    'status: draft',
+    'allow_proxies: false',
+    'primer: Test',
+    'commanders: []',
+    'mainboard:',
+    '  # draw',
+    "  - name: 'Old Draw'",
+    '    quantity: 1',
+    '    role: draw',
+    '  # lands',
+    '  - name: Forest',
+    '    quantity: 2',
+    '    role: land',
+    '  - name: Island',
+    '    quantity: 1',
+    '    role: land',
+    '',
+  ].join('\n');
+  const { text: updated, deck: swapped } = withMainboardSwaps(text, [
+    { out: 'old draw', in: 'New Draw' },
+    { out: 'Forest', in: 'Island' },
+  ]);
+  assert.deepEqual(swapped.mainboard, [
+    { name: 'New Draw', quantity: 1, role: 'draw' },
+    { name: 'Forest', quantity: 1, role: 'land' },
+    { name: 'Island', quantity: 2, role: 'land' },
+  ]);
+  assert.match(updated, /mainboard:\n {2}# draw\n {2}- name: New Draw\n(.|\n)*# lands\n {2}- name: Forest\n/);
+  assert.throws(() => withMainboardSwaps(text, [{ out: 'Plains', in: 'Island' }]), /mainboard has no Plains/);
 });
 
 test('parseDeck accepts a valid deck, including an empty draft mainboard', () => {

@@ -1,6 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { addTextCopies, deckCollectionText, planBuild, removeCsvCopies, removeTextCopies } from '../scripts/build.mjs';
+import {
+  addTextCopies,
+  deckCollectionText,
+  planBuild,
+  planSwapOut,
+  removeCsvCopies,
+  removeTextCopies,
+} from '../scripts/build.mjs';
 import { parseTextCollection, resolveTextRows } from '../scripts/collection.mjs';
 import { card, entry, forest, indexOf, row } from './fixtures.mjs';
 import * as fixtures from './fixtures.mjs';
@@ -79,6 +86,26 @@ test('planBuild reports shortfalls, and fills basics from untracked ones only wi
     plan.untracked.map(({ card: basic, quantity }) => [basic.name, quantity]),
     [['Forest', 5]],
   );
+});
+
+test("planSwapOut takes the pinned printing first from a deck's own list, and untracked basics by name", () => {
+  const ownRows = resolveTextRows(
+    parseTextCollection('Deck\n1 Example Spell (TST) 3\n2 Example Spell (RPT) 7\n3 Forest\n', 'own'),
+    index,
+  );
+  const cuts = new Map([
+    [spell.oracleId, { card: spell, quantity: 2, printingId: spellReprint.id }],
+    [forest.oracleId, { card: forest, quantity: 2 }],
+  ]);
+  const plan = planSwapOut(ownRows, cuts, index);
+  assert.deepEqual(plan.problems, []);
+  assert.deepEqual(takenSummary(plan), [[spellReprint.id, 2]]);
+  assert.deepEqual(
+    plan.untracked.map(({ name, quantity }) => [name, quantity]),
+    [['Forest', 2]],
+  );
+  const short = planSwapOut(ownRows, new Map([[leader.oracleId, { card: leader, quantity: 1 }]]), index);
+  assert.match(short.problems[0], /Example Leader: the deck's own list has 0 of the 1/);
 });
 
 test("deckCollectionText lists the deck's cards so they read back as a collection", () => {

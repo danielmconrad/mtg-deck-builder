@@ -49,6 +49,7 @@ node scripts/cli.mjs --help         # every command, plus exit codes
 | `deck:files`        | Write the committed decklist files beside `deck.yaml`               |
 | `deck:build`        | Physically build a deck: move its cards into its own collection     |
 | `deck:teardown`     | Take a built deck apart: return its cards to the collection         |
+| `deck:swap`         | Swap mainboard cards, moving a built deck's cards too               |
 | `decks:check`       | Check every deck; the example is schema-checked only                |
 | `lint` / `fix`      | Check, or fix, linting and formatting                               |
 | `check`             | `lint`, `collection:check`, `test` and `decks:check`                |
@@ -133,6 +134,21 @@ mise run deck:teardown -- conrad/kwias-canopy --to collections/conrad/binders/Al
 - **Destinations:** text lists under `collections/` only, never ManaBox CSVs. A list that doesn't exist yet is created. Returning to a protected list gets a warning, since no deck would count those cards.
 - **Untracked basics** (name-only lines from `unlimited_basics`) aren't returned, since no collection held them.
 
+### Swapping cards
+
+To swap cards in a deck, especially a built one whose physical cards have to move too:
+
+```sh
+mise run deck:swap -- conrad/kwia-lotus-engine --out "Tome of Legends" --in "Gleaming Splendor" --to collections/conrad/binders/Alphabetized.txt          # dry run
+mise run deck:swap -- conrad/kwia-lotus-engine --out "Tome of Legends" --in "Gleaming Splendor" --to collections/conrad/binders/Alphabetized.txt --apply  # do it
+```
+
+- **Pairs:** each `--out` pairs with the `--in` at the same place and swaps one copy. Repeat the options for more cards, or repeat a pair for more copies.
+- **`deck.yaml`:** a new card takes the out card's place and role, keeping comments such as role headings. A card already in the mainboard gets a copy added instead. Edit the role afterwards if it differs.
+- **Built decks:** the swapped deck must pass `deck:check`. Each in card is taken from the other available collections into the deck's `collection_destination` list, choosing copies the way `deck:build` does, and each out card goes from that list to the `--to` text list (lands to `--lands-to`, if given), as `deck:teardown` returns them. If an in card comes from a ManaBox export, move the same card in ManaBox before your next export.
+- **Drafts:** only `deck.yaml` changes, and `deck:check`'s result is shown.
+- **Upgrades:** it warns about any upgrade that cuts a card the swap took out, or adds one it put in, so you can fix them. Rerun `deck:files` afterwards.
+
 ### Formatting and linting
 
 Prettier formats, ESLint lints ([eslint.config.js](eslint.config.js)). Two things keep code tidy without thinking about it:
@@ -157,7 +173,7 @@ Prettier formats, ESLint lints ([eslint.config.js](eslint.config.js)). Two thing
 - To read only some collections, list patterns in `MTG_COLLECTIONS` in `.env`, e.g. `MTG_COLLECTIONS=collections/conrad*,collections/other*`, or pass `--collections PATTERNS` to one command. The rest are ignored entirely, and protection still applies to the ones read. Empty means every collection. `scryfall:refresh` always covers every collection, so changing the list never leaves card data missing.
 - ManaBox binder exports (with `Binder Name` and `Binder Type` columns) work too. A card named in any of the export's deck binders is in use: every copy of it, spares in other binders included, is shown as e.g. "3 in BradsCollection decks (protected)" and never fills a new deck.
 - `collection:check` lists the collections it reads and marks the protected ones. A pattern in either list that matches no collection gets a warning.
-- Never hand-edit ManaBox exports; replace them with fresh exports when the collection changes. `deck:build --apply` is the one tool that edits them (see above); `deck:teardown --apply` edits only text lists. Text lists can be edited by hand.
+- Never hand-edit ManaBox exports; replace them with fresh exports when the collection changes. `deck:build --apply` and `deck:swap --apply` are the only tools that edit them (see above); `deck:teardown --apply` edits only text lists. Text lists can be edited by hand.
 - Every deck is checked on its own. Two decks can both use your only copy of a card, until one of them is built.
 - All printings and finishes of a card count together.
 - Proxy rows count only when the deck sets `allow_proxies: true`. An export without a `Proxy` column has no proxies.

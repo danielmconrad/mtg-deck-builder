@@ -58,6 +58,41 @@ export function withDeckChanges(text, changes, { source = 'deck' } = {}) {
   return updated;
 }
 
+// Comments before a removed mainboard entry, such as a role group heading, move to the entry after it.
+function removeItem(items, position) {
+  const [removed] = items.splice(position, 1);
+  const next = items[position];
+  if (removed.commentBefore && next) {
+    next.commentBefore = [removed.commentBefore, next.commentBefore].filter(Boolean).join('\n');
+    next.spaceBefore ||= removed.spaceBefore;
+  }
+}
+
+// Swaps one copy of each out card for one copy of its in card in a deck file's mainboard, keeping
+// comments. A card already in the mainboard gains a copy; a new one takes the out card's place and
+// role. An out entry left with no copies is removed. The result must still be a valid deck.
+export function withMainboardSwaps(text, swaps, { source = 'deck' } = {}) {
+  const document = parseDocument(text, { uniqueKeys: true });
+  const { items } = document.get('mainboard');
+  const position = (name) => items.findIndex((item) => normalizeName(item.get('name')) === normalizeName(name));
+  for (const swap of swaps) {
+    const from = position(swap.out);
+    if (from === -1) throw new Error(`${source}: the mainboard has no ${swap.out}`);
+    const cut = items[from];
+    const existing = items[position(swap.in)];
+    if (existing) {
+      existing.set('quantity', existing.get('quantity') + 1);
+    } else {
+      const role = cut.get('role');
+      items.splice(from + 1, 0, document.createNode({ name: swap.in, quantity: 1, ...(role ? { role } : {}) }));
+    }
+    if (cut.get('quantity') > 1) cut.set('quantity', cut.get('quantity') - 1);
+    else removeItem(items, items.indexOf(cut));
+  }
+  const updated = document.toString({ lineWidth: 0 });
+  return { text: updated, deck: parseDeck(updated, source) };
+}
+
 // A nested slug (brad/green-value) is titled from its last part.
 const titleFromSlug = (slug) =>
   slug
