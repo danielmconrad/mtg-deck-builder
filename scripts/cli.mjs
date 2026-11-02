@@ -15,23 +15,35 @@ import { cardIndex } from './card-index.mjs';
 import { isLand } from './card.mjs';
 import { parseTextCollection, resolveTextRows, summarize } from './collection.mjs';
 import { copyToClipboard } from './clipboard.mjs';
-import { applyUpgrades, deckEntries, newDeck, resolveEntries, splitUpgrades } from './deck.mjs';
-import { EXPORT_FORMAT_NAMES, PASTE_HINTS, exportDeck, printingChooser } from './export.mjs';
+import { PRIMER_PLACEHOLDER, applyUpgrades, deckEntries, newDeck, resolveEntries, splitUpgrades } from './deck.mjs';
+import { EXPORT_FORMAT_NAMES, PASTE_HINTS, exportDeck, moxfieldCardList, printingChooser } from './export.mjs';
 import {
   candidateLines,
   checkLines,
   collectionSummaryLine,
   countLine,
   groupLines,
-  searchJson,
   searchLines,
+  showLines,
   statsLines,
   upgradeLines,
 } from './format.mjs';
-import { checkDeck, worstOutcome } from './rules.mjs';
+import {
+  candidatesJson,
+  checkJson,
+  collectionJson,
+  returnsJson,
+  searchResultJson,
+  showJson,
+  statsJson,
+  takesJson,
+  upgradesJson,
+} from './json.mjs';
+import { checkDeck, lowestLegalBracket, worstOutcome } from './rules.mjs';
 import { fetchBulkCards, fetchCards } from './scryfall.mjs';
 import {
   GROUP_BY_CHOICES,
+  ROLE_CHOICES,
   SORT_CHOICES,
   countResults,
   deckCandidates,
@@ -40,9 +52,10 @@ import {
   searchFilters,
   sortResults,
 } from './search.mjs';
-import { deckStats } from './stats.mjs';
+import { deckListing, deckStats } from './stats.mjs';
 import { commandHelp, overviewHelp, parseArgsOptions, withHelpOption } from './help.mjs';
 import { upgradeReport } from './upgrades.mjs';
+import { verifyDeck } from './verify.mjs';
 import { openWorkspace, pathMatches } from './workspace.mjs';
 
 const EXIT_CODES = { pass: 0, fail: 1, incomplete: 2 };
@@ -52,9 +65,15 @@ const printAll = (write, lines) => {
 };
 
 // Text list lines whose printing isn't cached yet are listed, since they count toward nothing.
-async function collectionCheck({ workspace, write, warn }) {
+async function collectionCheck({ workspace, write, warn, emit }) {
   let unmatched = 0;
-  for (const { name, isProtected, rows } of (await workspace.loadCollections()).sources) {
+  const { sources } = await workspace.loadCollections();
+  emit({
+    collections: sources.map(({ name, path, isProtected, rows }) =>
+      collectionJson(name, path, isProtected, summarize(rows), rows),
+    ),
+  });
+  for (const { name, isProtected, rows } of sources) {
     write(collectionSummaryLine(name, isProtected, summarize(rows)));
     for (const row of rows.filter((candidate) => !candidate.scryfallId)) {
       warn(`  NOT CACHED: ${row.location}: ${row.name}; run scryfall:refresh -- --missing`);
@@ -64,29 +83,36 @@ async function collectionCheck({ workspace, write, warn }) {
   return unmatched ? 'incomplete' : 'pass';
 }
 
-async function collectionSearch({ workspace, options, write, warn }) {
+async function collectionSearch({ workspace, options, write, warn, emit }) {
   if (options.count && options['group-by']) throw new Error('Use --count or --group-by, not both');
   const [collections, index] = await Promise.all([workspace.loadCollections(), workspace.loadCardIndex()]);
   const { results, unresolvedRows } = searchCollection(collections, index, searchFilters(options, index));
+  if (options.unowned && !index.isFromBulk()) {
+    warn(
+      'The card cache holds only collection and deck cards, so --unowned finds few; scryfall:refresh -- --bulk caches every card',
+    );
+  }
   if (unresolvedRows) {
     warn(`${unresolvedRows} collection rows have no cached card data and were skipped; run scryfall:refresh`);
   }
-  printAll(write, searchOutput(sortResults(results, options.sort), options, collections.availableNames));
+  const sorted = sortResults(results, options.sort);
+  emit({ available_collections: collections.availableNames, ...searchData(sorted, options) });
+  printAll(write, searchOutput(sorted, options, collections.availableNames));
   return 'pass';
 }
 
-// --group-by and --count summarize instead of listing; --json applies to whichever is printed.
+// --group-by and --count summarize instead of listing.
 function searchOutput(results, options, availableNames) {
-  const asJson = (value) => [JSON.stringify(value, null, 2)];
-  if (options['group-by']) {
-    const groups = groupResults(results, options['group-by']);
-    return options.json ? asJson(groups) : groupLines(groups);
-  }
-  if (options.count) {
-    return options.json ? asJson(countResults(results)) : [countLine(countResults(results), availableNames)];
-  }
+  if (options['group-by']) return groupLines(groupResults(results, options['group-by']));
+  if (options.count) return [countLine(countResults(results), availableNames)];
   const withValues = options.sort === 'edhrec' || options.sort === 'price';
-  return options.json ? [searchJson(results)] : searchLines(results, { withOracleText: options.oracle, withValues });
+  return searchLines(results, { withOracleText: options.oracle, withValues });
+}
+
+function searchData(results, options) {
+  if (options['group-by']) return { groups: groupResults(results, options['group-by']) };
+  if (options.count) return { count: countResults(results) };
+  return { cards: results.map(searchResultJson) };
 }
 
 // Scryfall identifiers for every collection row and every card a deck or upgrade names. Text list rows
@@ -146,26 +172,84 @@ async function cardsRefresh({ workspace, options, write, warn }) {
   return notFound.length || skipped.length ? 'incomplete' : 'pass';
 }
 
-async function deckNew({ workspace, slug, options, write }) {
-  const deck = newDeck(slug, { format: options.format, commanderNames: options.commander, name: options.name });
+// MTG_UNLIMITED_BASICS and MTG_ALLOW_PROXIES hold true or false; empty or unset means false.
+function envFlag(env, name) {
+  const value = env[name] || 'false';
+  if (!['true', 'false'].includes(value)) throw new Error(`${name} must be true or false`);
+  return value === 'true';
+}
+
+function parseAmount(value, flag) {
+  if (value === undefined) return undefined;
+  if (!/^\d+(\.\d{1,2})?$/.test(value)) throw new Error(`${flag} must be an amount such as 30 or 0.50`);
+  return Number(value);
+}
+
+// deck:new's header fields from the brief, each left out when its option isn't given.
+function newDeckHeader(options) {
+  const currency = options.currency ?? 'USD';
+  if (!['USD', 'EUR'].includes(currency)) throw new Error('--currency must be USD or EUR');
+  const bracket = options['target-bracket'] === undefined ? undefined : Number(options['target-bracket']);
+  if (bracket !== undefined && ![1, 2, 3, 4, 5].includes(bracket)) throw new Error('--target-bracket must be 1 to 5');
+  const money = (flag) => {
+    const amount = parseAmount(options[flag], `--${flag}`);
+    return amount === undefined ? undefined : { amount, currency };
+  };
+  return {
+    primer: options.primer,
+    target_bracket: bracket,
+    budget: money('budget'),
+    max_card_price: money('max-card-price'),
+    collection_source: options['collection-source'] ? patternList(options['collection-source']) : undefined,
+  };
+}
+
+async function deckNew({ workspace, slug, options, env, write }) {
+  const deck = newDeck(slug, {
+    format: options.format,
+    commanderNames: options.commander,
+    name: options.name,
+    allowProxies: options['allow-proxies'] ?? envFlag(env, 'MTG_ALLOW_PROXIES'),
+    unlimitedBasics: options['unlimited-basics'] ?? envFlag(env, 'MTG_UNLIMITED_BASICS'),
+    header: newDeckHeader(options),
+  });
   const label = await workspace.createDeck(slug, deck);
-  write(`Created ${label} with an empty mainboard. Set the primer, basics policy, and cards next.`);
+  const todo = [deck.primer === PRIMER_PLACEHOLDER && 'the primer', 'the mainboard'].filter(Boolean).join(' and ');
+  write(
+    `Created ${label} (allow_proxies: ${deck.allow_proxies}, unlimited_basics: ${deck.unlimited_basics}). Fill in ${todo} next.`,
+  );
   return 'pass';
 }
 
-async function deckCheck({ workspace, slug, write }) {
+async function deckCheck({ workspace, slug, write, emit }) {
   const deck = await workspace.loadDeck(slug);
   const [collections, index] = await Promise.all([workspace.loadCollections(deck), workspace.loadCardIndex()]);
   const report = checkDeck(deck, collections, index);
+  emit(checkJson(report));
   printAll(write, checkLines(slug, report));
   return report.outcome;
 }
 
-async function deckStatsCommand({ workspace, slug, write }) {
+// With --upgrades apply, the deck as it would be with every swap made.
+async function deckStatsCommand({ workspace, slug, options, write, emit }) {
   const [deck, index] = await Promise.all([workspace.loadDeck(slug), workspace.loadCardIndex()]);
-  const stats = deckStats(deck, index);
-  printAll(write, statsLines(deck, stats));
+  if (options.upgrades !== undefined && options.upgrades !== 'apply') throw new Error('--upgrades must be apply');
+  const upgraded = options.upgrades && applyUpgrades(deck);
+  const measured = upgraded ? { ...upgraded, mainboard: [...upgraded.mainboard, ...upgraded.upgradesIn] } : deck;
+  const stats = deckStats(measured, index);
+  emit({ upgrades_applied: Boolean(upgraded), ...statsJson(stats) });
+  printAll(write, statsLines(deck, stats, { upgradesApplied: Boolean(upgraded) }));
   return stats.problems.length ? 'incomplete' : 'pass';
+}
+
+// The deck's own cards with their rules text, so a review reads the list rather than recalling it.
+async function deckShow({ workspace, slug, options, write, emit }) {
+  const [deck, index] = await Promise.all([workspace.loadDeck(slug), workspace.loadCardIndex()]);
+  if (options.upgrades !== undefined && options.upgrades !== 'apply') throw new Error('--upgrades must be apply');
+  const listing = deckListing(withUpgrades(deck, options.upgrades), index, { role: options.role });
+  emit(showJson(listing));
+  printAll(write, showLines(listing, { withOracleText: options.oracle }));
+  return listing.problems.length ? 'incomplete' : 'pass';
 }
 
 // --upgrades apply makes every swap; split keeps the deck, with cuts and adds in their own sections.
@@ -176,9 +260,10 @@ function withUpgrades(deck, mode) {
   throw new Error('--upgrades must be one of: apply, split');
 }
 
-// --format wins, then the MTG_EXPORT_FORMAT project default (see .env.example), then text.
+// --format wins, then the MTG_EXPORT_FORMAT project default (see .env.example), then text. An empty
+// MTG_EXPORT_FORMAT= line in .env means no default.
 function exportFormat(options, env) {
-  const format = options.format ?? env.MTG_EXPORT_FORMAT ?? 'text';
+  const format = options.format ?? (env.MTG_EXPORT_FORMAT || undefined) ?? 'text';
   if (!EXPORT_FORMAT_NAMES.includes(format)) {
     const source = options.format === undefined ? 'MTG_EXPORT_FORMAT' : '--format';
     throw new Error(`${source} must be one of: ${EXPORT_FORMAT_NAMES.join(', ')}`);
@@ -186,13 +271,14 @@ function exportFormat(options, env) {
   return format;
 }
 
-// Loads what every export needs once, then renders the deck under each requested upgrades mode.
-async function exporter(workspace, slug, warn) {
+// Loads what every export needs once, then renders the deck under each requested upgrades mode. caveat
+// warns that exporting doesn't validate, which deck:verify, a validation itself, leaves out.
+async function exporter(workspace, slug, warn, { caveat = true } = {}) {
   const deck = await workspace.loadDeck(slug);
   const [collections, index] = await Promise.all([workspace.loadCollections(deck), workspace.loadCardIndex()]);
   const uncached = new Set();
   const printingOf = printingChooser(index, collections.available, uncached);
-  warn('Export does not validate the deck; run deck:check first.');
+  if (caveat) warn('Export does not validate the deck; run deck:check first.');
   const render = (format, upgradesMode) => exportDeck(withUpgrades(deck, upgradesMode), { format, printingOf });
   const warnUncached = () => {
     if (uncached.size) {
@@ -201,7 +287,7 @@ async function exporter(workspace, slug, warn) {
   };
   const warnApplied = () =>
     warn(`Applied ${deck.upgrades.length} upgrade swaps; some added cards may not be owned yet.`);
-  return { deck, render, warnUncached, warnApplied };
+  return { deck, collections, index, render, warnUncached, warnApplied };
 }
 
 async function deckExport({ workspace, slug, options, env, write, warn, copyText }) {
@@ -230,50 +316,101 @@ const LEGACY_DECKLIST_FILES = [
   ...DECKLIST_FORMATS.flatMap((format) => [`decklist-${format}.txt`, `decklist-upgraded-${format}.txt`]),
 ];
 
-// Writes the decklists kept in Git beside deck.yaml, once per format: the deck with upgrade swaps
-// split out, and, when the deck has upgrades, the deck with every swap made.
-async function deckFiles({ workspace, slug, warn, write }) {
-  const { deck, render, warnUncached } = await exporter(workspace, slug, warn);
-  const written = [];
+// The decklists kept in Git beside deck.yaml, once per format: the deck with upgrade swaps split out,
+// and, when the deck has upgrades, the deck with every swap made. Each file name maps to its text, or
+// to null when the file must not exist.
+function decklistFiles(deck, render) {
+  const files = new Map();
   for (const format of DECKLIST_FORMATS) {
-    written.push(await workspace.writeDeckFile(slug, decklistFile(format), render(format, 'split')));
-    if (deck.upgrades?.length) {
-      written.push(await workspace.writeDeckFile(slug, upgradedDecklistFile(format), render(format, 'apply')));
-    } else {
-      await workspace.removeDeckFile(slug, upgradedDecklistFile(format));
-    }
+    files.set(decklistFile(format), render(format, 'split'));
+    files.set(upgradedDecklistFile(format), deck.upgrades?.length ? render(format, 'apply') : null);
+  }
+  return files;
+}
+
+// Records the bracket the deck's cards set in lowest_legal_bracket (casual decks have none), and
+// removes plays_like_bracket when the card list changed, since that judged the old list.
+async function recordBrackets(workspace, slug, deck, index, { listChanged }) {
+  const bracket = lowestLegalBracket(deck, index);
+  const after = ['plays_like_bracket', 'target_bracket'].find((key) => deck[key] !== undefined) ?? 'status';
+  await workspace.putDeckField(slug, 'lowest_legal_bracket', bracket, { after });
+  const cleared = listChanged && deck.plays_like_bracket !== undefined;
+  if (cleared) await workspace.putDeckField(slug, 'plays_like_bracket', undefined);
+  return { bracket, cleared };
+}
+
+const bracketNote = ({ bracket, cleared }) =>
+  [
+    bracket === undefined ? '' : `; set lowest_legal_bracket: ${bracket}`,
+    cleared ? ' and removed plays_like_bracket because the card list changed; judge it again' : '',
+  ].join('');
+
+// The committed Moxfield list is compared before it's overwritten, to tell whether the cards changed.
+async function deckFiles({ workspace, slug, warn, write }) {
+  const { deck, index, render, warnUncached } = await exporter(workspace, slug, warn);
+  const files = decklistFiles(deck, render);
+  const before = await workspace.readDeckFile(slug, decklistFile('moxfield'));
+  const cardList = (text) => moxfieldCardList(text).join('\n');
+  const listChanged = before === null || cardList(before) !== cardList(files.get(decklistFile('moxfield')));
+  const written = [];
+  for (const [file, text] of files) {
+    if (text === null) await workspace.removeDeckFile(slug, file);
+    else written.push(await workspace.writeDeckFile(slug, file, text));
   }
   await Promise.all(LEGACY_DECKLIST_FILES.map((file) => workspace.removeDeckFile(slug, file)));
   warnUncached();
-  write(`Wrote ${written.join(', ')}.`);
+  const brackets = await recordBrackets(workspace, slug, deck, index, { listChanged });
+  write(`Wrote ${written.join(', ')}${bracketNote(brackets)}.`);
   return 'pass';
 }
 
 const CANDIDATE_LIMIT = 20;
 
+function parseLimit(value) {
+  const limit = value === undefined ? CANDIDATE_LIMIT : Number(value);
+  if (!Number.isSafeInteger(limit) || limit < 1) throw new Error('--limit must be a positive integer');
+  return limit;
+}
+
+// The hand-off gate: deck:check plus everything else a finished deck needs (see verify.mjs).
+async function deckVerifyCommand({ workspace, slug, options, write, warn, emit }) {
+  const { deck, collections, index, render } = await exporter(workspace, slug, warn, { caveat: false });
+  const expected = decklistFiles(deck, render);
+  const actual = new Map(
+    await Promise.all([...expected.keys()].map(async (file) => [file, await workspace.readDeckFile(slug, file)])),
+  );
+  const limit = parseLimit(options.limit);
+  const report = verifyDeck({ deck, collections, index, limit, decklists: { expected, actual } });
+  emit(checkJson(report));
+  printAll(write, checkLines(slug, report));
+  return report.outcome;
+}
+
 // The deck's most valued left-out cards, so a review explains each exclusion rather than missing one.
-async function deckCandidatesCommand({ workspace, slug, options, write }) {
+async function deckCandidatesCommand({ workspace, slug, options, write, warn, emit }) {
   const deck = await workspace.loadDeck(slug);
   const [collections, index] = await Promise.all([workspace.loadCollections(deck), workspace.loadCardIndex()]);
-  const limit = options.limit === undefined ? CANDIDATE_LIMIT : Number(options.limit);
-  if (!Number.isSafeInteger(limit) || limit < 1) throw new Error('--limit must be a positive integer');
-  const { results, unresolvedRows } = deckCandidates(deck, collections, index, {
+  const limit = parseLimit(options.limit);
+  const { results, unresolvedRows, overCap } = deckCandidates(deck, collections, index, {
     texts: (options.text ?? []).map((source) => new RegExp(source, 'i')),
     types: (options.type ?? []).map((source) => new RegExp(source, 'i')),
+    roles: options.role,
     lands: options.lands,
     sort: options.sort ?? 'edhrec',
   });
   if (results.length && results.every((result) => result.edhrecRank === null)) {
-    write('No EDHREC ranks cached yet; sorting falls back to price. Run scryfall:refresh to fetch them.');
+    warn('No EDHREC ranks cached yet; sorting falls back to price. Run scryfall:refresh to fetch them.');
   }
-  printAll(write, candidateLines(results, { limit, withOracleText: options.oracle, unresolvedRows }));
+  emit(candidatesJson(results, { limit, overCap, unresolvedRows }));
+  printAll(write, candidateLines(results, { limit, withOracleText: options.oracle, unresolvedRows, overCap }));
   return unresolvedRows ? 'incomplete' : 'pass';
 }
 
-async function deckUpgrades({ workspace, slug, write }) {
+async function deckUpgrades({ workspace, slug, write, emit }) {
   const deck = await workspace.loadDeck(slug);
   const [collections, index] = await Promise.all([workspace.loadCollections(deck), workspace.loadCardIndex()]);
   const report = upgradeReport(deck, collections, index);
+  emit(upgradesJson(report));
   printAll(write, upgradeLines(report));
   return report.outcome;
 }
@@ -310,15 +447,17 @@ async function removeTakenCopies(workspace, takenFrom, write) {
 
 // The deck's copies to take, or null after printing why it can't be built: it must pass deck:check,
 // and every card must have real copies to take.
-async function buildPlan(workspace, deckId, deck, write) {
+async function buildPlan(workspace, deckId, deck, { write, emit }) {
   const [collections, index] = await Promise.all([workspace.loadCollections(deck), workspace.loadCardIndex()]);
   const report = checkDeck(deck, collections, index);
   if (report.outcome !== 'pass') {
+    emit({ applied: false, check: checkJson(report) });
     printAll(write, [...checkLines(deckId, report), `Not built: ${deckId} must pass deck:check first.`]);
     return { outcome: report.outcome };
   }
   const plan = planBuild(deck, collections, index);
   if (plan.problems.length) {
+    emit({ applied: false, problems: plan.problems });
     printAll(write, [
       ...plan.problems.map((problem) => `ERROR: ${problem}`),
       `Not built: ${deckId} needs these cards owned as real copies first.`,
@@ -332,19 +471,21 @@ async function buildPlan(workspace, deckId, deck, write) {
 // Moves a finished deck's cards out of the collections they're counted in and into a text list of
 // its own, then points the deck's collection_destination at that list. Without --apply it only
 // prints what it would take.
-async function deckBuild({ workspace, slug, options, write, warn }) {
+async function deckBuild({ workspace, slug, options, env, write, warn, emit }) {
   const deckId = await workspace.resolveDeckId(slug);
   const deck = await workspace.loadDeck(deckId);
   if (deck.collection_destination) throw new Error(`${deckId} is already built into ${deck.collection_destination}`);
-  const destination = options.to ?? workspace.defaultDeckCollection(deckId, deck.name);
-  const { plan, takenFrom, outcome } = await buildPlan(workspace, deckId, deck, write);
+  const template = env.MTG_BUILD_DESTINATION || undefined;
+  const destination = options.to ?? workspace.defaultDeckCollection(deckId, deck.name, template);
+  const { plan, takenFrom, outcome } = await buildPlan(workspace, deckId, deck, { write, emit });
   if (!plan) return outcome;
+  emit({ applied: Boolean(options.apply), destination, ...takesJson(plan, takenFrom) });
   printAll(write, buildLines(plan, takenFrom, options.apply ? 'Taking' : 'Would take'));
   if (!workspace.protects(destination)) {
     warn(`${destination} isn't protected, so other decks could count its cards; see MTG_PROTECTED_COLLECTIONS`);
   }
   if (!options.apply) {
-    write(`Would write ${destination} and set collection_destination in builds/${deckId}/deck.yaml.`);
+    write(`Would write ${destination} and set collection_destination and status: built in builds/${deckId}/deck.yaml.`);
     write('Nothing changed; rerun with --apply to build it.');
     return 'pass';
   }
@@ -352,8 +493,9 @@ async function deckBuild({ workspace, slug, options, write, warn }) {
   await workspace.createCollectionFile(destination, deckCollectionText(plan, heading));
   await removeTakenCopies(workspace, takenFrom, write);
   await workspace.setDeckField(deckId, 'collection_destination', destination, { after: 'collection_source' });
+  await workspace.changeDeckFields(deckId, { status: 'built' });
   const sources = [...takenFrom.keys()].join(', ') || 'no collection';
-  write(`Wrote ${destination}, took the cards out of ${sources}, and set collection_destination.`);
+  write(`Wrote ${destination}, took the cards out of ${sources}, and set collection_destination and status: built.`);
   return 'pass';
 }
 
@@ -431,7 +573,7 @@ async function returnCopies(workspace, returns) {
 
 // The reverse of deck:build: returns a built deck's cards from its own list to the text lists named,
 // deletes that list, and makes the deck a draft again. Without --apply it only prints the plan.
-async function deckTeardown({ workspace, slug, options, write, warn }) {
+async function deckTeardown({ workspace, slug, options, write, warn, emit }) {
   const deckId = await workspace.resolveDeckId(slug);
   const deck = await workspace.loadDeck(deckId);
   const own = deck.collection_destination;
@@ -439,6 +581,7 @@ async function deckTeardown({ workspace, slug, options, write, warn }) {
   if (!options.to) throw new Error('deck:teardown needs --to PATH, the text list to return the cards to');
   checkReturnPaths(workspace, options, own, warn);
   const plan = await teardownPlan(workspace, deck, options);
+  emit({ applied: Boolean(options.apply), deleted: own, ...returnsJson(plan) });
   printAll(write, teardownLines(plan, options.apply ? 'Returning' : 'Would return'));
   const deckChanges = { collection_destination: undefined, ...(deck.status === 'built' ? { status: 'draft' } : {}) };
   const changed = Object.keys(deckChanges).join(' and ');
@@ -559,8 +702,9 @@ function swapLines(pairs, moves, verb) {
 
 // A built deck's moves, or the outcome after printing why it can't be swapped: the swapped deck must
 // pass deck:check, and every card must have real copies to move.
-function builtSwapPlan({ workspace, deckId, deck, collections, index, report, swap, options, write, warn }) {
+function builtSwapPlan({ workspace, deckId, deck, collections, index, report, swap, options, write, warn, emit }) {
   if (report.outcome !== 'pass') {
+    emit({ check: checkJson(report) });
     printAll(write, [
       ...checkLines(deckId, report),
       `Not swapped: ${deckId} is built, so the swapped deck must pass deck:check.`,
@@ -570,6 +714,7 @@ function builtSwapPlan({ workspace, deckId, deck, collections, index, report, sw
   checkReturnPaths(workspace, options, deck.collection_destination, warn);
   const moves = swapMoves(deck, collections, swap.cuts, swap.pairs, options, index);
   if (moves.problems.length) {
+    emit({ problems: moves.problems });
     printAll(write, [...moves.problems.map((problem) => `ERROR: ${problem}`), 'Not swapped.']);
     return { outcome: 'fail' };
   }
@@ -579,26 +724,49 @@ function builtSwapPlan({ workspace, deckId, deck, collections, index, report, sw
   return { moves };
 }
 
+// One --reason per swap, or none, which leaves the swapped-out cards without a considered reason.
+function swapReasons(options, swapCount, warn) {
+  const reasons = options.reason ?? [];
+  if (reasons.length && reasons.length !== swapCount) throw new Error('Give one --reason for each --out, or none');
+  if (!reasons.length) {
+    warn('WARNING: no --reason, so the cards swapped out get no considered reason and deck:candidates will list them');
+  }
+  return reasons;
+}
+
 // Swaps mainboard cards for others. A built deck's physical cards move too: each in card comes out of
 // the available collections into the deck's own list, and each out card goes from that list back to
 // --to. Without --apply it only prints the plan.
-async function deckSwap({ workspace, slug, options, write, warn }) {
+// What deck:swap changes, for --json: the swaps, and for a built deck the copies it moves.
+const swapJson = (swaps, reasons, moves) => ({
+  swaps: swaps.map((swap, at) => ({ ...swap, reason: reasons[at] ?? null })),
+  ...(moves && {
+    into: takesJson(moves.inPlan, moves.takenFrom),
+    out_of: returnsJson({ returns: moves.returns, untracked: moves.outPlan.untracked }),
+  }),
+});
+
+async function deckSwap({ workspace, slug, options, today, write, warn, emit }) {
   const deckId = await workspace.resolveDeckId(slug);
   const deck = await workspace.loadDeck(deckId);
   const [collections, index] = await Promise.all([workspace.loadCollections(deck), workspace.loadCardIndex()]);
   const swap = swapPairs(deck, options, index);
   const swaps = swap.pairs.map((pair) => ({ out: pair.out.name, in: pair.in.name }));
-  const swapped = await workspace.swapDeckCards(deckId, swaps);
+  const record = { date: today, reasons: swapReasons(options, swaps.length, warn) };
+  const swapped = await workspace.swapDeckCards(deckId, swaps, record);
   const report = checkDeck(swapped, collections, index);
   const own = deck.collection_destination;
+  emit({ applied: false, ...swapJson(swaps, record.reasons) });
   let moves;
   if (own) {
-    const plan = builtSwapPlan({ workspace, deckId, deck, collections, index, report, swap, options, write, warn });
+    const context = { workspace, deckId, deck, collections, index, report, swap, options, write, warn, emit };
+    const plan = builtSwapPlan(context);
     if (!plan.moves) return plan.outcome;
     ({ moves } = plan);
   } else if (options.to || options['lands-to']) {
     warn(`${deckId} isn't built, so only deck.yaml changes and --to is ignored`);
   }
+  emit({ applied: Boolean(options.apply), ...swapJson(swaps, record.reasons, moves), check: checkJson(report) });
   printAll(write, swapLines(swap.pairs, moves, options.apply ? 'Swapping' : 'Would swap'));
   for (const stale of staleUpgrades(swapped, swap.pairs, index)) warn(`WARNING: ${stale}`);
   // A draft may be unfinished, so its check is shown rather than required.
@@ -612,12 +780,15 @@ async function deckSwap({ workspace, slug, options, write, warn }) {
     await removeTakenCopies(workspace, moves.takenFrom, write);
     await returnCopies(workspace, moves.returns);
   }
-  await workspace.swapDeckCards(deckId, swaps, { apply: true });
-  write(`Swapped ${swaps.length} card${swaps.length === 1 ? '' : 's'}; rerun deck:files.`);
+  await workspace.swapDeckCards(deckId, swaps, { ...record, apply: true });
+  const brackets = await recordBrackets(workspace, deckId, swapped, index, { listChanged: true });
+  write(
+    `Swapped ${swaps.length} card${swaps.length === 1 ? '' : 's'}, added a history entry${bracketNote(brackets)}; rerun deck:files.`,
+  );
   return 'pass';
 }
 
-async function decksCheck({ workspace, write }) {
+async function decksCheck({ workspace, write, emit }) {
   const loadedDecks = await workspace.loadAllDecks();
   const candidates = loadedDecks.filter(({ deck }) => deck && deck.status !== 'example');
   const index = candidates.length ? await workspace.loadCardIndex() : null;
@@ -625,22 +796,30 @@ async function decksCheck({ workspace, write }) {
   const collectionsFor = new Map(
     await Promise.all(candidates.map(async ({ deck }) => [deck, await workspace.loadCollections(deck)])),
   );
-  const outcomes = loadedDecks.map(({ slug, deck, error }) => {
+  const results = loadedDecks.map(({ slug, deck, error }) => {
     if (error) {
       write(`FAIL: ${slug}: ${error.message}`);
-      return 'fail';
+      return { deck: slug, outcome: 'fail', error: error.message };
     }
     if (deck.status === 'example') {
       write(`SCHEMA ONLY: ${slug} (example template)`);
-      return 'pass';
+      return { deck: slug, outcome: 'pass', schema_only: true };
     }
     const report = checkDeck(deck, collectionsFor.get(deck), index);
     printAll(write, checkLines(slug, report));
-    return report.outcome;
+    return { deck: slug, ...checkJson(report) };
   });
+  emit({ decks: results });
+  const outcomes = results.map(({ outcome }) => outcome);
   if (loadedDecks.every(({ deck }) => deck?.status === 'example')) write('No decks yet besides the example.');
   return worstOutcome(outcomes);
 }
+
+const JSON_OPTION = {
+  type: 'boolean',
+  description:
+    'Print one line of JSON: { command, deck, outcome, data, warnings }; defaults to MTG_OUTPUT in .env (--no-json for text)',
+};
 
 const SEARCH_OPTIONS = {
   commander: {
@@ -667,10 +846,31 @@ const SEARCH_OPTIONS = {
     placeholder: 'REGEX',
     description: 'Rules text must match (case-insensitive)',
   },
+  role: {
+    type: 'string',
+    multiple: true,
+    placeholder: 'ROLE',
+    description: `Rules text must look like this role: ${ROLE_CHOICES.join(', ')} (rough; read the list before quoting a count)`,
+  },
   name: { type: 'string', placeholder: 'REGEX', description: 'Card name must match (case-insensitive)' },
   'min-mv': { type: 'string', placeholder: 'N', description: 'Minimum mana value' },
   'max-mv': { type: 'string', placeholder: 'N', description: 'Maximum mana value' },
   legal: { type: 'string', placeholder: 'FORMAT', description: 'Must be legal in this Scryfall format, e.g. modern' },
+  'max-price': {
+    type: 'string',
+    placeholder: 'USD',
+    description: 'Cheapest playable printing costs at most this; unknown prices are kept',
+  },
+  'min-copies': {
+    type: 'string',
+    placeholder: 'N',
+    description: 'At least this many available copies, e.g. 4 for casual-60 playsets',
+  },
+  unowned: {
+    type: 'boolean',
+    description:
+      'Search every card in the cache that has no available copy, e.g. for upgrades; needs scryfall:refresh -- --bulk',
+  },
   'include-protected': { type: 'boolean', description: 'Also list cards that exist only in protected collections' },
   proxies: { type: 'boolean', description: 'Count proxy rows as owned copies' },
   oracle: { type: 'boolean', description: "Print each card's rules text" },
@@ -678,9 +878,9 @@ const SEARCH_OPTIONS = {
   'group-by': {
     type: 'string',
     placeholder: 'KEY',
-    description: `Count matches per group instead of listing them: ${GROUP_BY_CHOICES.join(' or ')}`,
+    description: `Count matches per group instead of listing them: ${GROUP_BY_CHOICES.join(', ')} (role uses the --role tests)`,
   },
-  json: { type: 'boolean', description: 'Print machine-readable JSON (list, count or groups)' },
+  json: JSON_OPTION,
   sort: {
     type: 'string',
     placeholder: 'KEY',
@@ -715,10 +915,12 @@ const patternList = (value) =>
     .map((pattern) => pattern.trim())
     .filter(Boolean);
 
+// The default protect patterns name folders that may not exist yet, so only chosen ones warn when unmatched.
 const collectionScope = (options, env) => ({
   optionOnly: options.collections === undefined ? undefined : patternList(options.collections),
   envOnly: patternList(env.MTG_COLLECTIONS ?? ''),
   protect: patternList(options.protect ?? env.MTG_PROTECTED_COLLECTIONS ?? DEFAULT_PROTECTED),
+  protectChosen: (options.protect ?? env.MTG_PROTECTED_COLLECTIONS) !== undefined,
 });
 
 // The workspace with the collection scope applied, so commands just call loadCollections(), passing
@@ -732,7 +934,9 @@ function scopedWorkspace(workspace, scope, warn) {
   async function load(only, own) {
     const collections = await workspace.loadCollections({ only, own, protect: scope.protect });
     for (const pattern of collections.unknownOnly) warn(`No collection matches ${pattern} to read`);
-    for (const pattern of collections.unknownProtected) warn(`No collection matches ${pattern} to protect`);
+    if (scope.protectChosen) {
+      for (const pattern of collections.unknownProtected) warn(`No collection matches ${pattern} to protect`);
+    }
     if (collections.missingOwn) warn(`collection_destination ${collections.missingOwn} doesn't exist`);
     return collections;
   }
@@ -761,13 +965,13 @@ const COMMANDS = {
   'collection:check': {
     run: collectionCheck,
     summary: 'Validate every collection (ManaBox CSV or text list) and summarize it',
-    options: COLLECTION_OPTIONS,
+    options: { ...COLLECTION_OPTIONS, json: JSON_OPTION },
   },
   'collection:search': {
     run: collectionSearch,
     summary: 'Search owned cards by color identity, type, rules text and mana value',
     details:
-      'Searches every collections/*.csv except protected ones, whose copies are shown alongside. Filters combine with AND.',
+      'Searches every collection (ManaBox CSV or text list, at any depth under collections/) that MTG_COLLECTIONS or --collections selects, except protected ones, whose copies are shown alongside. Filters combine with AND.',
     options: { ...SEARCH_OPTIONS, ...COLLECTION_OPTIONS },
   },
   'scryfall:refresh': {
@@ -798,18 +1002,76 @@ const COMMANDS = {
         description: 'commander (default), custom-dollar-brawl or casual-60',
       },
       name: { type: 'string', placeholder: 'TEXT', description: 'Deck name; defaults to the slug in title case' },
+      primer: { type: 'string', placeholder: 'TEXT', description: 'The game plan, in a sentence or two' },
+      'target-bracket': {
+        type: 'string',
+        placeholder: 'N',
+        description: 'The Commander Bracket the deck is built for, 1 to 5; deck:files records the one its cards set',
+      },
+      budget: { type: 'string', placeholder: 'AMOUNT', description: 'Budget for upgrades, in --currency' },
+      'max-card-price': {
+        type: 'string',
+        placeholder: 'AMOUNT',
+        description: 'Most any one card may cost, in --currency',
+      },
+      currency: {
+        type: 'string',
+        placeholder: 'CODE',
+        description: 'USD (default) or EUR, for --budget and --max-card-price',
+      },
+      'collection-source': {
+        type: 'string',
+        placeholder: 'PATTERNS',
+        description: 'Comma-separated path globs of the collections the deck is built from, e.g. collections/brad/*',
+      },
+      'unlimited-basics': {
+        type: 'boolean',
+        description:
+          'The user has untracked basics; defaults to MTG_UNLIMITED_BASICS in .env (--no-unlimited-basics for false)',
+      },
+      'allow-proxies': {
+        type: 'boolean',
+        description: 'Proxy rows count as owned; defaults to MTG_ALLOW_PROXIES in .env (--no-allow-proxies for false)',
+      },
     },
   },
   'deck:check': {
     run: deckCheck,
     takesSlug: true,
     summary: 'Check size, commander rules, color identity, bans, copy limits and ownership',
-    options: COLLECTION_OPTIONS,
+    options: { ...COLLECTION_OPTIONS, json: JSON_OPTION },
   },
   'deck:stats': {
     run: deckStatsCommand,
     takesSlug: true,
     summary: 'Show mainboard curve, card types, color pips, land sources and roles',
+    details:
+      "Also Karsten's suggested land count, role counts against the deck's role_targets (or, for Commander, the Command Zone template), and opening-hand odds. Land sources count only colors inside the commanders' identity.",
+    options: {
+      upgrades: {
+        type: 'string',
+        placeholder: 'MODE',
+        description: 'apply: measure the deck with every upgrade swap made',
+      },
+      json: JSON_OPTION,
+    },
+  },
+  'deck:show': {
+    run: deckShow,
+    takesSlug: true,
+    summary: "List the deck's cards by role, with mana cost, type and optionally rules text",
+    details:
+      "Commanders first, then the mainboard grouped by each card's first role (cards with several roles name them all). Cards the cache lacks make it incomplete.",
+    options: {
+      role: { type: 'string', placeholder: 'ROLE', description: 'Only cards with this role label, e.g. removal' },
+      oracle: SEARCH_OPTIONS.oracle,
+      upgrades: {
+        type: 'string',
+        placeholder: 'MODE',
+        description: 'apply: list the deck with every upgrade swap made',
+      },
+      json: JSON_OPTION,
+    },
   },
   'deck:export': {
     run: deckExport,
@@ -833,7 +1095,7 @@ const COMMANDS = {
     run: deckFiles,
     takesSlug: true,
     summary: 'Write the decklist files kept beside deck.yaml',
-    details: `Writes ${DECKLIST_FORMATS.map(decklistFile).join(' and ')} (the kept cards, upgrade cuts in the sideboard, adds under Considering or Maybeboard) and, if the deck has upgrades, ${DECKLIST_FORMATS.map(upgradedDecklistFile).join(' and ')} (the full deck with every swap made). Overwrites them; rerun after every deck edit. Does not validate the deck.`,
+    details: `Sets lowest_legal_bracket in deck.yaml to the bracket the cards set, removes plays_like_bracket if the cards changed since the last run, and writes ${DECKLIST_FORMATS.map(decklistFile).join(' and ')} (the kept cards, upgrade cuts in the sideboard, adds under Considering or Maybeboard) and, if the deck has upgrades, ${DECKLIST_FORMATS.map(upgradedDecklistFile).join(' and ')} (the full deck with every swap made). Overwrites them; rerun after every deck edit. Does not validate the deck.`,
     options: COLLECTION_OPTIONS,
   },
   'deck:candidates': {
@@ -847,8 +1109,27 @@ const COMMANDS = {
       sort: { type: 'string', placeholder: 'KEY', description: 'edhrec (default) or price, highest first' },
       text: { ...SEARCH_OPTIONS.text },
       type: { ...SEARCH_OPTIONS.type },
+      role: SEARCH_OPTIONS.role,
       lands: { type: 'boolean', description: 'Include lands' },
       oracle: SEARCH_OPTIONS.oracle,
+      json: JSON_OPTION,
+      ...COLLECTION_OPTIONS,
+    },
+  },
+  'deck:verify': {
+    run: deckVerifyCommand,
+    takesSlug: true,
+    summary:
+      'Check that a deck is ready to hand off: deck:check plus primer, stats, left-out cards, upgrades and decklist files',
+    details:
+      "Errors: anything deck:check fails, a placeholder primer, a top --limit left-out card without a considered reason, upgrades over budget or without one, and decklist files that differ from what deck:files would write. Notes: lands more than one away from Karsten's suggestion and role counts outside their targets, which need explaining rather than fixing.",
+    options: {
+      limit: {
+        type: 'string',
+        placeholder: 'N',
+        description: `How many top left-out cards need a reason; defaults to ${CANDIDATE_LIMIT}`,
+      },
+      json: JSON_OPTION,
       ...COLLECTION_OPTIONS,
     },
   },
@@ -856,21 +1137,23 @@ const COMMANDS = {
     run: deckUpgrades,
     takesSlug: true,
     summary: 'Price the upgrade package and any shortfalls against the budget',
-    options: COLLECTION_OPTIONS,
+    options: { ...COLLECTION_OPTIONS, json: JSON_OPTION },
   },
   'deck:build': {
     run: deckBuild,
     takesSlug: true,
     summary: "Physically build a finished deck: move its cards out of the collections into the deck's own list",
     details:
-      "Only when the user says to build the deck. Takes every card, commanders included, out of the deck's available collections (the pinned printing first, then nonfoil copies, then the printing with the most copies; never proxies or protected copies), writes them to a text list, and sets collection_destination in deck.yaml. Upgrades are not applied. The deck must pass deck:check. Without --apply, prints what it would take and changes nothing.",
+      "Only when the user says to build the deck. Takes every card, commanders included, out of the deck's available collections (the pinned printing first, then nonfoil copies, then the printing with the most copies; never proxies or protected copies), writes them to a text list, and sets collection_destination and status: built in deck.yaml. Upgrades are not applied. The deck must pass deck:check. Without --apply, prints what it would take and changes nothing.",
     options: {
       apply: { type: 'boolean', description: 'Edit the collections and deck.yaml; without it, only print the plan' },
       to: {
         type: 'string',
         placeholder: 'PATH',
-        description: "The deck's new text list; defaults to collections/<owner>/decks/<deck name>.txt",
+        description:
+          "The deck's new text list; defaults to MTG_BUILD_DESTINATION in .env, else collections/{owner}/decks/{name}.txt",
       },
+      json: JSON_OPTION,
       ...COLLECTION_OPTIONS,
     },
   },
@@ -888,6 +1171,7 @@ const COMMANDS = {
         placeholder: 'PATH',
         description: 'A separate text list for the lands; defaults to --to',
       },
+      json: JSON_OPTION,
       ...COLLECTION_OPTIONS,
     },
   },
@@ -896,10 +1180,17 @@ const COMMANDS = {
     takesSlug: true,
     summary: 'Swap mainboard cards for others, moving the physical cards too when the deck is built',
     details:
-      "Each --out pairs with the --in at the same place and swaps one copy; repeat a pair to swap more copies. In deck.yaml a new card takes the out card's place and role, keeping comments. For a built deck, the swapped deck must pass deck:check; each in card is taken from the other available collections into the deck's collection_destination list (the same copy order as deck:build), and each out card goes from that list back to the text list --to names (lands to --lands-to, if given). Only when the user says they've swapped the physical cards. Warns about upgrades the swap leaves stale. Without --apply, prints the plan and changes nothing.",
+      "Each --out pairs with the --in at the same place and swaps one copy; repeat a pair to swap more copies. In deck.yaml a new card takes the out card's place and role, keeping comments; each --reason becomes its out card's considered reason, each in card leaves considered, and history gains an entry dated today. For a built deck, the swapped deck must pass deck:check; each in card is taken from the other available collections into the deck's collection_destination list (the same copy order as deck:build), and each out card goes from that list back to the text list --to names (lands to --lands-to, if given). Only when the user says they've swapped the physical cards. Warns about upgrades the swap leaves stale. Without --apply, prints the plan and changes nothing.",
     options: {
       out: { type: 'string', multiple: true, placeholder: 'NAME', description: 'A mainboard card to take out' },
       in: { type: 'string', multiple: true, placeholder: 'NAME', description: 'The card to put in its place' },
+      reason: {
+        type: 'string',
+        multiple: true,
+        placeholder: 'TEXT',
+        description:
+          "Why the --out card at the same place left; becomes its considered reason and the history entry's notes",
+      },
       apply: { type: 'boolean', description: 'Edit deck.yaml and, for a built deck, the collections' },
       to: {
         type: 'string',
@@ -911,13 +1202,14 @@ const COMMANDS = {
         placeholder: 'PATH',
         description: 'A separate text list for out lands; defaults to --to',
       },
+      json: JSON_OPTION,
       ...COLLECTION_OPTIONS,
     },
   },
   'decks:check': {
     run: decksCheck,
     summary: 'Check every deck independently; the example is schema-checked only',
-    options: COLLECTION_OPTIONS,
+    options: { ...COLLECTION_OPTIONS, json: JSON_OPTION },
   },
 };
 
@@ -931,7 +1223,7 @@ function parseCommandLine([name, ...rest]) {
   let parsed;
   try {
     const options = parseArgsOptions(withHelpOption(command.options));
-    parsed = parseArgs({ args: rest, options, allowPositionals: true, strict: true });
+    parsed = parseArgs({ args: rest, options, allowPositionals: true, allowNegative: true, strict: true });
   } catch (error) {
     throw usageError(error.message, error);
   }
@@ -943,21 +1235,73 @@ function parseCommandLine([name, ...rest]) {
       command.takesSlug ? `${name} needs exactly one <deck-slug>` : `${name} takes no positional arguments`,
     );
   }
-  return { command, options, slug: parsed.positionals[0] };
+  return { name, command, options, slug: parsed.positionals[0] };
+}
+
+const OUTPUT_MODES = ['text', 'json'];
+
+// --json or --no-json wins, then the MTG_OUTPUT project default (see .env.example), for commands that
+// can print JSON.
+function printsJson(command, options, env) {
+  if (!Object.hasOwn(command.options ?? {}, 'json')) return false;
+  if (options.json !== undefined) return options.json;
+  const mode = env.MTG_OUTPUT || 'text';
+  if (!OUTPUT_MODES.includes(mode)) throw new Error(`MTG_OUTPUT must be one of: ${OUTPUT_MODES.join(', ')}`);
+  return mode === 'json';
+}
+
+// Text output writes as it goes. JSON output keeps what commands emit and warn, then prints one line:
+// { command, deck, outcome, data, warnings }, or { command, deck, outcome: "fail", error, warnings } if the
+// command threw.
+function outputFor(json, { write, warn }) {
+  if (!json) return { write, warn, emit() {}, finish() {}, fail: null };
+  const warnings = [];
+  let data = {};
+  return {
+    write() {},
+    warn: (line) => warnings.push(line.trim()),
+    emit: (value) => {
+      data = { ...data, ...value };
+    },
+    finish: (header, outcome) => write(JSON.stringify({ ...header, outcome, data, warnings })),
+    fail: (header, error) => write(JSON.stringify({ ...header, outcome: 'fail', error: error.message, warnings })),
+  };
 }
 
 // Returns the process exit code: 0 pass, 1 fail, 2 incomplete. Invalid input throws.
+// A date as deck.yaml records it, in local time: "2026-11-02".
+const localDate = (time) => new Date(time).toLocaleDateString('en-CA');
+
 export async function runCli(
   args,
-  { root, env = process.env, write = console.log, warn = console.error, copyText = copyToClipboard } = {},
+  {
+    root,
+    env = process.env,
+    now = Date.now(),
+    write = console.log,
+    warn = console.error,
+    copyText = copyToClipboard,
+  } = {},
 ) {
-  const { helpText, command, options, slug } = parseCommandLine(args);
+  const { helpText, name, command, options, slug } = parseCommandLine(args);
   if (helpText) {
     write(helpText);
     return EXIT_CODES.pass;
   }
-  const workspace = scopedWorkspace(openWorkspace(root), collectionScope(options, env), warn);
-  const outcome = await command.run({ workspace, options, slug, env, write, warn, copyText });
+  const output = outputFor(printsJson(command, options, env), { write, warn });
+  const header = { command: name, ...(slug && { deck: slug }) };
+  const workspace = scopedWorkspace(openWorkspace(root), collectionScope(options, env), output.warn);
+  const today = localDate(now);
+  const context = { workspace, options, slug, env, today, copyText, write: output.write, warn: output.warn };
+  let outcome;
+  try {
+    outcome = await command.run({ ...context, emit: output.emit });
+  } catch (error) {
+    if (!output.fail) throw error;
+    output.fail(header, error);
+    return EXIT_CODES.fail;
+  }
+  output.finish(header, outcome);
   return EXIT_CODES[outcome];
 }
 

@@ -3,13 +3,15 @@ schema_version: 1
 name: Kwia Lotus Engine
 format: commander
 status: built
-bracket: 3
+target_bracket: 3
+plays_like_bracket: 3
+lowest_legal_bracket: 1
 allow_proxies: false
 unlimited_basics: true
 primer: >-
   Selesnya Food-and-tokens ramp. Accelerate into Kwia on turn three or four with dorks, rocks and land ramp, then gain life on every player's turn (Food sacrificed at instant speed, Squirrel Nest and flash tokens feeding Liliana, Daxos and Belladonna, Authority of the Consuls, Verdant Kraken's upkeep Tentacles) so Kwia makes a Lotus each turn. Peregrin Took turns every Lotus and token into an extra Food and Bilbo turns every Food into a Treasure, so the engine snowballs into mana, cards (Peregrin, Rent Is Due, Belladonna, Elven Chorus) and a wide board. Win by going wide and casting Strength of the Pack, Rabbit Response, Champions from Beyond or Garruk, or a cheap Ghalta, with Kwia flying over for lifelink damage; asymmetric wipes (Hour of Reckoning, Settle the Wreckage) and twelve spot removal spells keep the table in check.
 power_notes: >-
-  Bracket 3 (Upgraded). Built only from owned, unprotected cards: no Game Changers, mass land denial, extra turns or two-card infinite combos, so it fits Bracket 3 comfortably and sits near its top end. Pulls from the binders and from the three built custom decks (Kwia's Canopy, Bifur, Edgar), so building it dismantles parts of those. The One Ring and Seedborn Muse, plus staples like Path to Exile, Birds of Paradise, Cultivate, Beast Within, Heroic Intervention and the Selesnya duals, are only in protected collections. Caution on upgrades: Heliod, Sun-Crowned with Walking Ballista is a two-card infinite, which Bracket 3 forbids before turn six; agree on it with the table or swap one of them out before applying the upgrades.
+  Plays like Bracket 3 (Upgraded), near its top end: Sol Ring, fifteen ramp pieces and the Lotus engine put Kwia out on turn three or four and snowball from there. Built only from owned, unprotected cards: no Game Changers, mass land denial, extra turns or two-card infinite combos, so it fits Bracket 3 comfortably. Pulls from the binders and from the three built custom decks (Kwia's Canopy, Bifur, Edgar), so building it dismantles parts of those. The One Ring and Seedborn Muse, plus staples like Path to Exile, Birds of Paradise, Cultivate, Beast Within, Heroic Intervention and the Selesnya duals, are only in protected collections. Caution on upgrades: Heliod, Sun-Crowned with Walking Ballista is a two-card infinite, which Bracket 3 forbids before turn six; agree on it with the table or swap one of them out before applying the upgrades.
 budget:
   amount: 130
   currency: USD
@@ -285,11 +287,15 @@ considered:
   - name: 'Inspiring Call'
     reason: 'The baseline puts few +1/+1 counters on creatures; revisit if the Heliod and Archangel of Thune upgrades go in.'
   - name: 'Whispersilk Cloak'
-    reason: 'Kwia already flies and has ward {2}; Swiftfoot Boots and Lightning Greaves protect it for less and grant haste.'
+    reason: 'Kwia already flies and has ward {2}; Swiftfoot Boots protects it for less and grants haste.'
   - name: 'Darksteel Plate'
-    reason: 'Indestructible does not stop exile, bounce or Hour of Reckoning-style sacrifice effects, and the equip cost competes with the Boots and Greaves.'
+    reason: 'Indestructible does not stop exile, bounce or Hour of Reckoning-style sacrifice effects, and the equip cost competes with Swiftfoot Boots.'
   - name: 'Forge Anew'
-    reason: 'Only Swiftfoot Boots and Lightning Greaves are Equipment, so it has nothing to work with.'
+    reason: 'Swiftfoot Boots is the only Equipment, so it has nothing to work with.'
+  - name: 'Lightning Greaves'
+    reason: 'Swapped out for Bastion Protector. Its shroud also stops the deck from targeting the equipped creature with Snakeskin Veil and Vigorbloom Charm, while Swiftfoot Boots gives the same haste with hexproof, which those spells get through.'
+  - name: 'Satyr Wayfinder'
+    reason: "It puts a land into your hand rather than onto the battlefield, so it smooths draws without ramping toward a turn-three or four Kwia, and the three cards it puts in the graveyard feed only Undercover Skrull and Battle Screech's flashback."
   - name: 'Wall of Omens'
     reason: 'A cantrip body like Tataru Taru, but a defender can not attack with Strength of the Pack or Rabbit Response, and it makes no Treasure.'
   - name: 'Cut a Deal'
@@ -479,17 +485,17 @@ upgrades:
       name: 'Surveillance Room'
       quantity: 1
     reason: 'Untapped green-white source instead of a colorless land that costs {1} to fix.'
-playtests:
+history:
   - date: '2026-11-02'
     notes: >-
-      Not a playtest: a list review. Tome of Legends rarely gains page counters with a six-mana commander, while Gleaming Splendor is a cheaper repeatable draw outlet. Activated on an opponent's turn after their draw, targeting yourself and them, it draws a card and makes a Treasure, which Peregrin Took and Bilbo turn into Food and more Treasure. The Nature's Lore upgrade now cuts Three Tree Rootweaver.
+      A list review. Tome of Legends rarely gains page counters with a six-mana commander, while Gleaming Splendor is a cheaper repeatable draw outlet. Activated on an opponent's turn after their draw, targeting yourself and them, it draws a card and makes a Treasure, which Peregrin Took and Bilbo turn into Food and more Treasure. The Nature's Lore upgrade now cuts Three Tree Rootweaver.
     changes: '-Tome of Legends, +Gleaming Splendor'
   - date: '2026-11-02'
     notes: >-
-      Not a playtest: a review of the strongest left-out cards (deck:candidates). Tataru Taru replaces Gallant Citizen: the same two-mana cantrip body, plus a Treasure once each turn when an opponent draws off their turn, which Gleaming Splendor's ability and Tataru's own enter trigger can cause. The Walking Ballista upgrade now cuts Your Fate Ends Here. The other top-20 cards and Bag End Banquet are recorded in considered.
+      A review of the strongest left-out cards (deck:candidates). Tataru Taru replaces Gallant Citizen: the same two-mana cantrip body, plus a Treasure once each turn when an opponent draws off their turn, which Gleaming Splendor's ability and Tataru's own enter trigger can cause. The Walking Ballista upgrade now cuts Your Fate Ends Here. The other top-20 cards and Bag End Banquet are recorded in considered.
     changes: '-Gallant Citizen, +Tataru Taru'
   - date: '2026-11-02'
     notes: >-
-      Not a playtest: two more swaps from the deck:candidates review. Bastion Protector makes Kwia indestructible, so it survives the deck's own Hour of Reckoning; Lightning Greaves goes, since its shroud stops the deck's own protection spells and Swiftfoot Boots stays. Defense of the Heart usually triggers in a four-player game and puts two creatures such as Ghalta and Verdant Kraken, or Peregrin and Bilbo, onto the battlefield; Pictures of Spider-Man goes, as the weaker way to find creatures.
+      Two more swaps from the deck:candidates review. Bastion Protector makes Kwia indestructible, so it survives the deck's own Hour of Reckoning; Lightning Greaves goes, since its shroud stops the deck's own protection spells and Swiftfoot Boots stays. Defense of the Heart usually triggers in a four-player game and puts two creatures such as Ghalta and Verdant Kraken, or Peregrin and Bilbo, onto the battlefield; Pictures of Spider-Man goes, as the weaker way to find creatures.
     changes: '-Lightning Greaves, +Bastion Protector, -Pictures of Spider-Man, +Defense of the Heart'
 collection_destination: collections/conrad/protected/custom/Kwia Lotus Engine.txt

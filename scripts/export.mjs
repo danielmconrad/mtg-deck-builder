@@ -59,6 +59,22 @@ function moxfield(deck, printingOf) {
   return `${sections.join('\n\n')}\n`;
 }
 
+// The cards a Moxfield list holds as the deck (Commander, Deck and the Sideboard of upgrade cuts), as
+// sorted "quantity name" lines without printings, so a new collection export or a changed upgrade
+// doesn't count as a different list. Considering, the upgrade adds, is left out.
+export function moxfieldCardList(text) {
+  const quantities = new Map();
+  for (const block of text.trim().split(/\n\s*\n/)) {
+    const [heading, ...lines] = block.split('\n');
+    if (heading === 'Considering') continue;
+    for (const line of lines) {
+      const [, quantity, name] = line.match(/^(\d+) (.+?)(?: \([A-Z0-9]+\) \S+)?$/) ?? [];
+      if (name) quantities.set(name, (quantities.get(name) ?? 0) + Number(quantity));
+    }
+  }
+  return [...quantities].map(([name, quantity]) => `${quantity} ${name}`).sort();
+}
+
 // Archidekt's line syntax: categories in brackets, with roles becoming Title Case categories
 // ("ramp" becomes "Ramp"). {top} marks Commander as a premier category so Archidekt treats those
 // cards as the commanders. Upgrade is a plain category, so those cards still count toward the deck;

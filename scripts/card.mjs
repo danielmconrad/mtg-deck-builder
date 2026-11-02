@@ -42,4 +42,9 @@ export const creatureTypes = (card) => [
   ),
 ];
 
+// Gold-bordered and memorabilia printings (World Championship decks, Collectors' Edition, 30th Anniversary
+// Edition) can't be played, so they never set a card's price. A cache from before these fields were
+// recorded reads every printing as playable.
+export const isPlayablePrinting = (printing) => printing.borderColor !== 'gold' && printing.setType !== 'memorabilia';
+
 export const ageInDays = (card, now) => (now - Date.parse(card.fetchedAt)) / DAY_MS;

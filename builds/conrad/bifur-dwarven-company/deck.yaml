@@ -3,7 +3,9 @@ schema_version: 1
 name: Bifur's Dwarven Company
 format: custom-dollar-brawl
 status: draft
-bracket: 2
+target_bracket: 2
+plays_like_bracket: 2
+lowest_legal_bracket: 1
 allow_proxies: false
 unlimited_basics: true
 collection_source:
@@ -17,7 +19,7 @@ budget:
 primer: >-
   Boros Dwarves and Equipment in Custom Dollar Brawl: 60 cards, with no card over $1. Curve out with cheap legendary Dwarves (Thorin, Dwalin, Kíli, Óin, Bofur) and Equipment to reach an enduring story fast, so Thorin gives the team ward and Kíli makes the first equip free each turn. Then cast Bifur, who doubles every Dwarf trigger: Dori makes two Treasures, Glóin adds four red mana, Fíli makes two tokens per Dwarf, Dwalin puts two hone counters on each Equipment and Dáin's Company digs twice. Win by attacking with a wide, suited-up board, using Bruenor, Dáin Ironfoot's double strike and Thorin's Last Stand to finish.
 power_notes: >-
-  Aimed at Bracket 2 (Core): no Game Changers, mass land denial, extra turns or two-card combos. The $1 cap rules out Sol Ring, Swords to Plowshares and the like, so the ramp is Talismans, Relic of Legends and Treasure-making Dwarves. Bifur costs six, so the deck has to work as an aggressive Dwarf deck before he lands.
+  Aimed at and plays like Bracket 2 (Core): no Game Changers, mass land denial, extra turns or two-card combos. The $1 cap rules out Sol Ring, Swords to Plowshares and the like, so the ramp is Talismans, Relic of Legends and Treasure-making Dwarves. Bifur costs six, so the deck has to work as an aggressive Dwarf deck before he lands.
 commanders:
   - name: Bifur, Melodic Rider
     quantity: 1

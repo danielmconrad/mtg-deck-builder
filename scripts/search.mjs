@@ -1,6 +1,8 @@
 import { canBeCommander, creatureTypes, identityLabel, isLand } from './card.mjs';
 import { ownedCounts, protectedHoldings } from './collection.mjs';
 import { deckEntries, isCommanderFormat, resolveEntries } from './deck.mjs';
+import { priceCap } from './rules.mjs';
+import { cheapestPrice } from './upgrades.mjs';
 
 const COLORS = 'WUBRG';
 const IDENTITY_PATTERN = /^[WUBRGC]+$/i;
@@ -22,6 +24,34 @@ function parseNumber(value, flag) {
 
 const caseInsensitive = (source) => new RegExp(source, 'i');
 
+// Rough rules-text tests for the deck roles a search can find; wincon, synergy and land depend on the
+// deck. They overcount (draw also matches cards that make an opponent draw, removal includes
+// counterspells), so read the list before quoting a count.
+export const ROLE_PATTERNS = {
+  ramp: /\badd \{|\badds? (?:one|two|three|x) mana\b|\badd [^.]*mana of any|search(?:es)? (?:your|their) library for [^.]*\bland\b|\bcreate[^.]*\btreasure\b|put[^.]*\bland cards?[^.]*onto the battlefield/i,
+  draw: /\bdraws? (?:a|an|one|two|three|four|five|six|seven|x|that many|cards equal to|an additional)\b|\binvestigate\b|\bcreate[^.]*\bclue\b/i,
+  removal:
+    /\b(?:destroy|exile) (?:target|another target|up to (?:one|two|three) target)|\bcounter target\b|deals? (?:\d+|x|that much) damage to (?:any target|any one target|target creature|target planeswalker)|\bfights? (?:target|another target|up to one target)|target creature[^.]*gets -(?:\d+|x)\/-(?:\d+|x)|return target (?:nonland )?permanent[^.]* to its owner's hand/i,
+  wipe: /\b(?:destroy|exile) (?:all|each)\b|deals? (?:\d+|x) damage to each (?:creature|other creature)|all (?:other )?creatures get -|each (?:player|opponent) sacrifices[^.]*creatures?|return all [^.]*to (?:their|its) owners?'? hands?/i,
+  protection:
+    /(?:creatures? you control|permanents? you control|target (?:creature|permanent) you control|equipped creature|enchanted creature|your commander)[^.]*\b(?:hexproof|indestructible|shroud|protection from|phases? out|ward)\b|\byou have (?:hexproof|shroud)\b|\bphases? out\b/i,
+};
+export const ROLE_CHOICES = Object.keys(ROLE_PATTERNS);
+
+// A card's roles by rules text; lands count as land, and a spell matching none as other.
+export function textRoles(card) {
+  if (isLand(card)) return ['land'];
+  const roles = ROLE_CHOICES.filter((role) => ROLE_PATTERNS[role].test(card.oracleText));
+  return roles.length ? roles : ['other'];
+}
+
+function parseRoles(roles = []) {
+  for (const role of roles) {
+    if (!Object.hasOwn(ROLE_PATTERNS, role)) throw new Error(`--role must be one of: ${ROLE_CHOICES.join(', ')}`);
+  }
+  return roles.map((role) => ROLE_PATTERNS[role]);
+}
+
 function commanderFilters(name, index, legalIn) {
   const { card, problem } = index.lookup({ name });
   if (problem) throw new Error(problem);
@@ -34,7 +64,7 @@ export function searchFilters(options, index) {
   const filters = {
     name: options.name && caseInsensitive(options.name),
     types: (options.type ?? []).map(caseInsensitive),
-    texts: (options.text ?? []).map(caseInsensitive),
+    texts: [...(options.text ?? []).map(caseInsensitive), ...parseRoles(options.role)],
     identity: options.identity && parseIdentity(options.identity),
     legalIn: options.legal,
     minManaValue: parseNumber(options['min-mv'], '--min-mv'),
@@ -44,7 +74,11 @@ export function searchFilters(options, index) {
     gameChangersOnly: Boolean(options['game-changers']),
     includeProtectedOnly: Boolean(options['include-protected']),
     allowProxies: Boolean(options.proxies),
+    unowned: Boolean(options.unowned),
+    maxPriceUsd: parseNumber(options['max-price'], '--max-price'),
+    minCopies: parseNumber(options['min-copies'], '--min-copies'),
   };
+  if (filters.unowned && filters.minCopies) throw new Error('Use --unowned or --min-copies, not both');
   if (!options.commander) return filters;
   return { ...filters, ...commanderFilters(options.commander, index, filters.legalIn) };
 }
@@ -68,15 +102,9 @@ const matches = (card, filters) => FILTER_PREDICATES.every((predicate) => predic
 const byManaValueThenName = (first, second) =>
   first.card.manaValue - second.card.manaValue || first.card.name.localeCompare(second.card.name);
 
-// The cheapest USD quote among a card's cached printings, whatever its age, and its EDHREC rank.
+// The cheapest USD quote among a card's playable printings, whatever its age, and its EDHREC rank.
 // They only steer attention, so a stale price is fine here; deck:upgrades prices purchases.
-function cardValue(index, card) {
-  const prices = index
-    .printingsOf(card.oracleId)
-    .map((printing) => Number(printing.prices.usd))
-    .filter((price) => price > 0);
-  return { priceUsd: prices.length ? Math.min(...prices) : null, edhrecRank: card.edhrecRank ?? null };
-}
+const cardValue = (index, card) => ({ priceUsd: cheapestPrice(index, card), edhrecRank: card.edhrecRank ?? null });
 
 // Unknown values sort last. EDHREC ranks ascend (1 is the most played), prices descend.
 const nullsLast = (first, second, compare) => {
@@ -101,14 +129,30 @@ export function sortResults(results, by = 'mv') {
   return results.toSorted(SORTS[by]);
 }
 
+// Filters on a result's copies and value, after the card filters.
+const RESULT_PREDICATES = [
+  ({ available }, { unowned }) => !unowned || available === 0,
+  ({ available }, { minCopies }) => minCopies === undefined || available >= minCopies,
+  ({ priceUsd }, { maxPriceUsd }) => maxPriceUsd === undefined || priceUsd === null || priceUsd <= maxPriceUsd,
+];
+
+// The cards a search looks at: owned ones (protected-only ones too with includeProtectedOnly), or with
+// unowned every playable card in the cache.
+function searchedOracleIds(index, owned, holdings, filters) {
+  if (filters.unowned) return new Set(index.playableOracleIds());
+  const oracleIds = new Set(owned.counts.keys());
+  if (filters.includeProtectedOnly) for (const oracleId of holdings.keys()) oracleIds.add(oracleId);
+  return oracleIds;
+}
+
 // One result per card (oracle ID): copies in available collections, and protected copies by collection.
+// With unowned, the cards without an available copy, from the whole cache.
 export function searchCollection(collections, index, filters = {}) {
   const policy = { allowProxies: filters.allowProxies };
   const owned = ownedCounts(collections.available, index, policy);
   const protectedOwned = ownedCounts(collections.protected, index, policy);
   const holdings = protectedHoldings(collections.protected, index, policy);
-  const oracleIds = new Set(owned.counts.keys());
-  if (filters.includeProtectedOnly) for (const oracleId of holdings.keys()) oracleIds.add(oracleId);
+  const oracleIds = searchedOracleIds(index, owned, holdings, filters);
   const results = [...oracleIds]
     .map((oracleId) => ({
       card: index.printingsOf(oracleId)[0],
@@ -118,6 +162,7 @@ export function searchCollection(collections, index, filters = {}) {
     }))
     .filter(({ card }) => matches(card, filters))
     .map((result) => ({ ...result, ...cardValue(index, result.card) }))
+    .filter((result) => RESULT_PREDICATES.every((predicate) => predicate(result, filters)))
     .sort(byManaValueThenName);
   const unresolvedRows = owned.unresolvedRows + (filters.includeProtectedOnly ? protectedOwned.unresolvedRows : 0);
   return { results, unresolvedRows };
@@ -128,7 +173,7 @@ export const countResults = (results) => ({
   copies: results.reduce((sum, result) => sum + result.available, 0),
 });
 
-const GROUP_KEYS = { identity: (card) => [identityLabel(card)], 'creature-type': creatureTypes };
+const GROUP_KEYS = { identity: (card) => [identityLabel(card)], 'creature-type': creatureTypes, role: textRoles };
 export const GROUP_BY_CHOICES = Object.keys(GROUP_KEYS);
 
 // Distinct cards and available copies per group, largest first. A card counts once in each of its groups.
@@ -149,13 +194,14 @@ export function groupResults(results, by) {
 }
 
 // Available cards a deck could play but doesn't: in its commanders' color identity and legal for a
-// commander format, not in the commanders or mainboard. Each keeps the reason from the deck's
+// commander format, not in the commanders or mainboard, and within its price cap (overCap counts the
+// cards left out for costing more; unknown prices stay in). Each keeps the reason from the deck's
 // considered list, if any. Lands are left out unless lands is set.
 export function deckCandidates(
   deck,
   collections,
   index,
-  { texts = [], types = [], lands = false, sort = 'edhrec' } = {},
+  { texts = [], types = [], roles = [], lands = false, sort = 'edhrec' } = {},
 ) {
   const commanderRules = isCommanderFormat(deck.format);
   const commanders = deck.commanders.map((entry) => index.lookup(entry).card);
@@ -163,7 +209,7 @@ export function deckCandidates(
     throw new Error('Every commander must be in the card cache; run scryfall:refresh -- --missing');
   }
   const filters = {
-    texts,
+    texts: [...texts, ...parseRoles(roles)],
     types,
     nonlandOnly: !lands,
     ...(commanderRules
@@ -178,8 +224,14 @@ export function deckCandidates(
     }),
   );
   const { results, unresolvedRows } = searchCollection(collections, index, filters);
-  const candidates = results
-    .filter(({ card, available }) => available && !inDeck.has(card.oracleId))
+  const cap = priceCap(deck);
+  const overCapOf = (card) => {
+    const price = cap && cheapestPrice(index, card, cap.currency);
+    return Boolean(price) && price > cap.amount;
+  };
+  const leftOut = results.filter(({ card, available }) => available && !inDeck.has(card.oracleId));
+  const candidates = leftOut
+    .filter(({ card }) => !overCapOf(card))
     .map((result) => ({ ...result, considered: reasons.get(result.card.oracleId) }));
-  return { results: sortResults(candidates, sort), unresolvedRows };
+  return { results: sortResults(candidates, sort), unresolvedRows, overCap: leftOut.length - candidates.length };
 }

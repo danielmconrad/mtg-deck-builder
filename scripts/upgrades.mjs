@@ -1,4 +1,4 @@
-import { ageInDays } from './card.mjs';
+import { ageInDays, isPlayablePrinting } from './card.mjs';
 import { availableCopies, ownedCounts } from './collection.mjs';
 import { addCopies, deckEntries, removeCopies, resolveEntries } from './deck.mjs';
 
@@ -8,9 +8,25 @@ export const CENTS_PER_UNIT = 100;
 
 const toCents = (amount) => Math.round(amount * CENTS_PER_UNIT);
 
-// Cheapest fresh quote: the pinned printing when there is one, else any cached printing of the card.
+// A card's printings that can set its price: the playable ones, or every printing if none is.
+function pricedPrintings(index, card) {
+  const printings = index.printingsOf(card.oracleId);
+  const playable = printings.filter(isPlayablePrinting);
+  return playable.length ? playable : printings;
+}
+
+// The cheapest quote in a currency among a card's playable printings, whatever its age, or null. It
+// steers attention and filters searches; deck:upgrades and price caps use cheapestQuote's fresh quotes.
+export function cheapestPrice(index, card, currency = 'USD') {
+  const prices = pricedPrintings(index, card)
+    .map((printing) => Number(printing.prices[currency.toLowerCase()]))
+    .filter((price) => price > 0);
+  return prices.length ? Math.min(...prices) : null;
+}
+
+// Cheapest fresh quote: the pinned printing when there is one, else any playable cached printing.
 export function cheapestQuote(index, { card, printingId }, { currency, now }) {
-  const candidates = printingId ? [index.byId.get(printingId)] : index.printingsOf(card.oracleId);
+  const candidates = printingId ? [index.byId.get(printingId)] : pricedPrintings(index, card);
   const fresh = candidates.filter((printing) => ageInDays(printing, now) <= PRICE_MAX_AGE_DAYS);
   if (!fresh.length) return { problem: `price data older than ${PRICE_MAX_AGE_DAYS} days; run scryfall:refresh` };
   const quotes = fresh

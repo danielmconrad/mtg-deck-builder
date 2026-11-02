@@ -62,6 +62,11 @@ export function cardIndex(cache) {
   }
 
   const printingsOf = (oracleId) => byOracleId.get(oracleId) ?? [];
+  // Every cached card (oracle ID) that's legal in some format, leaving out bulk data's tokens and art cards.
+  const playableOracleIds = () =>
+    [...byOracleId.keys()].filter((oracleId) => isLegalSomewhere(printingsOf(oracleId)[0]));
+  // Bulk data marks each card's default printing; a cache without one holds only owned and deck cards.
+  const isFromBulk = () => [...byId.values()].some((card) => card.defaultPrinting);
 
-  return { byId, lookup, isCached, printing, printingsOf };
+  return { byId, lookup, isCached, printing, printingsOf, playableOracleIds, isFromBulk };
 }

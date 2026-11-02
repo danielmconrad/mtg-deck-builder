@@ -3,7 +3,9 @@ schema_version: 1
 name: Kwia's Canopy
 format: commander
 status: draft
-bracket: 3
+target_bracket: 3
+plays_like_bracket: 2
+lowest_legal_bracket: 1
 allow_proxies: false
 unlimited_basics: true
 collection_source:
@@ -11,7 +13,7 @@ collection_source:
 primer: >-
   Selesnya reach wall with lifegain ramp. Shut the skies with reach Spiders and beasts (Attercop, Ancient Spider, Old Fat Spider, Spider-Rex, Hazard of the Dunes), reach Equipment and a stack of flyer-only removal, so flying decks can't attack you profitably. Meanwhile gain a little life every turn (Liliana the Faultless, Ajani Resolute, Old Thrush, lifelink creatures, Blossoming Sands) so Kwia makes a Lotus each turn, and use that mana to land big threats early: Ghalta, Wildvine Pummeler, Strength of the Pack. Win by attacking with a wide, oversized ground board backed by Kwia and a few lifelinking flyers, with Settle the Wreckage and Cleansing Nova as resets.
 power_notes: >-
-  Aimed at Bracket 3 (Upgraded), but the baseline plays closer to a strong Bracket 2: no Game Changers, mass land denial, extra turns or two-card combos, and the efficient staples (Sol Ring, Swords to Plowshares, Path to Exile, Cultivate, Beast Within, Command Tower) are all in Daniel's protected precon decks. The upgrades add cheap ramp, instant-speed removal and a lifegain payoff or two to bring it up to a real Bracket 3.
+  Aimed at Bracket 3 (Upgraded), but the baseline plays like a strong Bracket 2: no Game Changers, mass land denial, extra turns or two-card combos, and the efficient staples (Sol Ring, Swords to Plowshares, Path to Exile, Cultivate, Beast Within, Command Tower) are all in Daniel's protected precon decks. The upgrades add cheap ramp, instant-speed removal and a lifegain payoff or two to bring it up to a real Bracket 3.
 budget:
   amount: 100
   currency: USD

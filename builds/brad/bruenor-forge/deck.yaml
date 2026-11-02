@@ -3,7 +3,9 @@ schema_version: 1
 name: Bruenor's Forge
 format: commander
 status: draft
-bracket: 3
+target_bracket: 3
+plays_like_bracket: 3
+lowest_legal_bracket: 3
 allow_proxies: false
 unlimited_basics: true
 collection_source:
@@ -11,7 +13,7 @@ collection_source:
 primer: >-
   Deploy cheap Equipment and creatures to carry it, then let Bruenor make the first equip each turn free and give +2/+0 per attached Equipment. Win by attacking with one or two heavily suited, evasive or double-striking creatures (Hard-Won Jitte, Dáin Ironfoot, Mockingbird), backed by Equipment that draws cards and removes blockers.
 power_notes: >-
-  Bracket 3 (Upgraded). Built only from BradsCollection's "all cards" binder with the commonest staples (Sol Ring, Arcane Signet, Command Tower, Lightning Greaves) tied up in Brad's other decks, so it plays nearer an upgraded precon until the upgrades go in. No mass land denial, extra turns or two-card combos.
+  Plays like the bottom of Bracket 3 (Upgraded): Teferi's Protection, its one Game Changer, rules out Bracket 2. Built only from BradsCollection's "all cards" binder with the commonest staples (Sol Ring, Arcane Signet, Command Tower, Lightning Greaves) tied up in Brad's other decks, so it plays nearer an upgraded precon until the upgrades go in. No mass land denial, extra turns or two-card combos.
 notes: >-
   Brad's deck, built only from his collection (see collections).
 budget:

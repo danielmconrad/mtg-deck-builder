@@ -1,7 +1,7 @@
 // Turns reports into the text the CLI prints. Nothing here decides an outcome.
-import { identityLabel, orderedIdentity } from './card.mjs';
+import { identityLabel } from './card.mjs';
 import { holdingsNote } from './collection.mjs';
-import { CARD_TYPES, CHEAP_MANA_VALUE, CURVE_TOP_BUCKET, MANA_SYMBOLS } from './stats.mjs';
+import { CARD_TYPES, CHEAP_MANA_VALUE, CURVE_TOP_BUCKET, MANA_SYMBOLS, OPENING_HAND } from './stats.mjs';
 import { CENTS_PER_UNIT, PRICE_MAX_AGE_DAYS } from './upgrades.mjs';
 
 const OUTCOME_LABELS = { pass: 'PASS', incomplete: 'INCOMPLETE', fail: 'FAIL' };
@@ -26,6 +26,8 @@ export function checkLines(slug, { total, findings, outcome }) {
 const valueNote = ({ edhrecRank, priceUsd }) =>
   `EDHREC ${edhrecRank === null ? '?' : `#${edhrecRank}`}, ${priceUsd === null ? '$?' : `$${priceUsd.toFixed(2)}`}`;
 
+const gameChangerNote = (card) => (card.gameChanger ? ' [Game Changer]' : '');
+
 const oracleLines = (card) => card.oracleText.split('\n').map((line) => `    ${line}`);
 
 export function searchLines(results, { withOracleText = false, withValues = false } = {}) {
@@ -33,48 +35,30 @@ export function searchLines(results, { withOracleText = false, withValues = fals
     const { card, available, protectedIn } = result;
     const protectedNote = protectedIn.length ? ` (+${holdingsNote(protectedIn)}, protected)` : '';
     const values = withValues ? ` (${valueNote(result)})` : '';
-    const summary = `${available}x ${card.name} ${card.manaCost} — ${card.typeLine} [${identityLabel(card)}]${values}${protectedNote}`;
+    const summary = `${available}x ${card.name} ${card.manaCost} — ${card.typeLine} [${identityLabel(card)}]${gameChangerNote(card)}${values}${protectedNote}`;
     return [summary, ...(withOracleText ? oracleLines(card) : [])];
   });
   return [...lines, `${results.length} cards`];
 }
 
 // deck:candidates: the most valued cards the deck leaves out, each with its considered reason if any.
-export function candidateLines(results, { limit, withOracleText = false, unresolvedRows = 0 }) {
+// The summary counts the shown cards without a reason, since those are the ones a review must cover.
+export function candidateLines(results, { limit, withOracleText = false, unresolvedRows = 0, overCap = 0 }) {
   const shown = results.slice(0, limit);
-  const unexplained = results.filter((result) => !result.considered).length;
+  const unexplained = (list) => list.filter((result) => !result.considered).length;
   const lines = shown.flatMap((result) => {
     const { card, available } = result;
-    const summary = `${available}x ${card.name} ${card.manaCost} — ${card.typeLine} (${valueNote(result)})`;
+    const summary = `${available}x ${card.name} ${card.manaCost} — ${card.typeLine}${gameChangerNote(card)} (${valueNote(result)})`;
     const reason = result.considered ? `    considered: ${result.considered}` : '    not in considered';
     return [summary, reason, ...(withOracleText ? oracleLines(card) : [])];
   });
   return [
     ...lines,
-    `${shown.length} of ${results.length} available cards left out; ${unexplained} without a considered reason`,
+    `${shown.length} of ${results.length} left-out cards shown; ${unexplained(shown)} of them without a considered reason (${unexplained(results)} in all)`,
+    ...(overCap ? [`${overCap} more cost over the deck's price cap and aren't listed`] : []),
     ...(unresolvedRows ? [`${unresolvedRows} collection rows have no cached card data and were skipped`] : []),
   ];
 }
-
-// JSON keeps snake_case to match the deck YAML that assistants read and write.
-export const searchJson = (results) =>
-  JSON.stringify(
-    results.map(({ card, available, protected: protectedCopies, protectedIn, priceUsd, edhrecRank }) => ({
-      name: card.name,
-      available,
-      protected: protectedCopies,
-      protected_in: protectedIn,
-      mana_cost: card.manaCost,
-      mana_value: card.manaValue,
-      type_line: card.typeLine,
-      color_identity: orderedIdentity(card),
-      oracle_text: card.oracleText,
-      price_usd: priceUsd,
-      edhrec_rank: edhrecRank,
-    })),
-    null,
-    2,
-  );
 
 function countList(counts, order) {
   const keys = order
@@ -83,7 +67,38 @@ function countList(counts, order) {
   return keys.map((key) => `${key} ${counts.get(key)}`).join(', ') || 'none';
 }
 
-export function statsLines(deck, stats) {
+const percent = (chance) => `${Math.round(chance * 100)}%`;
+
+function bracketLines(bracket) {
+  if (!bracket) return [];
+  const raisedBy = bracket.raises.length
+    ? bracket.raises.map(({ reason }) => reason).join('; ')
+    : 'no Game Changers, extra turns or mass land denial';
+  const judged = (value) => (value === null ? 'not set' : value);
+  return [
+    `Brackets: lowest legal ${bracket.bracket} (${raisedBy}); plays like ${judged(bracket.playsLike)}; target ${judged(bracket.target)}`,
+  ];
+}
+
+function roleTargetLines({ source, targets }) {
+  if (!source) return [];
+  const range = ({ min, max }) => (max === null ? `${min}+` : `${min}–${max}`);
+  const notes = targets.map(
+    (target) =>
+      `${target.role} ${target.count} (${range(target)}${target.status === 'within' ? '' : `, ${target.status}`})`,
+  );
+  return [`Role targets (${source}): ${notes.join(', ')}`];
+}
+
+function openingHandLines(odds) {
+  if (!odds) return [];
+  return [
+    `Opening ${OPENING_HAND}: 0–1 lands ${percent(odds.fewLands)}, 2–4 lands ${percent(odds.keepableLands)}, ` +
+      `5+ lands ${percent(odds.manyLands)}; at least one ramp card ${percent(odds.someRamp)}`,
+  ];
+}
+
+export function statsLines(deck, stats, { upgradesApplied = false } = {}) {
   const nonlandCards = stats.cards - stats.lands;
   const averageManaValue = nonlandCards ? (stats.nonlandManaValue / nonlandCards).toFixed(2) : 'n/a';
   const curve = Array.from({ length: CURVE_TOP_BUCKET + 1 }, (_, manaValue) => {
@@ -92,7 +107,7 @@ export function statsLines(deck, stats) {
   });
   const commanders = deck.commanders.map((entry) => entry.name).join(' + ');
   return [
-    `${deck.name}: ${stats.cards} mainboard cards${commanders ? ` + commander ${commanders}` : ''}`,
+    `${deck.name}: ${stats.cards} mainboard cards${commanders ? ` + commander ${commanders}` : ''}${upgradesApplied ? ' (upgrades applied)' : ''}`,
     `Lands: ${stats.lands}; nonland average mana value: ${averageManaValue}`,
     ...(stats.suggestedLands === null
       ? []
@@ -105,6 +120,9 @@ export function statsLines(deck, stats) {
     `Color pips (nonland): ${countList(stats.pips, MANA_SYMBOLS)}`,
     `Land color sources: ${countList(stats.landSources, MANA_SYMBOLS)}`,
     `Roles: ${countList(stats.roles)}`,
+    ...bracketLines(stats.bracket),
+    ...roleTargetLines(stats.roleTargets),
+    ...openingHandLines(stats.openingHand),
     ...stats.problems.map((problem) => indent(`INCOMPLETE: ${problem}`)),
   ];
 }
@@ -133,4 +151,22 @@ export function groupLines(groups) {
   const width = Math.max(0, ...groups.map(({ cards }) => String(cards).length));
   const lines = groups.map(({ key, cards, copies }) => `${String(cards).padStart(width)}  ${key} (${copies} copies)`);
   return [...lines, `${groups.length} groups; counts are distinct cards`];
+}
+
+// deck:show: the commanders, then the mainboard grouped by each card's first role, with every role named.
+export function showLines({ commanders, groups, problems }, { withOracleText = false } = {}) {
+  const cardLine = ({ card, quantity, roles, upgrade }) =>
+    `${quantity}x ${card.name} ${card.manaCost} — ${card.typeLine}${roles.length ? ` [${roles.join(', ')}]` : ''}${upgrade ? ' (upgrade)' : ''}`;
+  const withText = (item) => [cardLine(item), ...(withOracleText ? oracleLines(item.card) : [])];
+  return [
+    ...commanders.flatMap((item) => [
+      `Commander: ${cardLine(item)}`,
+      ...(withOracleText ? oracleLines(item.card) : []),
+    ]),
+    ...groups.flatMap(({ role, items }) => [
+      `${role} (${items.reduce((sum, item) => sum + item.quantity, 0)})`,
+      ...items.flatMap(withText).map(indent),
+    ]),
+    ...problems.map((problem) => indent(`INCOMPLETE: ${problem}`)),
+  ];
 }

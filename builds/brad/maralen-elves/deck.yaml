@@ -3,7 +3,9 @@ schema_version: 1
 name: Court of Mirkwood
 format: commander
 status: draft
-bracket: 3
+target_bracket: 3
+plays_like_bracket: 2
+lowest_legal_bracket: 1
 allow_proxies: false
 unlimited_basics: true
 collection_source:
@@ -11,7 +13,7 @@ collection_source:
 primer: >-
   Ramp with mana Elves and land drops, then turn every Elf and Faerie that enters into card advantage: Maralen exiles two cards from an opponent's library each time and lets you cast one for free once a turn. Landfall Thranduils and Springleaf Parade flood the board, and the Elf lords (Morcant's Loyalist, Thranduil, Sindarin Liege, Moon-Vigil Adherents) turn that wide board into a lethal attack.
 power_notes: >-
-  Bracket 3 (Upgraded). Built only from BradsCollection's "all cards" binder with the commonest staples (Sol Ring, Arcane Signet, Command Tower, Cultivate) tied up in Brad's other decks, so it plays nearer an upgraded precon until the upgrades go in. No mass land denial, extra turns or two-card combos.
+  Aimed at Bracket 3 (Upgraded), but plays like Bracket 2 for now. Built only from BradsCollection's "all cards" binder with the commonest staples (Sol Ring, Arcane Signet, Command Tower, Cultivate) tied up in Brad's other decks, so it plays nearer an upgraded precon until the upgrades go in. No mass land denial, extra turns or two-card combos.
 notes: >-
   Brad's deck, built only from his collection (see collections).
 budget:

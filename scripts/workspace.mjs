@@ -4,7 +4,14 @@ import { fileURLToPath } from 'node:url';
 import { readCache, writeCache } from './card-cache.mjs';
 import { cardIndex } from './card-index.mjs';
 import { holdDeckCards, parseCollection, parseTextCollection, resolveTextRows } from './collection.mjs';
-import { parseDeck, serializeDeck, withDeckChanges, withDeckField, withMainboardSwaps } from './deck.mjs';
+import {
+  parseDeck,
+  serializeDeck,
+  withDeckChanges,
+  withDeckField,
+  withDeckValue,
+  withMainboardSwaps,
+} from './deck.mjs';
 
 const PROJECT_ROOT = fileURLToPath(new URL('..', import.meta.url));
 // A deck is named by its folder under builds/, which may be nested (brad/bruenor-forge). Each part
@@ -13,6 +20,8 @@ const DECK_PATH_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)
 const DECKS_FOLDER = 'builds';
 const DECK_FILE = 'deck.yaml';
 const COLLECTIONS_FOLDER = 'collections';
+// deck:build's default destination; MTG_BUILD_DESTINATION in .env replaces it.
+const DEFAULT_BUILD_DESTINATION = `${COLLECTIONS_FOLDER}/{owner}/decks/{name}.txt`;
 // A collection is a ManaBox CSV export or a plain-text list, parsed by its extension.
 const COLLECTION_PARSERS = { '.csv': parseCollection, '.txt': parseTextCollection };
 const COLLECTION_EXTENSION = /\.(?:csv|txt)$/i;
@@ -103,6 +112,16 @@ export function openWorkspace(root = PROJECT_ROOT) {
     return `${DECKS_FOLDER}/${deckId}/${fileName}`;
   }
 
+  // A generated file beside deck.yaml, or null if it doesn't exist.
+  async function readDeckFile(slug, fileName) {
+    try {
+      return await readFile(join(await deckFolder(slug), fileName), 'utf8');
+    } catch (error) {
+      if (error.code === 'ENOENT') return null;
+      throw error;
+    }
+  }
+
   const removeDeckFile = async (slug, fileName) => rm(join(await deckFolder(slug), fileName), { force: true });
 
   // Adds a field to a deck's deck.yaml, keeping its comments; see withDeckField.
@@ -115,6 +134,16 @@ export function openWorkspace(root = PROJECT_ROOT) {
     );
   }
 
+  // Sets one field of a deck's deck.yaml in place or after another, keeping its comments; see
+  // withDeckValue. Leaves the file untouched when the value is already there.
+  async function putDeckField(slug, key, value, { after } = {}) {
+    const deckId = await resolveDeckId(slug);
+    const path = join(decksFolder, deckId, DECK_FILE);
+    const text = await readFile(path, 'utf8');
+    const updated = withDeckValue(text, key, value, { after, source: deckLabel(deckId) });
+    if (updated !== text) await writeFile(path, updated);
+  }
+
   // Sets or removes existing fields in a deck's deck.yaml, keeping its comments; see withDeckChanges.
   async function changeDeckFields(slug, changes) {
     const deckId = await resolveDeckId(slug);
@@ -122,26 +151,32 @@ export function openWorkspace(root = PROJECT_ROOT) {
     await writeFile(path, withDeckChanges(await readFile(path, 'utf8'), changes, { source: deckLabel(deckId) }));
   }
 
-  // Swaps mainboard cards in a deck's deck.yaml, keeping its comments; see withMainboardSwaps. Returns
-  // the swapped deck, and writes it only with apply.
-  async function swapDeckCards(slug, swaps, { apply = false } = {}) {
+  // Swaps mainboard cards in a deck's deck.yaml, keeping its comments; see withMainboardSwaps, which
+  // also records the swap when given a date. Returns the swapped deck, and writes it only with apply.
+  async function swapDeckCards(slug, swaps, { apply = false, date, reasons } = {}) {
     const deckId = await resolveDeckId(slug);
     const path = join(decksFolder, deckId, DECK_FILE);
-    const { text, deck } = withMainboardSwaps(await readFile(path, 'utf8'), swaps, { source: deckLabel(deckId) });
+    const source = deckLabel(deckId);
+    const { text, deck } = withMainboardSwaps(await readFile(path, 'utf8'), swaps, { source, date, reasons });
     if (apply) await writeFile(path, text);
     return deck;
   }
 
-  // Where deck:build puts a deck's own cards by default, named after the deck: builds/brad/elves,
+  // Where deck:build puts a deck's own cards by default, from a template whose {owner} is the deck's
+  // parent folders under builds/ and {name} its name: with the default template builds/brad/elves,
   // named Elf Ball, keeps them in collections/brad/decks/Elf Ball.txt, and an unnested builds/elves
   // in collections/decks/Elf Ball.txt. Characters that aren't safe in a file name become hyphens.
-  function defaultDeckCollection(deckId, deckName) {
-    const owners = deckId.split('/').slice(0, -1);
+  function defaultDeckCollection(deckId, deckName, template = DEFAULT_BUILD_DESTINATION) {
+    if (!template.includes('{name}')) throw new Error('MTG_BUILD_DESTINATION must contain {name}');
+    const owner = deckId.split('/').slice(0, -1).join('/');
     const fileName = deckName
       .replace(/[/\\:*?"<>|\p{Cc}]/gu, '-')
       .trim()
       .replace(/^\.+/, '');
-    return [COLLECTIONS_FOLDER, ...owners, 'decks', `${fileName}.txt`].join('/');
+    return template
+      .replaceAll('{owner}', owner)
+      .replaceAll('{name}', fileName)
+      .replace(/\/{2,}/g, '/');
   }
 
   const collectionName = (path) => withoutExtension(path.slice(COLLECTIONS_FOLDER.length + 1));
@@ -244,8 +279,10 @@ export function openWorkspace(root = PROJECT_ROOT) {
     loadAllDecks,
     createDeck,
     writeDeckFile,
+    readDeckFile,
     removeDeckFile,
     setDeckField,
+    putDeckField,
     changeDeckFields,
     swapDeckCards,
     resolveDeckId,

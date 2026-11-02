@@ -1,125 +1,110 @@
 ---
 name: new-deck
-description: Step-by-step workflow for brewing a new Commander or casual-60 deck from the user's collection in this repo, from the opening questions through commander directions, the decklist, checks, upgrades and export. Use when the user wants to build, brew or start a new deck, or asks which decks their collection supports.
+description: Step-by-step workflow for brewing a new Commander, Custom Dollar Brawl or casual-60 deck from the user's collection in this repo, from the brief through the plan, the decklist and the hand-off, or for picking up a draft where it was left. Use when the user wants to build, brew or start a new deck, or to continue a draft. To only see which decks the collection supports, use collection-survey.
 ---
 
 # Brewing a new deck
 
-The rules in AGENTS.md still apply: only unprotected collections supply cards, protected copies are only mentioned, never invent card data. This skill is the order of work. Every command here is read-only and offline except `deck:new` (writes one file) and `scryfall:refresh` (network). `mise run <task> -- --help` documents every option.
+The rules in AGENTS.md still apply: only unprotected collections supply cards, protected copies are only mentioned, and card data comes from the cache, never memory. This skill is the order of work. It hands parts of the job to other skills:
+
+- **collection-survey:** step 2, finding the directions the collection supports.
+- **deckbuilding-strategy:** the frameworks behind the plan, role counts, land count and bracket.
+- **deck-review:** step 6, the check-and-fix loop.
+- **deck-upgrades:** step 8, purchases.
+- **physical-deck:** only when the user says they're physically building it.
+
+`mise run <task> -- --help` documents every option. Every command is offline and read-only except `deck:new` and `deck:files` (they write deck files), `deck:swap --apply` (edits `deck.yaml`) and `scryfall:refresh` (network). Add `--json` to a read command when a script will consume its output; text is shorter to read.
+
+## 0. Preflight
+
+- **Defaults:** read `.env` and memory for the user's standing answers. `MTG_UNLIMITED_BASICS` and `MTG_ALLOW_PROXIES` fill `deck:new`'s ownership policies, `MTG_COLLECTIONS` and `MTG_PROTECTED_COLLECTIONS` decide which cards count, and `MTG_BUILD_DESTINATION` is where a built deck goes.
+- **Existing decks:** `grep -rh -A1 '^commanders:' builds --include=deck.yaml | grep name` lists the commanders already used. Don't propose one that already has a deck unless the user wants a second build.
+- **Card data:** `deck:check` notes data older than 30 days. `collection:search --unowned` (for upgrades) needs a bulk cache, and warns without one.
+- **Continuing a draft:** read its `deck.yaml` (`primer`, the engine map in `notes`, `considered`, `history`), run `mise run deck:verify -- <slug>`, and resume at the step its state implies.
 
 ## 1. Settle the brief
 
-Ask only about what the user hasn't already said. Don't fill gaps with defaults.
+Ask only about what the user hasn't said. A default from `.env` or memory counts as an answer: state it in one line instead of asking.
 
-- **Format:** Commander, Custom Dollar Brawl (`custom-dollar-brawl`, a house format: exactly 60 cards, Commander-legal cards, none over $1) or casual-60.
+- **Format:** Commander, Custom Dollar Brawl (`custom-dollar-brawl`, a house format: exactly 60 cards, Commander-legal, none over $1) or casual-60.
 - **Commander or theme:** or "open to anything from my collection".
-- **Power level:** a Commander Bracket (1–5) or the playgroup's own terms. The bracket table is in the `deckbuilding-strategy` skill.
-- **Budget:** amount and currency for optional upgrades, and any per-card price cap (set `max_card_price` so `deck:check` enforces it).
+- **Power level:** a Commander Bracket (1–5) or the playgroup's own terms; the table is in `deckbuilding-strategy`. It becomes `target_bracket`, which changes only when the user asks.
+- **Table:** a four-player pod or 1v1. It changes what "whenever an opponent" triggers, symmetrical effects and wipes are worth.
+- **Play style:** what the deck should feel like to play, and what to avoid (combos, stax, extra turns, long turns).
+- **Must-includes and no-gos:** pet cards to build around, and cards or strategies the playgroup dislikes.
+- **Budget:** amount and currency for optional upgrades, and any per-card price cap (`max_card_price`, which `deck:check` enforces).
 - **Proxies:** allowed or not.
-- **Collections:** whose cards to build from, if not every unprotected collection (e.g. a friend's deck from `collections/brad/*`). Record the patterns in the deck's `collection_source` field so every command reads the right cards without flags.
-- **Basic lands:** run `mise run collection:search -- --type basic --count`. The collections usually hold very few basics, so every deck fails ownership unless the user has untracked basics. Ask, and set `unlimited_basics: true` if they do.
+- **Collections:** whose cards to build from, if not every unprotected collection (e.g. a friend's deck from `collections/brad/*`), recorded in `collection_source`.
+- **Basics:** if `MTG_UNLIMITED_BASICS` isn't set, run `mise run collection:search -- --type basic --count`. The collections hold few basics, so ask whether the user has untracked ones.
 
-## 2. Survey the collection
+## 2. Survey, propose directions, then stop
 
-Start with counts and groups, and list cards only once a query is narrow. Unfiltered lists run to hundreds of lines.
+Follow the `collection-survey` skill: it sizes each candidate by role and engine depth and proposes two or three directions. Then **wait for the user to choose.** Don't run `deck:new` or write a list before they pick.
 
-```sh
-# Commander candidates per exact identity, then names within one identity, then rules text for a few.
-# --group-by identity counts exact identities (WR means only red-white cards). --identity and --commander
-# include every subset (WR also matches mono-W, mono-R and colorless), which is what a deck can play.
-mise run collection:search -- --commanders --legal commander --group-by identity
-mise run collection:search -- --commanders --legal commander --identity WR
-mise run collection:search -- --name '^(Thorin, King|Glóin the Mighty)' --oracle   # names are regexes; // joins two-faced names
-
-# Depth behind a candidate: every card it can play, its tribes, and the card types the deck needs.
-# To compare candidates, run the --count line once per commander.
-mise run collection:search -- --commander "Thorin, King of Durin's Folk" --nonland --count
-mise run collection:search -- --commander "Thorin, King of Durin's Folk" --group-by creature-type
-```
-
-Recipes per role. They're rough: read the list before quoting a count. Draw overcounts (it also matches cards that make an opponent or each player draw), and removal includes counterspells, which matters mostly in blue:
+## 3. Plan before choosing cards
 
 ```sh
-C="Thorin, King of Durin's Folk"
-mise run collection:search -- --commander "$C" --nonland --text 'add \{|search your library for .*land|create .*treasure'  # ramp
-mise run collection:search -- --commander "$C" --nonland --text 'draw (a|two|three|four|x|that many) cards?'                 # draw
-mise run collection:search -- --commander "$C" --nonland --text 'destroy target|exile target|counter target|deals? (\d+|x) damage to (any target|target creature)'  # removal
-mise run collection:search -- --commander "$C" --nonland --text '(destroy|exile) all|deals? (\d+|x) damage to each (creature|other creature)'  # wipe
+mise run deck:new -- <slug> --commander "Name" --target-bracket 3 --budget 30 --primer "How it wins, in a sentence or two."
+#   repeat --commander for partners; --format custom-dollar-brawl or casual-60; --max-card-price 1;
+#   --collection-source 'collections/brad/*'; a nested slug such as brad/<slug> groups decks by owner
 ```
 
-Add `--count` to any of these for a quick depth check. Add `--sort edhrec` or `--sort price` to see the most played or most valuable matches first, with both numbers on each line.
+- **`primer`:** how the deck wins, in one or two sentences, on one line of YAML (`deckbuilding-strategy` §1).
+- **Engine map in `notes`:** what the commander and key engine cards use up and produce (life-gain events, Food, Treasure, any token, counters, spells cast, cards drawn), and which owned cards turn one into another (§1a). It lives in `deck.yaml` so a later session sees why the list looks the way it does.
+- **`role_targets`:** Commander decks are compared with the Command Zone template by default. Set `role_targets` when the plan departs from it (say, two wipes in a go-wide deck), and always for Custom Dollar Brawl and casual-60 (§3 and §5).
+- **`power_notes`:** the bracket's limits that no tool checks (two-card combos, chained extra turns), and how the deck stays inside them. `lowest_legal_bracket` is written by `deck:files`; never edit it by hand.
 
-Engine searches. Once a direction is chosen, search for whatever the deck's engine uses up and produces, not just its theme words (see "Map the engine" in `deckbuilding-strategy`). These catch cards whose value is one step removed:
+## 4. Build a shortlist
 
-```sh
-mise run collection:search -- --commander "$C" --nonland --text 'create .*(treasure|food|clue|blood|map)'                 # artifact tokens, which token doublers and "whenever you create a token" cards also count
-mise run collection:search -- --commander "$C" --nonland --text 'whenever an opponent|each opponent|each player|target players?' --oracle  # triggers off other players; symmetrical effects you may aim at yourself
-mise run collection:search -- --commander "$C" --nonland --text 'for each (food|treasure|artifact|token|creature)'         # payoffs that count a resource
-```
+Choose from a shortlist, never from one read of the whole pool: a 500-line dump can't be held in mind, and cards whose value is one step removed get lost.
 
-Check staples that may exist only in protected collections, so you can name them as protected alternatives:
+- **Search each role and each engine resource, both makers and payoffs:**
 
-```sh
-mise run collection:search -- --include-protected --name '^(Sol Ring|Arcane Signet|Command Tower|Swords to Plowshares|Path to Exile|Cultivate|Beast Within|Counterspell)$'
-```
+  ```sh
+  C="Commander Name"
+  mise run collection:search -- --commander "$C" --nonland --role ramp --oracle      # also draw, removal, wipe, protection
+  mise run collection:search -- --commander "$C" --nonland --text 'create .*(treasure|food|clue)' --oracle
+  mise run collection:search -- --commander "$C" --nonland --text 'whenever an opponent|each player|target players?' --oracle
+  ```
 
-Writing a throwaway script over `--json` output is acceptable for one-off analysis in the scratchpad. If you need the same analysis twice, suggest a CLI option instead. Don't choose the mainboard from one read of the whole pool, though: a 500-line dump can't be held in mind, and cards whose value is indirect get lost. Use the searches above to build a shortlist (step 4).
+  `--role` is a rough rules-text test (draw also matches cards that make an opponent draw, removal includes counterspells). Read the cards before counting them. For Custom Dollar Brawl add `--max-price 1`; for casual-60 use `--identity` with `--min-copies 4` for playsets.
 
-## 3. Propose two or three directions, then stop
+- **Read every match's full rules text**, including activated abilities and who each effect targets. A symmetrical effect aimed at yourself is often an engine.
+- **Write the shortlist** to a scratchpad file: one line per card, grouped by role and engine resource, each with a one-line reason. For set operations across searches (cards that feed two resources, say), use `--json` and a throwaway script in the scratchpad.
 
-For each direction give:
+## 5. Assemble the deck
 
-- **Commander and plan:** the commander, the game plan in two sentences, and how it wins.
-- **Key owned cards:** the cards that make it work, with counts from the survey (e.g. "25 Dwarves, 36 ramp pieces").
-- **Mana:** colors, how many sources it needs, and the ramp available.
-- **Gaps:** weak roles, and protected copies that would help.
-- **Upgrades:** the rough upgrade need against the budget.
+In this order:
 
-Then **wait for the user to choose.** Don't run `deck:new` or write a list before they pick.
+1. **Nonland cards to the role targets**, from the shortlist: the plan's enablers and payoffs first, then the role cards. Give each entry a `role` (`land`, `ramp`, `draw`, `removal`, `wipe`, `protection`, `wincon`, `synergy`; comma-separate several).
+2. **Check the shape:** `mise run deck:stats -- <slug>` for the curve, role counts against targets, and color pips.
+3. **Mana base:** take the land count from Karsten's suggestion in `deck:stats`, and explain any gap of more than a land in `power_notes`. Choose utility and dual lands with `collection:search -- --commander "$C" --type land --oracle`. Count the lands that enter tapped, give each color sources in proportion to its pips, then fill with basics.
+4. **Size:** exactly 100 cards including commanders (60 for `custom-dollar-brawl`), or at least 60 for casual.
+5. **`considered`:** record the close calls with a one-line reason as you go.
 
-## 4. Build the baseline
+`deck.yaml` is the only decklist, and commanders go in `commanders`, not `mainboard`. Run `mise run deck:check -- <slug>` after each round of edits.
 
-```sh
-mise run deck:new -- <slug> --commander "Name"     # repeat --commander for partners; add --format custom-dollar-brawl for Custom Dollar Brawl
-```
+## 6. Review until it passes
 
-- **Header fields:** fill `primer` (the game plan, one line of YAML with no manual line breaks), `collection_source` (if the brief limits them), `power_notes`, `bracket`, `budget`, `allow_proxies` and `unlimited_basics` in the new `deck.yaml` (pass a nested slug such as `brad/<slug>` to `deck:new` to group decks by owner).
-- **Engine map first:** before choosing cards, write down in the scratchpad what the commander and the key engine cards use up and produce (life-gain events, Food, Treasure, any token, counters, spells cast, cards drawn), and which owned cards convert one into another. Run an engine search (step 2) for each resource, both its makers and its payoffs.
-- **Shortlist, then choose:** write a candidate file in the scratchpad with one line per plausible card, grouped by role and engine resource, each with a one-line reason. Read every match's full rules text, including activated abilities. Then choose the mainboard from the shortlist, never straight from memory of the pool.
-- **Mainboard:** owned cards only. Give each entry a `role` from the vocabulary below.
-- **Considered:** record the strongest cards you left out in `considered` (`name` and `reason`), especially close calls and anything with a high EDHREC rank or price. Step 5 checks this list.
-- **Size:** reach exactly 100 cards including commanders (exactly 60 for `custom-dollar-brawl`), or at least 60 for casual.
+Follow the `deck-review` skill: check, read the list, cover the left-out cards, compare with the frameworks, fix, and repeat until `mise run deck:verify -- <slug>` exits 0.
 
-Role vocabulary (comma-separate several): `land`, `ramp`, `draw`, `removal`, `wipe`, `protection`, `wincon`, `synergy`. `deck:stats` counts them, and the Archidekt export turns them into categories.
+## 7. Explain and hand off
 
-Use the `deckbuilding-strategy` skill for the plan, role counts, land count and bracket fit. It has the Command Zone template, 8x8, Karsten's land math and the Rule of 9 for casual-60.
+Explain the deck to the user: the game plan, the mana base (point to `deck:stats`), key inclusions, hard cuts, known weaknesses, and which bracket it plays like against `target_bracket` (`deck:stats` shows all three brackets).
 
-## 5. Check and critique
+The deck is done when:
 
-```sh
-mise run deck:check -- <slug>    # fix every ERROR; explain every INCOMPLETE. Exit 2 is not a pass.
-mise run deck:stats -- <slug>    # curve, roles, color sources and Karsten's suggested land count
-mise run deck:candidates -- <slug>    # the most played and most valuable owned cards the deck leaves out
-```
+- **`deck:verify` exits 0.** It fails on any `deck:check` error, a placeholder primer, a top-20 left-out card without a `considered` reason, upgrades over budget, or decklist files that don't match `deck.yaml`. Explain every NOTE it prints (land gaps, role counts outside their targets).
+- **`deck:files` ran after the last edit,** which `deck:verify` confirms.
+- **`plays_like_bracket` is judged for the final list,** with the reasons in `power_notes`. `deck:files` removes it whenever the cards change, so judge it last (`deckbuilding-strategy` §2).
+- **The summary names what's still unknown:** unknown prices, uncached cards, and checks no tool makes.
 
-Read the top 20 of `deck:candidates` with `--oracle`. Every card on it needs a place in the deck or a `considered` reason, and the summary line counts those without one. Its ranking only flags cards for a second look: a high EDHREC rank or price says the card is popular or scarce, not that it fits this deck. Rerun it with `--text` for each engine resource (e.g. `--text treasure`). If every rank shows `?`, the cache predates EDHREC ranks; ask before refreshing.
+If the user wants to paste the deck into a site, run `mise run deck:export -- <slug> --copy` (add `--upgrades apply` for a playtest list) and say where to paste it. Don't commit unless asked.
 
-Then review it with the checklist in `deckbuilding-strategy`, and explain the deck to the user: the game plan, the mana base, key inclusions, hard cuts and known weaknesses. Point to the stats when you talk about curve or color sources.
+## 8. Upgrades (optional)
 
-## 6. Upgrades (optional)
+Follow the `deck-upgrades` skill.
 
-1. Add paired swaps under `upgrades` (`add`, `cut`, `reason`). Never edit the baseline to apply them.
-2. Unowned cards have no card data yet. **Ask before** running `mise run scryfall:refresh -- --missing`, since it uses the network.
-3. Run `mise run deck:upgrades -- <slug>` and report the total against the budget. Unknown prices stay unknown, never zero.
-4. Run `mise run deck:check -- <slug>`, then `mise run deck:files -- <slug>` right away, so `decklist-upgraded.archidekt.txt` and `decklist-upgraded.moxfield.txt` exist with every swap made (the added cards in their own Upgrade category in Archidekt, and only in the Sideboard section in Moxfield, not in Deck). Do this whenever upgrades are added or changed, not only at hand-off.
+## 9. Physical build (only when asked)
 
-## 7. Hand off
-
-- **Summary:** what's in the deck, what failed or is still unknown, and the upgrade total.
-- **Decklist files:** run `mise run deck:files -- <slug>` after the final `deck:check`. It writes `decklist.archidekt.txt` and `decklist.moxfield.txt` and, when the deck has upgrades, `decklist-upgraded.archidekt.txt` and `decklist-upgraded.moxfield.txt` beside `deck.yaml`. Rerun it after every later deck edit so the files never go stale.
-- **Viewing online:** if the user wants to paste the deck into a site, run `mise run deck:export -- <slug> --copy` (add `--upgrades apply` for a playtest list) and tell them where to paste it.
-- **Git:** don't commit unless asked.
-
-## 8. Physically build it (only when asked)
-
-When the user says they're physically assembling the deck, run `mise run deck:build -- <slug>` and show them what it would take from which collection file. Only after they confirm, run it again with `--apply`. That takes the cards out of the source collections (lowering or removing their rows), writes the deck's own list (default `collections/<owner>/decks/<deck name>.txt`) and sets `collection_destination` in `deck.yaml`. Then run `deck:check` and `deck:files`, and mention that other decks now count those cards as protected, so `decks:check` may newly fail for decks sharing them. If the source is a ManaBox export, remind the user to move the same cards into a deck binder in ManaBox (or out of the app) before their next export, or the cards will be counted twice.
+When the user says they're sleeving it up, follow the `physical-deck` skill.

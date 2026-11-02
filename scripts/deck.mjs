@@ -9,7 +9,7 @@ const validateSchema = new Ajv({ allErrors: true, strict: false }).compile(schem
 const MAX_YAML_ALIASES = 50;
 // The editor schema path is relative to the deck file; the default fits builds/<slug>/deck.yaml.
 const DEFAULT_SCHEMA_PATH = '../../schemas/deck.schema.json';
-const PRIMER_PLACEHOLDER = 'Describe the game plan.';
+export const PRIMER_PLACEHOLDER = 'Describe the game plan.';
 
 // Formats played with commanders, and their exact deck size including the commanders.
 export const COMMANDER_DECK_SIZES = { commander: 100, 'custom-dollar-brawl': 60 };
@@ -45,6 +45,15 @@ export function withDeckField(text, key, value, { after, source = 'deck' } = {})
   return updated;
 }
 
+// Sets one top-level field of a deck file's text: in place if it's there, else after the field named
+// by after (or at the end). An undefined value removes it. Comments and quoting are kept.
+export function withDeckValue(text, key, value, { after, source = 'deck' } = {}) {
+  const document = parseDocument(text, { uniqueKeys: true });
+  if (value === undefined && !document.has(key)) return text;
+  if (document.has(key) || value === undefined) return withDeckChanges(text, { [key]: value }, { source });
+  return withDeckField(text, key, value, { after, source });
+}
+
 // Changes fields of a deck's deck.yaml in place, keeping its comments and field order: each key is set
 // to its value, or removed when the value is undefined. The result must still be a valid deck.
 export function withDeckChanges(text, changes, { source = 'deck' } = {}) {
@@ -68,10 +77,40 @@ function removeItem(items, position) {
   }
 }
 
+// A top-level list in a deck document, created after the field named by after (else at the end) if
+// the deck doesn't have one yet.
+function deckList(document, key, after) {
+  if (!document.has(key)) {
+    const { items } = document.contents;
+    const position = items.findIndex((pair) => pair.key?.value === after);
+    items.splice(position === -1 ? items.length : position + 1, 0, document.createPair(key, []));
+  }
+  return document.get(key);
+}
+
+// Records a swap: each out card with a reason gets that considered reason (replacing an older one),
+// each in card loses its considered entry since it's in the deck now, and history gains an entry.
+function recordSwaps(document, swaps, { date, reasons = [] }) {
+  const considered = deckList(document, 'considered', 'mainboard');
+  const named = (names) => (item) => names.some((name) => normalizeName(item.get('name')) === normalizeName(name));
+  const replaced = [...swaps.map((swap) => swap.in), ...swaps.filter((_, at) => reasons[at]).map((swap) => swap.out)];
+  considered.items = considered.items.filter((item) => !named(replaced)(item));
+  swaps.forEach((swap, at) => {
+    if (reasons[at]) considered.items.push(document.createNode({ name: swap.out, reason: reasons[at] }));
+  });
+  if (!considered.items.length) document.delete('considered');
+  const changes = swaps.map((swap) => `-${swap.out}, +${swap.in}`).join(', ');
+  const notes = reasons.filter(Boolean).join(' ');
+  deckList(document, 'history', 'upgrades').items.push(
+    document.createNode({ date, changes, ...(notes ? { notes } : {}) }),
+  );
+}
+
 // Swaps one copy of each out card for one copy of its in card in a deck file's mainboard, keeping
 // comments. A card already in the mainboard gains a copy; a new one takes the out card's place and
-// role. An out entry left with no copies is removed. The result must still be a valid deck.
-export function withMainboardSwaps(text, swaps, { source = 'deck' } = {}) {
+// role. An out entry left with no copies is removed. With a date, the swap is recorded in considered
+// and history (see recordSwaps). The result must still be a valid deck.
+export function withMainboardSwaps(text, swaps, { source = 'deck', date, reasons } = {}) {
   const document = parseDocument(text, { uniqueKeys: true });
   const { items } = document.get('mainboard');
   const position = (name) => items.findIndex((item) => normalizeName(item.get('name')) === normalizeName(name));
@@ -89,6 +128,7 @@ export function withMainboardSwaps(text, swaps, { source = 'deck' } = {}) {
     if (cut.get('quantity') > 1) cut.set('quantity', cut.get('quantity') - 1);
     else removeItem(items, items.indexOf(cut));
   }
+  if (date) recordSwaps(document, swaps, { date, reasons });
   const updated = document.toString({ lineWidth: 0 });
   return { text: updated, deck: parseDeck(updated, source) };
 }
@@ -102,21 +142,47 @@ const titleFromSlug = (slug) =>
     .map((word) => word[0].toUpperCase() + word.slice(1))
     .join(' ');
 
-export function newDeck(slug, { format = 'commander', commanderNames = [], name = titleFromSlug(slug) } = {}) {
+// The fields given a value, in order; the rest are left out.
+const definedFields = (fields) => Object.fromEntries(Object.entries(fields).filter(([, value]) => value !== undefined));
+
+// A new draft. The brief's answers fill the header: header holds target_bracket, budget, max_card_price,
+// collection_source and primer when they're known, and the two ownership policies default to false.
+export function newDeck(
+  slug,
+  {
+    format = 'commander',
+    commanderNames = [],
+    name = titleFromSlug(slug),
+    allowProxies = false,
+    unlimitedBasics = false,
+    header = {},
+  } = {},
+) {
   if (isCommanderFormat(format) && !commanderNames.length) {
     throw new Error('Commander decks need --commander "<name>" (repeat it for a partner pair)');
   }
+  const {
+    primer = PRIMER_PLACEHOLDER,
+    target_bracket: targetBracket,
+    budget,
+    max_card_price: maxCardPrice,
+    collection_source: source,
+  } = header;
   const deck = {
     schema_version: 1,
     name,
     format,
     status: 'draft',
-    allow_proxies: false,
-    unlimited_basics: false,
-    primer: PRIMER_PLACEHOLDER,
+    ...definedFields({ target_bracket: targetBracket }),
+    allow_proxies: allowProxies,
+    unlimited_basics: unlimitedBasics,
+    primer,
+    ...definedFields({ budget, max_card_price: maxCardPrice, collection_source: source }),
     commanders: commanderNames.map((commanderName) => ({ name: commanderName, quantity: 1 })),
     mainboard: [],
+    considered: [],
     upgrades: [],
+    history: [],
     playtests: [],
   };
   parseDeck(serializeDeck(deck), `new deck ${slug}`);
@@ -170,6 +236,9 @@ export function splitUpgrades(deck) {
     considering: (deck.upgrades ?? []).map(({ add }) => ({ ...add })),
   };
 }
+
+// The labels a card entry's role may use; deck:check notes any other.
+export const ROLE_VOCABULARY = ['land', 'ramp', 'draw', 'removal', 'wipe', 'protection', 'wincon', 'synergy'];
 
 // A card entry's role field holds comma-separated labels, e.g. "ramp, draw".
 export const roleLabels = (entry) =>

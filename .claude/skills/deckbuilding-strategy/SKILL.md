@@ -1,6 +1,6 @@
 ---
 name: deckbuilding-strategy
-description: Established Magic deckbuilding frameworks (Commander Brackets, the Command Zone template, 8x8, Karsten's land math, the Rule of 9, "Who's the Beatdown?") and how to apply them with this repo's tools. Use when choosing a deck's plan or power level, setting role counts, sizing a mana base, or reviewing, tuning or cutting an existing deck.
+description: Established Magic deckbuilding frameworks (Commander Brackets, the Command Zone template, 8x8, Karsten's land math, the Rule of 9, "Who's the Beatdown?") and what each means for this repo's decks. Use when choosing a deck's plan or power level, setting role counts or role_targets, sizing a mana base, or judging a deck under review (the deck-review skill runs the review with the tools).
 ---
 
 # Deckbuilding strategy
@@ -41,7 +41,7 @@ Theme words find the obvious cards. The ones that get missed feed the engine one
 
 ## 2. Agree on power level: Commander Brackets
 
-Wizards' Commander Brackets (beta) exist to guide the pregame conversation with a playgroup. They aren't a matchmaking law. Set `bracket` in `deck.yaml` once the user picks one.
+Wizards' Commander Brackets (beta) exist to guide the pregame conversation with a playgroup. They aren't a matchmaking law. Set `target_bracket` in `deck.yaml` when the deck is created (`deck:new --target-bracket`), and change it only when the user asks.
 
 | Bracket      | Game Changers                             | Mass land denial | Extra turns      | Two-card combos    | Games last about |
 | ------------ | ----------------------------------------- | ---------------- | ---------------- | ------------------ | ---------------- |
@@ -53,14 +53,22 @@ Wizards' Commander Brackets (beta) exist to guide the pregame conversation with 
 
 These definitions date from October 2025. Tutors are unrestricted in every bracket.
 
-- **`deck:check` enforces Game Changers** from Scryfall's live `game_changer` flag. With a `bracket` set it fails over the limit; without one it lists them.
-- **The Game Changers list changes.** It had 53 cards after February 2026, and Wizards had an announcement due October 12, 2026. Refresh card data before relying on the count.
-- **Check the other bracket rules by reading the list.** No tool detects mass land denial, extra-turn chaining or two-card combos.
+A deck carries three brackets:
+
+- **`target_bracket`:** the bracket agreed with the playgroup, set at creation and changed only when the user asks.
+- **`lowest_legal_bracket`:** the lowest bracket the cards allow. Game Changers (Scryfall's live `game_changer` flag) raise it to 3, or 4 with more than three; cards that take extra turns to 2; mass land denial found in rules text to 4. `deck:files` and `deck:swap --apply` write it, and `deck:verify` fails when it's out of date. A deck at 1 can still play like a 3.
+- **`plays_like_bracket`:** how the deck actually plays, judged from the whole list. `deck:files` removes it whenever the cards change, and `deck:verify` fails until it's judged again. Weigh speed (how many turns to the win, by the bracket table), fast mana, tutors, how consistently the engine assembles, combos and near-combos, interaction and resilience, and explain the call in `power_notes`. A deck built from a thin pool usually plays below the bracket its cards allow; one with tight synergy and cheap interaction plays above.
+
+`deck:check` fails a deck whose cards need a higher bracket than `target_bracket`, upgrade adds included, and a `plays_like_bracket` above `target_bracket` or below `lowest_legal_bracket`. Without a target, it notes the bracket the cards set.
+
+- **Check the other bracket rules by reading the list.** No tool detects two-card combos, chained extra turns or land denial that the rules-text tests miss.
 - **See what's owned:** `mise run collection:search -- --game-changers --include-protected` shows which Game Changers the user owns.
 
 ## 3. Fill the roles: pick one template as a checklist
 
 Give every mainboard card a `role` (`land`, `ramp`, `draw`, `removal`, `wipe`, `protection`, `wincon`, `synergy`), then compare with `mise run deck:stats -- <slug>`. A card that does two jobs, like ramp that draws, gets both roles and counts toward both.
+
+`deck:stats` compares the counts with the deck's `role_targets` (e.g. `ramp: { min: 10, max: 12 }`), or, for a Commander deck without them, with the Command Zone template below. Set `role_targets` when the plan departs from the template, and say why in `power_notes`.
 
 **Command Zone template, updated version (episode 379)** for Commander:
 
@@ -96,18 +104,26 @@ Here `avg MV` is the average mana value of nonland mainboard cards. `cheap` coun
 - **Land count by curve:** low-curve aggressive decks often run 20–22 lands; decks full of 4–5 drops want 24 or more.
 - **Copies:** fewer than 4 copies is fine for legendary cards, situational answers, or expensive finishers.
 
+## 5a. 60-card Commander (Custom Dollar Brawl)
+
+No published template covers 60-card singleton decks with a commander, so there's nothing to cite.
+
+- **A starting point:** scale the Command Zone counts by 59/99. That gives roughly 6–7 ramp, 6 draw, 6–7 removal and 2 wipes. Say it's arithmetic, not a framework, and record the numbers in `role_targets`.
+- **Lands:** `deck:stats` applies Karsten's Commander adjustment to 60 cards, which is also an extrapolation rather than one of his fits.
+- **Price cap:** every search for this format needs `--max-price 1`. `deck:candidates` already leaves out cards over the deck's cap.
+
 ## 6. Reviewing or tuning a deck
 
-Go through these in order and report what you find:
+Go through these in order and report what you find. The `deck-review` skill runs them with the tools.
 
 1. **Plan:** can the deck's plan be said in one sentence, and do the cards support it?
-2. **Bracket:** does it fit the agreed bracket? Run `deck:check`, then read the list for mass land denial, extra turns and combos.
-3. **Roles:** compare role counts with the chosen template. Name the weakest role.
+2. **Bracket:** judge `plays_like_bracket` again, and check it against `target_bracket`. `deck:check` compares the bracket the cards set (Game Changers, extra turns, mass land denial), upgrades included. Read the list and the upgrade adds for two-card combos and chained extra turns.
+3. **Roles:** compare role counts with the targets. Name the weakest role.
 4. **Mana:** compare lands with Karsten's suggestion, look at the curve shape, and compare color sources with pips.
 5. **Win conditions:** are there enough, and are they owned? Can the deck still win if the commander is removed?
 6. **Resilience:** protection for key pieces, recursion, and how the deck recovers after a wipe.
-7. **Left-out cards:** run `mise run deck:candidates -- <slug> --oracle`, and again with `--text` for each engine resource. Every card it lists needs a place in the deck or a `considered` reason, and its summary counts those without one. A strong left-out card means a weak inclusion should go.
-8. **Cuts:** remove the cards that serve no role or the weakest role first. Use `upgrades` for purchases.
+7. **Left-out cards:** every strong owned card the deck leaves out needs a place or a `considered` reason (`deck:candidates`, and `deck:verify` for the top 20). A strong left-out card means a weak inclusion should go.
+8. **Cuts:** remove the cards that serve no role or the weakest role first. Use `upgrades` for purchases (`deck-upgrades`).
 
 Base claims on `deck:stats` output and card text from the cache, never on memory. A few games or goldfishing don't establish win rates.
 

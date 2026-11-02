@@ -26,6 +26,8 @@ export function card(name, fields = {}) {
     producedMana: [],
     legalities: { commander: 'legal' },
     gameChanger: false,
+    borderColor: 'black',
+    setType: 'expansion',
     edhrecRank: null,
     prices: { usd: '1.00', eur: null },
     defaultPrinting: false,

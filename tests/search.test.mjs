@@ -9,7 +9,7 @@ import {
   searchFilters,
   sortResults,
 } from '../scripts/search.mjs';
-import { deckStats, suggestedLands } from '../scripts/stats.mjs';
+import { deckListing, deckStats, suggestedLands } from '../scripts/stats.mjs';
 import { identityLabel, orderedIdentity } from '../scripts/card.mjs';
 import { card, entry, forest, indexOf, leader, row, spell } from './fixtures.mjs';
 
@@ -95,6 +95,15 @@ test('deckStats summarizes the mainboard curve, types, pips, land sources and ro
   assert.deepEqual(Object.fromEntries(stats.pips), { G: 1, B: 2 });
   assert.deepEqual(Object.fromEntries(stats.landSources), { G: 30 });
   assert.deepEqual(Object.fromEntries(stats.roles), { land: 30, ramp: 1, creature: 1 });
+});
+
+test("deckStats counts only the land colors a commander deck can make, within the commanders' identity", () => {
+  const tower = card('Command Tower', { typeLine: 'Land', producedMana: ['W', 'U', 'B', 'R', 'G'] });
+  const towerIndex = indexOf(forest, leader, tower);
+  const deck = { commanders: [entry(leader.name)], mainboard: [entry(forest.name, 2), entry(tower.name)] };
+  const sources = (fields) => Object.fromEntries(deckStats({ ...deck, ...fields }, towerIndex).landSources);
+  assert.deepEqual(sources({ format: 'commander' }), { G: 3 });
+  assert.deepEqual(sources({ format: 'casual-60', commanders: [] }), { W: 1, U: 1, B: 1, R: 1, G: 3 });
 });
 
 test('deckStats reports cards it cannot resolve', () => {
@@ -267,11 +276,120 @@ test('deckCandidates lists playable cards the deck leaves out, with their consid
   );
   const withLands = deckCandidates(deck, pool, index, { lands: true }).results.map((result) => result.card.name);
   assert.deepEqual(withLands.toSorted(), ['Forest', 'Llanowar Elves']);
+  const capped = deckCandidates({ ...deck, max_card_price: { amount: 0.5, currency: 'USD' } }, pool, index);
+  assert.deepEqual([capped.results.length, capped.overCap], [0, 1]);
   const casual = deckCandidates({ ...deck, format: 'casual-60', commanders: [] }, pool, index).results;
   assert.deepEqual(casual.map((result) => result.card.name).toSorted(), [
     'Banned Thing',
     'Example Leader',
     'Grave Ghoul',
     'Llanowar Elves',
+  ]);
+});
+
+test('--role presets match rules text, and group-by role counts each card once per role', () => {
+  const wrath = card('Wrath', { oracleText: 'Destroy all creatures.' });
+  const bolt = card('Bolt', { oracleText: 'Bolt deals 3 damage to any target.' });
+  const growth = card('Growth', { oracleText: 'Search your library for a basic land card. Draw a card.' });
+  const bear = card('Bear', { typeLine: 'Creature — Bear' });
+  const roleIndex = indexOf(forest, wrath, bolt, growth, bear);
+  const pool = { available: [forest, wrath, bolt, growth, bear].map((value) => row(value, 1)), protected: [] };
+  const names = (options) =>
+    searchCollection(pool, roleIndex, searchFilters(options, roleIndex)).results.map((result) => result.card.name);
+  assert.deepEqual(names({ role: ['wipe'] }), ['Wrath']);
+  assert.deepEqual(names({ role: ['removal'] }), ['Bolt']);
+  assert.deepEqual(names({ role: ['ramp', 'draw'] }), ['Growth']);
+  assert.throws(() => names({ role: ['wincon'] }), /--role must be one of: ramp, draw, removal, wipe, protection/);
+  const { results } = searchCollection(pool, roleIndex);
+  assert.deepEqual(
+    groupResults(results, 'role').map(({ key, cards }) => [key, cards]),
+    [
+      ['draw', 1],
+      ['land', 1],
+      ['other', 1],
+      ['ramp', 1],
+      ['removal', 1],
+      ['wipe', 1],
+    ],
+  );
+});
+
+test('--max-price keeps cards at or under a USD price, and --min-copies needs that many available', () => {
+  assert.deepEqual(namesFor({ 'max-price': '1' }), ['Banned Thing', 'Llanowar Elves', 'Grave Ghoul']);
+  assert.deepEqual(namesFor({ 'min-copies': '2' }), ['Llanowar Elves']);
+  assert.throws(() => namesFor({ 'max-price': 'cheap' }), /--max-price must be a number/);
+});
+
+test('--unowned searches every playable cached card without an available copy', () => {
+  const token = card('Elf Token', { typeLine: 'Token Creature — Elf', legalities: {} });
+  const unownedIndex = indexOf(forest, leader, spell, elf, ghoul, banned, token);
+  const results = searchCollection(collections, unownedIndex, { unowned: true }).results;
+  assert.deepEqual(
+    results.map((result) => [result.card.name, result.available, result.protected]),
+    [
+      ['Forest', 0, 0],
+      ['Example Leader', 0, 1],
+    ],
+  );
+  assert.throws(() => searchFilters({ unowned: true, 'min-copies': '1' }, index), /not both/);
+});
+
+test('deckStats compares roles with the Command Zone template or role_targets, and gives opening-hand odds', () => {
+  const deck = {
+    format: 'commander',
+    commanders: [entry(leader.name)],
+    mainboard: [entry(forest.name, 37, { role: 'land' }), entry(elf.name, 11, { role: 'ramp' })],
+  };
+  const stats = deckStats(deck, index);
+  assert.equal(stats.roleTargets.source, 'Command Zone template');
+  assert.deepEqual(
+    stats.roleTargets.targets.map(({ role, count, status }) => [role, count, status]),
+    [
+      ['ramp', 11, 'within'],
+      ['draw', 0, 'under'],
+      ['removal', 0, 'under'],
+      ['wipe', 0, 'under'],
+    ],
+  );
+  const own = deckStats({ ...deck, format: 'casual-60', role_targets: { ramp: { min: 4, max: 8 } } }, index);
+  assert.deepEqual(own.roleTargets, {
+    source: 'role_targets',
+    targets: [{ role: 'ramp', count: 11, min: 4, max: 8, status: 'over' }],
+  });
+  assert.equal(deckStats({ ...deck, format: 'casual-60' }, index).roleTargets.source, null);
+  const { fewLands, keepableLands, manyLands, someRamp } = stats.openingHand;
+  assert.ok(Math.abs(fewLands + keepableLands + manyLands - 1) < 1e-9);
+  assert.ok(fewLands < 0.01 && manyLands > keepableLands);
+  // No ramp in 7 of 48 cards with 11 ramp: (37/48)(36/47)...(31/42).
+  const noRamp = Array.from({ length: 7 }, (_, drawn) => (37 - drawn) / (48 - drawn)).reduce((a, b) => a * b);
+  assert.ok(Math.abs(someRamp - (1 - noRamp)) < 1e-9);
+});
+
+test('deckListing groups the mainboard by first role, marking upgrades and filtering by role', () => {
+  const deck = {
+    commanders: [entry(leader.name)],
+    mainboard: [
+      entry(ghoul.name),
+      entry(forest.name, 2, { role: 'land' }),
+      entry(elf.name, 1, { role: 'synergy, ramp' }),
+    ],
+    upgradesIn: [entry(spell.name, 1, { role: 'ramp' })],
+  };
+  const listing = deckListing(deck, index);
+  assert.deepEqual(
+    listing.groups.map(({ role, items }) => [role, items.map(({ card, upgrade }) => [card.name, upgrade])]),
+    [
+      ['land', [['Forest', false]]],
+      ['ramp', [['Example Spell', true]]],
+      ['synergy', [['Llanowar Elves', false]]],
+      ['no role', [['Grave Ghoul', false]]],
+    ],
+  );
+  const ramp = deckListing(deck, index, { role: 'ramp' }).groups.flatMap(({ items }) =>
+    items.map(({ card }) => card.name),
+  );
+  assert.deepEqual(ramp, ['Example Spell', 'Llanowar Elves']);
+  assert.deepEqual(deckListing({ ...deck, mainboard: [entry('Nope')] }, index).problems, [
+    'Nope: not in card cache; check the spelling or run scryfall:refresh',
   ]);
 });

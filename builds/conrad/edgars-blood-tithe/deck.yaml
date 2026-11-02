@@ -3,7 +3,9 @@ schema_version: 1
 name: Edgar's Blood Tithe
 format: commander
 status: draft
-bracket: 2
+target_bracket: 2
+plays_like_bracket: 2
+lowest_legal_bracket: 1
 allow_proxies: false
 unlimited_basics: true
 collection_source:
@@ -11,7 +13,7 @@ collection_source:
 primer: >-
   Orzhov aristocrats. Flood the board with cheap tokens (Lingering Souls, Battle Screech, Hop to It, Champions from Beyond), then feed them to Edgar and the other sacrifice outlets. Every death gains life through Edgar, Daxos and Bastion of Remembrance, and Marauding Blight-Priest turns each lifegain into a drain on every opponent, so the board bleeds the table while Faramir, Braids, Kingpin's Enforcers and Niv-Mizzet refill the hand. Rent Is Due turns spare tokens into a card every turn. Close with a menacing, counter-stacked Edgar or a big Exsanguinate, and reset losing boards with Hour of Reckoning, which spares your tokens.
 power_notes: >-
-  Bracket 2 (Core) baseline built only from Daniel's binders: no Game Changers, mass land denial, extra turns or two-card combos, and a slow 1-drain-per-death clock that wins around turn 9 or 10. The upgrades make it a real Bracket 4. They add three combos (Heliod with Walking Ballista from turn 4; Exquisite Blood with Marauding Blight-Priest or Vito; Karmic Guide, Reveillark and a free sacrifice outlet into Blood Artist, Zulaport Cutthroat, Cruel Celebrant, Elas il-Kor or Edgar with Blight-Priest). They also add fast mana (Dark Ritual, Orzhov Signet, Fellwar Stone, Ashnod's Altar), tutors (Demonic Tutor and Enlightened Tutor, both Game Changers, plus Diabolic Intent), Skullclamp, cheap instant-speed interaction, and Grand Abolisher and Silence to protect the combo turn.
+  Plays like Bracket 2 (Core): a baseline built only from Daniel's binders: no Game Changers, mass land denial, extra turns or two-card combos, and a slow 1-drain-per-death clock that wins around turn 9 or 10. The upgrades make it a real Bracket 4. They add three combos (Heliod with Walking Ballista from turn 4; Exquisite Blood with Marauding Blight-Priest or Vito; Karmic Guide, Reveillark and a free sacrifice outlet into Blood Artist, Zulaport Cutthroat, Cruel Celebrant, Elas il-Kor or Edgar with Blight-Priest). They also add fast mana (Dark Ritual, Orzhov Signet, Fellwar Stone, Ashnod's Altar), tutors (Demonic Tutor and Enlightened Tutor, both Game Changers, plus Diabolic Intent), Skullclamp, cheap instant-speed interaction, and Grand Abolisher and Silence to protect the combo turn.
 budget:
   amount: 250
   currency: USD

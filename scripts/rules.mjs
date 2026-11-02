@@ -1,6 +1,14 @@
 import { ageInDays, hasCommanderText, isBackground, isBasic, isLegendaryCreature } from './card.mjs';
 import { availableCopies, holdingsNote, ownedCounts, protectedHoldings } from './collection.mjs';
-import { COMMANDER_DECK_SIZES, deckEntries, isCommanderFormat, resolveEntries } from './deck.mjs';
+import {
+  COMMANDER_DECK_SIZES,
+  ROLE_VOCABULARY,
+  applyUpgrades,
+  deckEntries,
+  isCommanderFormat,
+  resolveEntries,
+  roleLabels,
+} from './deck.mjs';
 import { CENTS_PER_UNIT, cheapestQuote } from './upgrades.mjs';
 
 const RULES_WARN_AGE_DAYS = 30;
@@ -13,14 +21,14 @@ const CUSTOM_LIMIT_TEXT = /A deck can have /i;
 
 // A finding is one line of check output; its level decides the outcome.
 const finding = (level) => (message) => ({ level, message });
-const error = finding('error');
-const incomplete = finding('incomplete');
-const note = finding('note');
+export const error = finding('error');
+export const incomplete = finding('incomplete');
+export const note = finding('note');
 
 // Failures outrank unknowns: a deck with both still fails.
 const OUTCOME_SEVERITY = ['pass', 'incomplete', 'fail'];
 
-function outcomeOf(findings) {
+export function outcomeOf(findings) {
   if (findings.some(({ level }) => level === 'error')) return 'fail';
   if (findings.some(({ level }) => level === 'incomplete')) return 'incomplete';
   return 'pass';
@@ -138,30 +146,92 @@ function ownershipFindings(tallies, collections, index, deck) {
   return findings;
 }
 
-// Wizards' Commander Brackets (beta; definitions from October 2025): Game Changers allowed per bracket.
-const GAME_CHANGER_LIMITS = { 1: 0, 2: 0, 3: 3, 4: Infinity, 5: Infinity };
+// Wizards' Commander Brackets (beta; definitions from October 2025). Only some of a bracket's limits
+// show in the cards: Game Changers (none in Brackets 1-2, up to 3 in Bracket 3), extra turns (none in
+// Bracket 1) and mass land denial (none below Bracket 4). Two-card combos, chained extra turns and a
+// deck's intent don't, so the bracket the cards set is a floor, not a rating.
+// Checked against every Commander-legal card: "except ... lands" (Scourglass), one tapped land and
+// "this land doesn't untap" (painlands) don't count, nor do cards that only stop extra turns.
+const MASS_LAND_DENIAL =
+  /\b(?:destroy|exile|return) all\b(?:(?!\bexcept\b)[^.])*\blands\b|\beach (?:player|opponent) sacrifices\b[^.]*\blands\b|\blands (?:don't|do not) untap\b|\bcan't untap more than (?:one|two) (?:lands?|permanents?)\b|\bnonbasic lands are\b/i;
+const EXTRA_TURN = /\btakes? (?:an|one|two|three|x|that many)? ?extra turns?\b/i;
 
-function gameChangerFindings(tallies, bracket) {
-  const names = [...tallies.values()].filter(({ card }) => card.gameChanger).map(({ card }) => card.name);
-  const list = `${names.length} Game Changers${names.length ? `: ${names.join(', ')}` : ''}`;
-  if (bracket === undefined) {
-    return names.length ? [note(`${list} (Brackets 1-2 allow none, Bracket 3 up to 3; set bracket to enforce)`)] : [];
-  }
-  const limit = GAME_CHANGER_LIMITS[bracket];
-  if (names.length <= limit) return [];
-  // Bracket 1 lets a playgroup agree on thematic exceptions before the game, so it's a judgment call.
-  if (bracket === 1) {
-    return [incomplete(`${list}; Bracket 1 allows none unless your playgroup agrees to a thematic exception`)];
-  }
-  return [error(`${list}; Bracket ${bracket} allows ${limit === 0 ? 'none' : `up to ${limit}`}`)];
+// The lowest bracket a list's cards allow, with what raises it: [{ bracket, reason }].
+export function bracketFloor(tallies) {
+  const cards = [...tallies.values()].map(({ card }) => card);
+  const named = (test) => cards.filter(test).map((card) => card.name);
+  const changers = named((card) => card.gameChanger);
+  const landDenial = named((card) => MASS_LAND_DENIAL.test(card.oracleText));
+  const extraTurns = named((card) => EXTRA_TURN.test(card.oracleText));
+  const raises = [
+    ...(changers.length
+      ? [
+          {
+            bracket: changers.length > 3 ? 4 : 3,
+            reason: `${changers.length} Game Changers: ${changers.join(', ')}`,
+            gameChangers: true,
+          },
+        ]
+      : []),
+    ...(landDenial.length ? [{ bracket: 4, reason: `mass land denial: ${landDenial.join(', ')}` }] : []),
+    ...(extraTurns.length ? [{ bracket: 2, reason: `extra turns: ${extraTurns.join(', ')}` }] : []),
+  ];
+  return { bracket: Math.max(1, ...raises.map(({ bracket }) => bracket)), raises };
 }
+
+// What lowest_legal_bracket should hold: the bracket a commander deck's cards set, commanders included, or
+// undefined for casual decks, which have none.
+export function lowestLegalBracket(deck, index) {
+  if (!isCommanderFormat(deck.format)) return undefined;
+  return bracketFloor(resolveEntries(deckEntries(deck), index).tallies).bracket;
+}
+
+// The cards' bracket against target_bracket. Without a target the floor is a note. Bracket 1 lets a
+// playgroup agree on thematic Game Changers before the game, so those are a judgment call there.
+function bracketFindings(tallies, target) {
+  const { bracket, raises } = bracketFloor(tallies);
+  const reasons = (list) => list.map(({ reason }) => reason).join('; ');
+  if (target === undefined) {
+    return raises.length
+      ? [note(`Bracket ${bracket} or higher by its cards (${reasons(raises)}); set target_bracket to enforce`)]
+      : [];
+  }
+  const over = raises.filter((raise) => raise.bracket > target);
+  if (!over.length) return [];
+  const message = `Bracket ${bracket} or higher by its cards (${reasons(over)}); target_bracket is ${target}`;
+  if (target === 1 && over.every((raise) => raise.gameChangers)) {
+    return [incomplete(`${message}, unless your playgroup agrees to a thematic exception`)];
+  }
+  return [error(message)];
+}
+
+// plays_like_bracket is a judgment, but it can't sit below what the cards require, and a deck that
+// plays above the bracket agreed with the playgroup doesn't fit it.
+function playsLikeFindings(deck, tallies) {
+  const playsLike = deck.plays_like_bracket;
+  if (playsLike === undefined) return [];
+  const findings = [];
+  const lowest = bracketFloor(tallies).bracket;
+  if (playsLike < lowest) {
+    findings.push(
+      error(`plays_like_bracket ${playsLike} is below lowest_legal_bracket ${lowest}, which its cards require`),
+    );
+  }
+  if (deck.target_bracket !== undefined && playsLike > deck.target_bracket) {
+    findings.push(error(`plays_like_bracket ${playsLike} is above target_bracket ${deck.target_bracket}`));
+  }
+  return findings;
+}
+
+// The most one card may cost: the deck's max_card_price, else its format's cap, else undefined.
+export const priceCap = (deck) => deck.max_card_price ?? FORMAT_PRICE_CAPS[deck.format];
 
 const formatMoney = (cents, currency) => `${(cents / CENTS_PER_UNIT).toFixed(2)} ${currency}`;
 
 // Judges each card by its cheapest printing, so a pricey printing in the collection doesn't break the cap.
 // Upgrade adds are checked too, since applying them must keep the deck under the cap.
 function priceCapFindings(deck, tallies, index, now) {
-  const cap = deck.max_card_price ?? FORMAT_PRICE_CAPS[deck.format];
+  const cap = priceCap(deck);
   if (!cap) return [];
   const { amount, currency } = cap;
   const capName = deck.max_card_price ? 'max_card_price' : `the ${FORMAT_LABELS[deck.format]} cap`;
@@ -183,6 +253,19 @@ function priceCapFindings(deck, tallies, index, now) {
     });
 }
 
+// deck:stats and the Archidekt export count roles by label, so a label outside the vocabulary is noted.
+function roleLabelFindings(deck) {
+  const unknown = new Map();
+  for (const entry of [...deck.mainboard, ...(deck.upgrades ?? []).map(({ add }) => add)]) {
+    for (const label of roleLabels(entry).filter((role) => !ROLE_VOCABULARY.includes(role))) {
+      unknown.set(label, [...(unknown.get(label) ?? []), entry.name]);
+    }
+  }
+  return [...unknown].map(([label, names]) =>
+    note(`Role "${label}" isn't one of ${ROLE_VOCABULARY.join(', ')}: ${names.join(', ')}`),
+  );
+}
+
 function freshnessFindings(tallies, now) {
   const oldestDays = Math.max(0, ...[...tallies.values()].map(({ card }) => ageInDays(card, now)));
   if (oldestDays <= RULES_WARN_AGE_DAYS) return [];
@@ -191,9 +274,38 @@ function freshnessFindings(tallies, now) {
   ];
 }
 
-const uniqueFindings = (findings) => [
-  ...new Map(findings.map((item) => [`${item.level}:${item.message}`, item])).values(),
-];
+const findingKey = (item) => `${item.level}:${item.message}`;
+const uniqueFindings = (findings) => [...new Map(findings.map((item) => [findingKey(item), item])).values()];
+
+// Card rules for a list: copy limits, and for commander formats legality, color identity and Game Changers.
+function listRuleFindings(tallies, deck, identity) {
+  const commanderRules = isCommanderFormat(deck.format);
+  return [
+    ...[...tallies.values()].flatMap((tally) => [
+      ...copyLimitFindings(tally, deck.format),
+      ...(commanderRules ? commanderLegalityFindings(tally.card, identity, deck.format) : []),
+    ]),
+    ...(commanderRules ? bracketFindings(tallies, deck.target_bracket) : []),
+  ];
+}
+
+// Applying the upgrades must keep the deck legal, so the card rules are judged again on the upgraded
+// list. Only findings the baseline doesn't already have are reported, marked as coming from upgrades.
+function upgradeRuleFindings(deck, index, identity, baseline) {
+  if (!deck.upgrades?.length) return [];
+  let upgraded;
+  try {
+    upgraded = applyUpgrades(deck);
+  } catch (problem) {
+    return [error(`Upgrades: ${problem.message}`)];
+  }
+  const entries = [...upgraded.commanders, ...upgraded.mainboard, ...upgraded.upgradesIn];
+  const { tallies, problems } = resolveEntries(entries, index);
+  const seen = new Set(baseline.map(findingKey));
+  return [...problems.map(incomplete), ...listRuleFindings(tallies, deck, identity)]
+    .filter((item) => !seen.has(findingKey(item)))
+    .map((item) => ({ ...item, message: `With upgrades applied: ${item.message}` }));
+}
 
 export function checkDeck(deck, collections, index, { now = Date.now() } = {}) {
   const entries = deckEntries(deck);
@@ -205,18 +317,17 @@ export function checkDeck(deck, collections, index, { now = Date.now() } = {}) {
     commanderRules && commanders.length === deck.commanders.length
       ? new Set(commanders.flatMap((card) => card.colorIdentity))
       : null;
-  const cardFindings = [...tallies.values()].flatMap((tally) => [
-    ...copyLimitFindings(tally, deck.format),
-    ...(commanderRules ? commanderLegalityFindings(tally.card, identity, deck.format) : []),
-  ]);
+  const ruleFindings = listRuleFindings(tallies, deck, identity);
   const findings = uniqueFindings([
     ...problems.map(incomplete),
     ...sizeFindings(deck.format, total),
     ...commanderFindings(commanders),
-    ...cardFindings,
+    ...ruleFindings,
+    ...(isCommanderFormat(deck.format) ? playsLikeFindings(deck, tallies) : []),
     ...ownershipFindings(tallies, collections, index, deck),
-    ...(commanderRules ? gameChangerFindings(tallies, deck.bracket) : []),
     ...priceCapFindings(deck, tallies, index, now),
+    ...upgradeRuleFindings(deck, index, identity, ruleFindings),
+    ...roleLabelFindings(deck),
     ...freshnessFindings(tallies, now),
   ]);
   return { total, findings, outcome: outcomeOf(findings) };

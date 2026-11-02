@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { cheapestQuote, upgradeReport } from '../scripts/upgrades.mjs';
+import { cheapestPrice, cheapestQuote, upgradeReport } from '../scripts/upgrades.mjs';
 import { DAY_MS, NOW, card, entry, forest, indexOf, leader, row, spell } from './fixtures.mjs';
 
 const index = indexOf(forest, leader, spell);
@@ -31,6 +31,17 @@ test('cheapestQuote picks the cheapest fresh printing', () => {
   const quote = cheapestQuote(indexOf(...printings), { card: printings[0] }, { currency: 'USD', now: NOW });
   assert.equal(quote.printing.id, 'cheap');
   assert.equal(quote.unitCents, 25);
+});
+
+test('gold-bordered and memorabilia printings never set the price, unless they are the only ones', () => {
+  const gold = card('Bolt', { id: 'gold', borderColor: 'gold', prices: { usd: '0.10', eur: null } });
+  const memorabilia = card('Bolt', { id: 'ce', setType: 'memorabilia', prices: { usd: '0.05', eur: null } });
+  const real = card('Bolt', { id: 'real', prices: { usd: '2.00', eur: null } });
+  const quote = (...printings) =>
+    cheapestQuote(indexOf(...printings), { card: printings[0] }, { currency: 'USD', now: NOW });
+  assert.equal(quote(gold, memorabilia, real).printing.id, 'real');
+  assert.equal(cheapestPrice(indexOf(gold, memorabilia, real), real), 2);
+  assert.equal(quote(gold).printing.id, 'gold');
 });
 
 test('cheapestQuote honors a pinned printing', () => {

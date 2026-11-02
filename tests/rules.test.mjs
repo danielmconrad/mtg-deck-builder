@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { checkDeck, worstOutcome } from '../scripts/rules.mjs';
+import { bracketFloor, checkDeck, worstOutcome } from '../scripts/rules.mjs';
 import { DAY_MS, NOW, card, entry, forest, indexOf, leader, messages, row, spell } from './fixtures.mjs';
 
 const owned = () => ({ available: [row(forest, 100), row(leader, 1), row(spell, 4)], protected: [] });
@@ -260,23 +260,85 @@ function checkWithChangers(count, fields = {}) {
   return check(deck, { collections, cards: [forest, leader, ...used] });
 }
 
-test('Game Changers are listed as a note when the deck sets no bracket', () => {
+test('without a target_bracket, the bracket the cards set is a note', () => {
   const report = checkWithChangers(2);
   assert.equal(report.outcome, 'pass');
-  assert.match(messages(report, 'note').join(), /2 Game Changers: Changer One, Changer Two \(Brackets 1-2 allow none/);
+  assert.deepEqual(messages(report, 'note'), [
+    'Bracket 3 or higher by its cards (2 Game Changers: Changer One, Changer Two); set target_bracket to enforce',
+  ]);
+  assert.deepEqual(messages(checkWithChangers(0), 'note'), []);
 });
 
-test('a bracket enforces its Game Changer limit', () => {
-  assert.equal(checkWithChangers(3, { bracket: 3 }).outcome, 'pass');
-  assert.deepEqual(messages(checkWithChangers(4, { bracket: 3 }), 'error'), [
-    '4 Game Changers: Changer One, Changer Two, Changer Three, Changer Four; Bracket 3 allows up to 3',
+test('target_bracket fails cards that need a higher bracket', () => {
+  assert.equal(checkWithChangers(3, { target_bracket: 3 }).outcome, 'pass');
+  assert.deepEqual(messages(checkWithChangers(4, { target_bracket: 3 }), 'error'), [
+    'Bracket 4 or higher by its cards (4 Game Changers: Changer One, Changer Two, Changer Three, Changer Four); target_bracket is 3',
   ]);
-  assert.match(messages(checkWithChangers(1, { bracket: 2 }), 'error').join(), /Bracket 2 allows none/);
-  assert.equal(checkWithChangers(4, { bracket: 4 }).outcome, 'pass');
+  assert.match(messages(checkWithChangers(1, { target_bracket: 2 }), 'error').join(), /target_bracket is 2/);
+  assert.equal(checkWithChangers(4, { target_bracket: 4 }).outcome, 'pass');
 });
 
 test('Bracket 1 Game Changers need a playgroup decision rather than failing', () => {
-  const report = checkWithChangers(1, { bracket: 1 });
+  const report = checkWithChangers(1, { target_bracket: 1 });
   assert.equal(report.outcome, 'incomplete');
   assert.match(messages(report, 'incomplete').join(), /thematic exception/);
+});
+
+test('bracketFloor reads Game Changers, extra turns and mass land denial from the cards', () => {
+  const tallies = (...cards) => new Map(cards.map((value) => [value.oracleId, { card: value, quantity: 1 }]));
+  const timeWalk = card('Time Walk', { oracleText: 'Take an extra turn after this one.' });
+  const armageddon = card('Armageddon', { oracleText: 'Destroy all lands.' });
+  const winterOrb = card('Winter Orb', {
+    oracleText: "As long as Winter Orb is untapped, players can't untap more than one land during their untap steps.",
+  });
+  const wrath = card('Wrath', { oracleText: "Destroy all creatures. They can't be regenerated." });
+  assert.deepEqual(bracketFloor(tallies(forest, wrath)), { bracket: 1, raises: [] });
+  assert.equal(bracketFloor(tallies(timeWalk)).bracket, 2);
+  assert.equal(bracketFloor(tallies(timeWalk, changers[0])).bracket, 3);
+  assert.deepEqual(
+    bracketFloor(tallies(armageddon, winterOrb)).raises.map(({ bracket, reason }) => [bracket, reason]),
+    [[4, 'mass land denial: Armageddon, Winter Orb']],
+  );
+  const report = check(
+    commanderDeck({ target_bracket: 1, mainboard: [entry(forest.name, 98), entry(timeWalk.name)] }),
+    {
+      collections: { available: [row(forest, 98), row(leader, 1), row(timeWalk, 1)], protected: [] },
+      cards: [forest, leader, timeWalk],
+    },
+  );
+  assert.deepEqual(messages(report, 'error'), [
+    'Bracket 2 or higher by its cards (extra turns: Time Walk); target_bracket is 1',
+  ]);
+});
+
+test('upgrade adds must keep the deck legal: color identity, legality, copy limits and Game Changers', () => {
+  const offColor = card('Off Color', { colorIdentity: ['U'] });
+  const changer = card('Changer', { colorIdentity: ['G'], gameChanger: true });
+  const cards = [forest, leader, spell, offColor, changer];
+  const swap = (add) => ({ add: entry(add), cut: entry(forest.name), reason: 'Test' });
+  const deck = commanderDeck({
+    target_bracket: 2,
+    mainboard: [entry(forest.name, 98), entry(spell.name)],
+    upgrades: [swap(offColor.name), swap(spell.name), swap(changer.name)],
+  });
+  assert.deepEqual(messages(check(deck, { cards }), 'error'), [
+    'With upgrades applied: Example Spell: 2 copies exceeds limit 1',
+    'With upgrades applied: Off Color: outside commander color identity',
+    'With upgrades applied: Bracket 3 or higher by its cards (1 Game Changers: Changer); target_bracket is 2',
+  ]);
+  const unknown = commanderDeck({ upgrades: [swap('Not Cached')] });
+  assert.match(messages(check(unknown), 'incomplete').join(), /With upgrades applied: Not Cached: not in card cache/);
+  const badCut = commanderDeck({ upgrades: [{ add: entry(spell.name), cut: entry('Missing'), reason: 'Test' }] });
+  assert.match(messages(check(badCut), 'error').join(), /Upgrades: Upgrade cuts 1 Missing/);
+  assert.equal(check(commanderDeck({ upgrades: [swap(spell.name)] })).outcome, 'pass');
+});
+
+test('role labels outside the vocabulary are noted without changing the outcome', () => {
+  const report = check(
+    commanderDeck({ mainboard: [entry(forest.name, 98), entry(spell.name, 1, { role: 'ramp, tutor' })] }),
+  );
+  assert.equal(report.outcome, 'pass');
+  assert.deepEqual(messages(report, 'note'), [
+    'Role "tutor" isn\'t one of land, ramp, draw, removal, wipe, protection, wincon, synergy: Example Spell',
+  ]);
 });

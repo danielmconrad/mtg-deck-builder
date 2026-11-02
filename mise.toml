@@ -45,6 +45,14 @@ run = "node scripts/cli.mjs deck:files"
 description = "List the deck's most valued left-out cards and their considered reasons: -- <slug> [--limit N] [--sort edhrec|price]"
 run = "node scripts/cli.mjs deck:candidates"
 
+[tasks."deck:show"]
+description = "List a deck's cards by role, with rules text on request: -- <slug> [--role ROLE] [--oracle]"
+run = "node scripts/cli.mjs deck:show"
+
+[tasks."deck:verify"]
+description = "Check a deck is ready to hand off: deck:check plus primer, stats, left-out cards, upgrades, decklist files: -- <slug>"
+run = "node scripts/cli.mjs deck:verify"
+
 [tasks."deck:upgrades"]
 description = "Price the upgrade package and any shortfalls against the budget: -- <slug>"
 run = "node scripts/cli.mjs deck:upgrades"
