@@ -14,7 +14,7 @@ The rules in AGENTS.md apply: only unprotected collections supply cards, and pro
 # include every subset (WR also matches mono-W, mono-R and colorless), which is what a deck can play.
 mise run collection:search -- --commanders --legal commander --group-by identity
 mise run collection:search -- --commanders --legal commander --identity WR --sort edhrec
-mise run collection:search -- --name '^(Thorin, King|Glóin the Mighty)' --oracle   # names are regexes; // joins two-faced names
+mise run card:show -- "Thorin, King of Durin's Folk" "Glóin, Dwarf Emissary"   # exact names, owned or not
 ```
 
 Skip commanders that already lead a deck in `builds/` unless the user wants a second build: `grep -rh -A1 '^commanders:' builds --include=deck.yaml | grep name`.

@@ -1,12 +1,6 @@
 import { isLand } from './card.mjs';
-import {
-  COMMANDER_DECK_SIZES,
-  ROLE_VOCABULARY,
-  deckEntries,
-  isCommanderFormat,
-  resolveEntries,
-  roleLabels,
-} from './deck.mjs';
+import { ROLE_VOCABULARY, deckEntries, resolveEntries, roleLabels } from './deck.mjs';
+import { FORMATS, isCommanderFormat } from './formats.mjs';
 import { bracketFloor } from './rules.mjs';
 
 export const CARD_TYPES = [
@@ -30,7 +24,7 @@ const CHEAP_ROLES = ['ramp', 'draw'];
 // For Custom Dollar Brawl's 60 cards the same adjustment is an extrapolation, not one of Karsten's fits.
 export function suggestedLands({ format, commanderCount, averageManaValue, cheapRampAndDraw }) {
   const cheapCredit = 0.28 * cheapRampAndDraw;
-  const deckSize = COMMANDER_DECK_SIZES[format];
+  const deckSize = isCommanderFormat(format) ? FORMATS[format].size : undefined;
   if (deckSize === undefined) return 19.59 + 1.9 * averageManaValue - cheapCredit;
   const scale = (deckSize - commanderCount) / 60;
   return scale * (19.59 + 1.9 * averageManaValue + 0.27 * commanderCount) - cheapCredit - 1.35;

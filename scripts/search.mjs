@@ -1,6 +1,7 @@
 import { canBeCommander, creatureTypes, identityLabel, isLand } from './card.mjs';
 import { ownedCounts, protectedHoldings } from './collection.mjs';
-import { deckEntries, isCommanderFormat, resolveEntries } from './deck.mjs';
+import { deckEntries, resolveEntries } from './deck.mjs';
+import { isCommanderFormat } from './formats.mjs';
 import { priceCap } from './rules.mjs';
 import { cheapestPrice } from './upgrades.mjs';
 

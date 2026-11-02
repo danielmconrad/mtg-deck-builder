@@ -10,7 +10,7 @@ Install [mise](https://mise.jdx.dev/getting-started.html), then:
 mise trust && mise install
 mise run setup          # npm ci (network) and the git pre-commit hook
 mise run scryfall:refresh  # fetch card data and prices (network); add -- --bulk for every card on Scryfall
-mise run check          # offline: collection, tests, every deck
+mise run check          # offline: lint, collections, tests and built decks
 cp .env.example .env    # project defaults, e.g. the export format (ignored by Git)
 ```
 
@@ -24,7 +24,7 @@ builds/<slug>/deck.yaml      One file per deck (see builds/example and schemas/)
 builds/<slug>/decklist*.txt  Generated Archidekt and Moxfield decklists, written by deck:files and committed
 scripts/                    CLI (cli.mjs) and the modules behind it
 tests/                      Offline tests on synthetic fixtures
-.cache/cards.json           Scryfall data, about 140 MB after a bulk refresh (ignored by Git)
+.cache/cards.json           Scryfall data, about 55 MB after a bulk refresh (ignored by Git)
 ```
 
 ## Commands
@@ -40,6 +40,8 @@ node scripts/cli.mjs --help         # every command, plus exit codes
 | ------------------- | ------------------------------------------------------------------- |
 | `collection:check`  | Validate every collection and summarize it                          |
 | `collection:search` | Find owned cards by color identity, type, rules text and mana value |
+| `collection:diff`   | What each collection gained or lost since a Git commit              |
+| `card:show`         | Any card by name, owned or not, with copies and decks using it      |
 | `scryfall:refresh`  | Fetch Scryfall card data and prices (network); `--bulk` for all     |
 | `deck:new`          | Create a draft deck                                                 |
 | `deck:check`        | Check rules and ownership for one deck                              |
@@ -53,15 +55,15 @@ node scripts/cli.mjs --help         # every command, plus exit codes
 | `deck:build`        | Physically build a deck: move its cards into its own collection     |
 | `deck:teardown`     | Take a built deck apart: return its cards to the collection         |
 | `deck:swap`         | Swap mainboard cards, moving a built deck's cards too               |
-| `decks:check`       | Check every deck; the example is schema-checked only                |
+| `decks:check`       | Check every deck, or `--status`/`--decks`; example is schema-only   |
 | `lint` / `fix`      | Check, or fix, linting and formatting                               |
-| `check`             | `lint`, `collection:check`, `test` and `decks:check`                |
+| `check`             | `lint`, `collection:check`, `test` and built decks' `decks:check`   |
 
 Exit codes: `0` passed, `1` a check failed or input is invalid, `2` incomplete (unknown cards, missing card data, unknown prices).
 
 ### JSON output
 
-The read commands (`collection:check`, `collection:search`, `deck:check`, `deck:stats`, `deck:show`, `deck:candidates`, `deck:upgrades`, `deck:verify`, `decks:check`, and the plans of `deck:build`, `deck:teardown` and `deck:swap`) print text by default, or one line of JSON with `--json`:
+Every command except `deck:export` prints text by default, or one line of JSON with `--json`: the read commands, `card:show`, `collection:diff`, `scryfall:refresh`, `deck:new`, `deck:files`, and the plans and results of `deck:build`, `deck:teardown` and `deck:swap`. A test pins each command's `data` keys:
 
 ```json
 {
@@ -98,6 +100,23 @@ mise run collection:search -- --identity WR --nonland --text 'destroy target' --
 - **Game Changers** are marked `[Game Changer]` in every list.
 
 See `mise run collection:search -- --help` for the full list.
+
+### Looking up any card
+
+```sh
+mise run card:show -- "Sol Ring" "Craterhoof Behemoth"
+```
+
+It reads the card cache, so with bulk data every card is there, owned or not: rules text, Commander legality, Game Changer status, EDHREC rank, cheapest playable price, available and protected copies, and every deck that plays the card, cuts or adds it in upgrades, or left it out with a `considered` reason. A misspelled name gets the closest cached names as suggestions, here and wherever a deck names a card.
+
+### What changed in the collection
+
+```sh
+mise run collection:diff                 # since the last commit
+mise run collection:diff -- --ref HEAD~3
+```
+
+After you drop in a new ManaBox export or edit a text list, it lists each collection's gains and losses by card name (every printing and finish together) against Git, then the decks that name those cards, so you know which to check again.
 
 ### Reviewing left-out cards
 
@@ -163,7 +182,9 @@ mise run deck:build -- brad/great-goblin-penny --apply    # do it
 - **What it does:** takes every card in the deck, commanders included, out of the deck's available collections, lowering a row's quantity or removing the row (and removing a file left with no cards). It writes them to one text list and sets `collection_destination` and `status: built` in `deck.yaml`.
 - **Where:** `MTG_BUILD_DESTINATION` in `.env` is a template, such as `collections/{owner}/protected/custom/{name}.txt`, where `{owner}` is the deck's folder under `builds/` and `{name}` its name. Without it the list goes to `collections/<owner>/decks/<deck name>.txt`, and `--to PATH` overrides both. Keep it inside a protected folder; the dry run warns otherwise.
 - **Which copies:** a pinned `scryfall_id` first, then nonfoil copies before foil or etched ones, then the printing with the most available copies (the one the decklist files show), then the rest in collection order. Protected copies and proxies are never taken. With `unlimited_basics`, basics the collections lack are listed by name as coming from untracked basics.
-- **Requirements:** the deck must pass `deck:check`, and it can be built only once. Upgrades aren't applied, so build after making any swaps you want in `mainboard`.
+- **Requirements:** the deck must pass `deck:check`, apart from problems only its unapplied upgrades cause, and it can be built only once. Upgrades aren't applied, so build after making any swaps you want in `mainboard`.
+- **Other drafts:** the dry run names the drafts that play any card it takes from a collection they read too, since they may come up short afterwards.
+- **All or nothing:** every file it changes (the deck's new list, each collection it takes from, `deck.yaml`) is written to a temporary file first and only then moved into place, so a failure part way changes nothing. The same holds for `deck:teardown` and `deck:swap`. Paths in `deck.yaml` and on the command line must stay inside `collections/`.
 - **Afterwards:** the deck reads its own list as available, whatever its `collection_source` says, and every other deck sees those cards as protected (`collections/**/decks` is protected by default). Rerun `deck:files`.
 - **ManaBox exports:** the edited CSV now differs from ManaBox. Before your next export, move the same cards into a deck binder in ManaBox (whose cards are held back anyway) or out of the app, or the cards will count twice.
 - **What the text list keeps:** printing and finish. Purchase price, condition and language from a CSV row aren't carried over; they stay in Git history.
@@ -202,7 +223,7 @@ mise run deck:swap -- conrad/kwia-lotus-engine --out "Tome of Legends" --in "Gle
 Prettier formats, ESLint lints ([eslint.config.js](eslint.config.js)). Two things keep code tidy without thinking about it:
 
 - **On commit:** the pre-commit hook from `setup` fixes and re-stages staged files, and blocks the commit on lint errors it can't fix. It refuses files with unstaged changes, since re-staging them would sweep those changes in; stage everything or run `mise run fix` first. `git commit --no-verify` skips it.
-- **On check:** `mise run check` fails on unformatted or unlinted files.
+- **On check:** `mise run check` fails on unformatted or unlinted files. It checks only built decks, so a draft in progress never turns it red; `mise run decks:check` checks every deck.
 
 ## Deck folders
 
@@ -259,8 +280,10 @@ Use exact Scryfall names. You can give a double-faced card by its front-face nam
 
 ## Card data and prices
 
-- **Refresh.** `scryfall:refresh` batches requests to Scryfall's collection endpoint (75 cards per request, 550ms apart) and keeps only the fields the tools use. A plain refresh replaces the cache with just the collections' and decks' cards; `--missing` adds only what's not cached. A failed refresh leaves the old cache in place.
-- **Bulk data.** `scryfall:refresh -- --bulk` caches every printing on Scryfall from its daily [bulk data](https://scryfall.com/docs/api/bulk-data): the Default Cards file (every printing in English, or in its only language) and the Oracle Cards file, which marks the printing Scryfall shows for each name. That's about 105 MB of downloads and half a minute. It then fetches only what bulk data lacks, such as non-English printings in a collection. Afterwards, unowned cards named in a deck need no further fetching, and `--missing` keeps the bulk data while adding to it. Scryfall rebuilds the files every 12–24 hours, and its gameplay data changes rarely, so weekly or after a set release is plenty. Bulk prices are as old as the file, so they still go stale after 7 days.
+- **Refresh.** `scryfall:refresh` batches requests to Scryfall's collection endpoint (75 cards per request, 550ms apart) and keeps only the fields the tools use. A plain refresh fetches every collection and deck card again, for fresh data and prices. On a cache built from bulk data it keeps every other printing, so `--unowned` keeps working; otherwise, or with `--prune`, the cache ends up with just those cards. `--missing` adds only what's not cached.
+- **Failures.** Rate limits (429), server errors and dropped connections are retried after 1, 2 and 4 seconds, or after Scryfall's `Retry-After`. Any other failure leaves the old cache in place. Only one refresh runs at a time: a second one stops at `.cache/refresh.lock` while the first is running, and takes over a lock its process left behind.
+- **Cache file.** The rules fields every printing shares are stored once per card, and legalities only where a card isn't `not_legal`, so a bulk cache is about 55 MB and each command loads it in about half a second. A cache written in the older one-record-per-printing layout is still read, and the next refresh rewrites it. `collection:check` starts with a line describing the cache: printings and cards, whether from bulk data, and when it was last refreshed.
+- **Bulk data.** `scryfall:refresh -- --bulk` caches every printing on Scryfall from its daily [bulk data](https://scryfall.com/docs/api/bulk-data): the Default Cards file (every printing in English, or in its only language) and the Oracle Cards file, which marks the printing Scryfall shows for each name. That's about 105 MB of downloads and half a minute. It then fetches only what bulk data lacks, such as non-English printings in a collection. Afterwards, unowned cards named in a deck need no further fetching, and both a plain refresh and `--missing` keep the bulk data. Scryfall rebuilds the files every 12–24 hours, and its gameplay data changes rarely, so weekly or after a set release is plenty. Bulk prices are as old as the file, so they still go stale after 7 days.
 - **Shared names.** Bulk data includes tokens, art cards and playtest cards that share names with real cards. When a name matches several cards and only one is legal in some format, that one is meant.
 - **Old card data.** Card data older than 30 days adds a note to `deck:check` output but doesn't fail the check. Refresh to pick up new bans.
 - **Prices.** `deck:upgrades` uses the cheapest cached Scryfall nonfoil quote less than 7 days old, or the printing set by `scryfall_id`. Older or missing quotes count as unknown, never zero. Shipping and tax aren't included. Cuts aren't resold. Gold-bordered and memorabilia printings (World Championship decks, Collectors' Edition) can't be played, so they never set a price unless they're a card's only printings. A cache from before these fields were recorded treats every printing as playable until the next refresh.

@@ -1,19 +1,17 @@
-import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
-import { join, posix } from 'node:path';
+import { execFile } from 'node:child_process';
+import { access, mkdir, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises';
+import { dirname, join, posix } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { promisify } from 'node:util';
 import { readCache, writeCache } from './card-cache.mjs';
 import { cardIndex } from './card-index.mjs';
 import { holdDeckCards, parseCollection, parseTextCollection, resolveTextRows } from './collection.mjs';
-import {
-  parseDeck,
-  serializeDeck,
-  withDeckChanges,
-  withDeckField,
-  withDeckValue,
-  withMainboardSwaps,
-} from './deck.mjs';
+import { parseDeck, serializeDeck, withMainboardSwaps } from './deck.mjs';
 
 const PROJECT_ROOT = fileURLToPath(new URL('..', import.meta.url));
+const runFile = promisify(execFile);
+// Room for the largest ManaBox export git show returns.
+const GIT_OUTPUT_LIMIT = 256 * 1024 * 1024;
 // A deck is named by its folder under builds/, which may be nested (brad/bruenor-forge). Each part
 // must be a slug, which also keeps deck paths inside builds/.
 const DECK_PATH_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)*$/;
@@ -36,6 +34,49 @@ export function pathMatches(path, pattern) {
   for (let length = 1; length < parts.length; length += 1) candidates.push(parts.slice(0, length).join('/'));
   return candidates.some((candidate) => posix.matchesGlob(candidate, glob));
 }
+
+// A file under collections/ that a command may read or change. Path segments are checked so a path in
+// deck.yaml (collection_destination) or on the command line can't reach outside the folder.
+const COLLECTION_FILE = /^collections\/(?:[^/\\]+\/)*[^/\\]+\.(?:csv|txt)$/;
+// A file a change set may write: a collection file, or a file in a deck's folder under builds/.
+const DECK_FOLDER_FILE = /^builds\/(?:[a-z0-9]+(?:-[a-z0-9]+)*\/)+[^/\\]+$/;
+const hasDotSegment = (path) => path.split('/').some((part) => part === '..' || part === '.');
+
+export function checkCollectionPath(path) {
+  if (!COLLECTION_FILE.test(path) || hasDotSegment(path)) {
+    throw new Error(`${path} must be a .csv or .txt file under ${COLLECTIONS_FOLDER}/`);
+  }
+  return path;
+}
+
+// Every write goes through a temporary file beside the target and a rename, so an interrupted write
+// never leaves a truncated collection or deck file.
+let temporaryCount = 0;
+const temporaryPath = (path) => `${path}.${process.pid}.${(temporaryCount += 1)}.tmp`;
+
+async function writeAtomic(path, text) {
+  const temporary = temporaryPath(path);
+  await writeFile(temporary, text);
+  await rename(temporary, path);
+}
+
+// Whether a process is alive: signal 0 checks without sending anything, and EPERM means it exists
+// under another user.
+function isRunning(pid) {
+  if (!Number.isSafeInteger(pid) || pid <= 0) return false;
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (error) {
+    return error.code === 'EPERM';
+  }
+}
+
+const exists = (path) =>
+  access(path).then(
+    () => true,
+    () => false,
+  );
 
 // The project's on-disk layout: every path the tools read or write is defined here.
 export function openWorkspace(root = PROJECT_ROOT) {
@@ -108,7 +149,7 @@ export function openWorkspace(root = PROJECT_ROOT) {
   // Generated files kept beside a deck's deck.yaml, such as exported decklists.
   async function writeDeckFile(slug, fileName, text) {
     const deckId = await resolveDeckId(slug);
-    await writeFile(join(decksFolder, deckId, fileName), text);
+    await writeAtomic(join(decksFolder, deckId, fileName), text);
     return `${DECKS_FOLDER}/${deckId}/${fileName}`;
   }
 
@@ -122,44 +163,21 @@ export function openWorkspace(root = PROJECT_ROOT) {
     }
   }
 
-  const removeDeckFile = async (slug, fileName) => rm(join(await deckFolder(slug), fileName), { force: true });
-
-  // Adds a field to a deck's deck.yaml, keeping its comments; see withDeckField.
-  async function setDeckField(slug, key, value, { after } = {}) {
-    const deckId = await resolveDeckId(slug);
-    const path = join(decksFolder, deckId, DECK_FILE);
-    await writeFile(
-      path,
-      withDeckField(await readFile(path, 'utf8'), key, value, { after, source: deckLabel(deckId) }),
-    );
+  // Removes a generated file beside deck.yaml, returning whether there was one.
+  async function removeDeckFile(slug, fileName) {
+    const path = join(await deckFolder(slug), fileName);
+    const existed = await exists(path);
+    await rm(path, { force: true });
+    return existed;
   }
 
-  // Sets one field of a deck's deck.yaml in place or after another, keeping its comments; see
-  // withDeckValue. Leaves the file untouched when the value is already there.
-  async function putDeckField(slug, key, value, { after } = {}) {
-    const deckId = await resolveDeckId(slug);
-    const path = join(decksFolder, deckId, DECK_FILE);
-    const text = await readFile(path, 'utf8');
-    const updated = withDeckValue(text, key, value, { after, source: deckLabel(deckId) });
-    if (updated !== text) await writeFile(path, updated);
-  }
-
-  // Sets or removes existing fields in a deck's deck.yaml, keeping its comments; see withDeckChanges.
-  async function changeDeckFields(slug, changes) {
-    const deckId = await resolveDeckId(slug);
-    const path = join(decksFolder, deckId, DECK_FILE);
-    await writeFile(path, withDeckChanges(await readFile(path, 'utf8'), changes, { source: deckLabel(deckId) }));
-  }
-
-  // Swaps mainboard cards in a deck's deck.yaml, keeping its comments; see withMainboardSwaps, which
-  // also records the swap when given a date. Returns the swapped deck, and writes it only with apply.
-  async function swapDeckCards(slug, swaps, { apply = false, date, reasons } = {}) {
+  // The deck as a swap would leave it, without writing anything; see withMainboardSwaps, which also
+  // records the swap when given a date. deck:swap writes the result through commitFiles.
+  async function swapDeckCards(slug, swaps, { date, reasons } = {}) {
     const deckId = await resolveDeckId(slug);
     const path = join(decksFolder, deckId, DECK_FILE);
     const source = deckLabel(deckId);
-    const { text, deck } = withMainboardSwaps(await readFile(path, 'utf8'), swaps, { source, date, reasons });
-    if (apply) await writeFile(path, text);
-    return deck;
+    return withMainboardSwaps(await readFile(path, 'utf8'), swaps, { source, date, reasons }).deck;
   }
 
   // Where deck:build puts a deck's own cards by default, from a template whose {owner} is the deck's
@@ -203,20 +221,82 @@ export function openWorkspace(root = PROJECT_ROOT) {
     return nested.flat().sort((first, second) => first.localeCompare(second));
   }
 
-  // Collection files are edited only by deck:build, deck:teardown and deck:swap. Paths are relative to the project root.
-  const readCollectionFile = (path) => readFile(join(root, path), 'utf8');
-  const writeCollectionFile = (path, text) => writeFile(join(root, path), text);
-  const removeCollectionFile = (path) => rm(join(root, path));
+  // Collection files are edited only by deck:build, deck:teardown and deck:swap, through commitFiles.
+  // Paths are relative to the project root.
+  const readCollectionFile = async (path) => readFile(join(root, checkCollectionPath(path)), 'utf8');
 
-  // A deck's own text list, created only where no collection of that name exists yet.
-  async function createCollectionFile(path, text) {
-    if (!/^collections\/(?:[^/\\]+\/)*[^/\\]+\.txt$/.test(path) || path.split('/').includes('..')) {
-      throw new Error(`${path} must be a .txt file under ${COLLECTIONS_FOLDER}/`);
-    }
+  // A new text list must not clash with an existing collection's name, whatever its extension.
+  async function checkNewCollection(path) {
+    if (!path.endsWith('.txt')) throw new Error(`${path} must be a .txt file under ${COLLECTIONS_FOLDER}/`);
+    checkCollectionPath(path);
     const existing = (await collectionPaths()).find((other) => collectionName(other) === collectionName(path));
     if (existing) throw new Error(`${existing} already exists`);
-    await mkdir(join(root, path, '..'), { recursive: true });
-    await writeFile(join(root, path), text, { flag: 'wx' });
+  }
+
+  // Every collection's rows by name, unresolved, as the working tree has them or, with ref, as Git has
+  // them at that commit, for collection:diff.
+  async function collectionRows(ref) {
+    const git = async (...args) =>
+      (await runFile('git', ['-C', root, ...args], { maxBuffer: GIT_OUTPUT_LIMIT })).stdout;
+    let files;
+    if (ref === undefined) {
+      const paths = await collectionPaths();
+      files = await Promise.all(paths.map(async (path) => [path, await readFile(join(root, path), 'utf8')]));
+    } else {
+      let listing;
+      try {
+        listing = await git('ls-tree', '-r', '--name-only', ref, '--', COLLECTIONS_FOLDER);
+      } catch (error) {
+        throw new Error(`Can't read collections at ${ref} from Git: ${error.stderr?.trim() || error.message}`, {
+          cause: error,
+        });
+      }
+      const paths = listing.split('\n').filter((path) => COLLECTION_EXTENSION.test(path));
+      files = await Promise.all(paths.map(async (path) => [path, await git('show', `${ref}:${path}`)]));
+    }
+    return new Map(
+      files.map(([path, text]) => {
+        const name = collectionName(path);
+        return [name, COLLECTION_PARSERS[path.match(COLLECTION_EXTENSION)[0].toLowerCase()](text, name)];
+      }),
+    );
+  }
+
+  // The deck.yaml of a deck, as its path from the project root and its text.
+  async function readDeckText(slug) {
+    const deckId = await resolveDeckId(slug);
+    const path = `${DECKS_FOLDER}/${deckId}/${DECK_FILE}`;
+    return { deckId, path, text: await readFile(join(root, path), 'utf8') };
+  }
+
+  // Writes a set of changes together, each { path, text } from the project root, where text null deletes
+  // the file and create refuses one that exists. Every new text is written to a temporary file first,
+  // and only once all are written are they renamed into place and the deletions made, so a failure
+  // part way leaves every file as it was. Paths must be collection files or files in a deck's folder.
+  async function commitFiles(changes) {
+    for (const { path } of changes) {
+      if (!DECK_FOLDER_FILE.test(path) || hasDotSegment(path)) checkCollectionPath(path);
+    }
+    for (const { path, create } of changes) {
+      if (create && (await exists(join(root, path)))) throw new Error(`EEXIST: ${path} already exists`);
+    }
+    const written = [];
+    try {
+      for (const { path, text } of changes.filter((change) => change.text !== null)) {
+        const target = join(root, path);
+        await mkdir(dirname(target), { recursive: true });
+        const temporary = temporaryPath(target);
+        await writeFile(temporary, text);
+        written.push({ temporary, target });
+      }
+    } catch (error) {
+      await Promise.all(written.map(({ temporary }) => rm(temporary, { force: true })));
+      throw error;
+    }
+    for (const { temporary, target } of written) await rename(temporary, target);
+    for (const { path } of changes.filter((change) => change.text === null)) {
+      await rm(join(root, path), { force: true });
+    }
   }
 
   // Every .csv and .txt under collections/ is a collection, named by its path inside collections/
@@ -274,24 +354,48 @@ export function openWorkspace(root = PROJECT_ROOT) {
     indexPromise = undefined;
   }
 
+  // scryfall:refresh holds this lock while it fetches and saves, so two refreshes can't overwrite each
+  // other's cache. A lock whose process has ended is taken over.
+  async function withRefreshLock(run) {
+    const lockPath = join(root, '.cache', 'refresh.lock');
+    await mkdir(dirname(lockPath), { recursive: true });
+    try {
+      await writeFile(lockPath, `${process.pid}\n`, { flag: 'wx' });
+    } catch (error) {
+      if (error.code !== 'EEXIST') throw error;
+      const holder = Number((await readFile(lockPath, 'utf8')).trim());
+      if (isRunning(holder)) {
+        throw new Error(
+          `Another scryfall:refresh (process ${holder}) is running; wait for it, or delete .cache/refresh.lock if it isn't`,
+          { cause: error },
+        );
+      }
+      await writeFile(lockPath, `${process.pid}\n`);
+    }
+    try {
+      return await run();
+    } finally {
+      await rm(lockPath, { force: true });
+    }
+  }
+
   return {
+    withRefreshLock,
     loadDeck,
     loadAllDecks,
     createDeck,
     writeDeckFile,
     readDeckFile,
     removeDeckFile,
-    setDeckField,
-    putDeckField,
-    changeDeckFields,
     swapDeckCards,
     resolveDeckId,
     defaultDeckCollection,
     loadCollections,
     readCollectionFile,
-    writeCollectionFile,
-    removeCollectionFile,
-    createCollectionFile,
+    checkNewCollection,
+    collectionRows,
+    readDeckText,
+    commitFiles,
     loadCache,
     saveCache,
     loadCardIndex,

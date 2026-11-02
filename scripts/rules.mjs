@@ -1,19 +1,10 @@
 import { ageInDays, hasCommanderText, isBackground, isBasic, isLegendaryCreature } from './card.mjs';
 import { availableCopies, holdingsNote, ownedCounts, protectedHoldings } from './collection.mjs';
-import {
-  COMMANDER_DECK_SIZES,
-  ROLE_VOCABULARY,
-  applyUpgrades,
-  deckEntries,
-  isCommanderFormat,
-  resolveEntries,
-  roleLabels,
-} from './deck.mjs';
+import { ROLE_VOCABULARY, applyUpgrades, deckEntries, resolveEntries, roleLabels } from './deck.mjs';
+import { FORMATS, isCommanderFormat } from './formats.mjs';
 import { CENTS_PER_UNIT, cheapestQuote } from './upgrades.mjs';
 
 const RULES_WARN_AGE_DAYS = 30;
-const CASUAL_MIN_DECK_SIZE = 60;
-const DEFAULT_COPY_LIMIT = { commander: 1, 'custom-dollar-brawl': 1, 'casual-60': 4 };
 const NUMBER_WORDS = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10 };
 const ANY_NUMBER_TEXT = /A deck can have any number of cards named /i;
 const UP_TO_TEXT = /A deck can have up to (\w+) cards named /i;
@@ -34,6 +25,10 @@ export function outcomeOf(findings) {
   return 'pass';
 }
 
+// The outcome of the deck as it stands, leaving out findings only its unapplied upgrades cause; deck:build
+// and a built deck's deck:swap move the baseline's cards, so upgrades can't block them.
+export const baselineOutcome = ({ findings }) => outcomeOf(findings.filter((item) => !item.upgrades));
+
 export const worstOutcome = (outcomes) =>
   outcomes.reduce(
     (worst, outcome) => (OUTCOME_SEVERITY.indexOf(outcome) > OUTCOME_SEVERITY.indexOf(worst) ? outcome : worst),
@@ -46,22 +41,16 @@ function copyLimit(card, format) {
   const upTo = card.oracleText.match(UP_TO_TEXT);
   if (upTo) return NUMBER_WORDS[upTo[1].toLowerCase()] ?? Number(upTo[1]);
   if (CUSTOM_LIMIT_TEXT.test(card.oracleText)) return null;
-  return DEFAULT_COPY_LIMIT[format];
+  return FORMATS[format].copyLimit;
 }
 
-const FORMAT_LABELS = { commander: 'Commander', 'custom-dollar-brawl': 'Custom Dollar Brawl' };
-// Scryfall's legality key for each commander format. Custom Dollar Brawl is a house format with Commander's card pool.
-const LEGALITY_KEYS = { commander: 'commander', 'custom-dollar-brawl': 'commander' };
-// The price cap a format sets when the deck has no max_card_price of its own.
-const FORMAT_PRICE_CAPS = { 'custom-dollar-brawl': { amount: 1, currency: 'USD' } };
-
 function sizeFindings(format, total) {
-  const commanderSize = COMMANDER_DECK_SIZES[format];
-  if (commanderSize !== undefined && total !== commanderSize) {
-    return [error(`${FORMAT_LABELS[format]} requires ${commanderSize} cards including commanders; found ${total}`)];
+  const { label, size, minSize } = FORMATS[format];
+  if (size !== undefined && total !== size) {
+    return [error(`${label} requires ${size} cards including commanders; found ${total}`)];
   }
-  if (format === 'casual-60' && total < CASUAL_MIN_DECK_SIZE) {
-    return [error(`Casual requires at least ${CASUAL_MIN_DECK_SIZE} cards; found ${total}`)];
+  if (minSize !== undefined && total < minSize) {
+    return [error(`${label} requires at least ${minSize} cards; found ${total}`)];
   }
   return [];
 }
@@ -111,8 +100,8 @@ function copyLimitFindings({ card, quantity }, format) {
 }
 
 function commanderLegalityFindings(card, identity, format) {
-  const legality = card.legalities[LEGALITY_KEYS[format]];
-  const label = FORMAT_LABELS[format];
+  const { legality: legalityKey, label } = FORMATS[format];
+  const legality = card.legalities[legalityKey];
   const findings = [];
   if (!legality) findings.push(incomplete(`${card.name}: ${label} legality unknown`));
   else if (legality !== 'legal') findings.push(error(`${card.name}: ${legality} in ${label}`));
@@ -224,7 +213,7 @@ function playsLikeFindings(deck, tallies) {
 }
 
 // The most one card may cost: the deck's max_card_price, else its format's cap, else undefined.
-export const priceCap = (deck) => deck.max_card_price ?? FORMAT_PRICE_CAPS[deck.format];
+export const priceCap = (deck) => deck.max_card_price ?? FORMATS[deck.format].priceCap;
 
 const formatMoney = (cents, currency) => `${(cents / CENTS_PER_UNIT).toFixed(2)} ${currency}`;
 
@@ -234,7 +223,7 @@ function priceCapFindings(deck, tallies, index, now) {
   const cap = priceCap(deck);
   if (!cap) return [];
   const { amount, currency } = cap;
-  const capName = deck.max_card_price ? 'max_card_price' : `the ${FORMAT_LABELS[deck.format]} cap`;
+  const capName = deck.max_card_price ? 'max_card_price' : `the ${FORMATS[deck.format].label} cap`;
   const capCents = Math.round(amount * CENTS_PER_UNIT);
   const upgradeCards = (deck.upgrades ?? []).map(({ add }) => index.lookup(add).card).filter(Boolean);
   const cards = new Map([...tallies.values()].map(({ card }) => [card.oracleId, card]));
@@ -304,7 +293,7 @@ function upgradeRuleFindings(deck, index, identity, baseline) {
   const seen = new Set(baseline.map(findingKey));
   return [...problems.map(incomplete), ...listRuleFindings(tallies, deck, identity)]
     .filter((item) => !seen.has(findingKey(item)))
-    .map((item) => ({ ...item, message: `With upgrades applied: ${item.message}` }));
+    .map((item) => ({ ...item, upgrades: true, message: `With upgrades applied: ${item.message}` }));
 }
 
 export function checkDeck(deck, collections, index, { now = Date.now() } = {}) {

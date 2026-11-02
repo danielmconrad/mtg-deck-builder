@@ -9,6 +9,24 @@ function getOrCreate(map, key, create) {
 // sort is stable, so other printings keep the cache's order.
 const defaultFirst = (first, second) => Number(second.defaultPrinting) - Number(first.defaultPrinting);
 
+// The edit distance between two strings, giving up once it exceeds limit.
+function editDistance(first, second, limit) {
+  if (Math.abs(first.length - second.length) > limit) return limit + 1;
+  let previous = Array.from({ length: second.length + 1 }, (_, position) => position);
+  for (let row = 1; row <= first.length; row += 1) {
+    const current = [row];
+    for (let column = 1; column <= second.length; column += 1) {
+      const substitution = previous[column - 1] + (first[row - 1] === second[column - 1] ? 0 : 1);
+      current.push(Math.min(substitution, previous[column] + 1, current[column - 1] + 1));
+    }
+    if (Math.min(...current) > limit) return limit + 1;
+    previous = current;
+  }
+  return previous[second.length];
+}
+
+const SUGGESTION_COUNT = 3;
+
 const isLegalSomewhere = (card) =>
   Object.values(card.legalities).some((status) => status === 'legal' || status === 'restricted');
 
@@ -19,11 +37,17 @@ export function cardIndex(cache) {
   const byPrinting = new Map();
   const printingKey = (set, collectorNumber) => `${set}|${collectorNumber}`.toLowerCase();
   for (const card of byId.values()) {
-    getOrCreate(byOracleId, card.oracleId, () => []).push(card);
-    getOrCreate(byPrinting, printingKey(card.set, card.collectorNumber), () => card);
-    for (const name of new Set([card.name, card.frontName])) {
-      getOrCreate(oracleIdsByName, normalizeName(name), () => new Set()).add(card.oracleId);
+    const printings = byOracleId.get(card.oracleId);
+    if (printings) {
+      printings.push(card);
+    } else {
+      byOracleId.set(card.oracleId, [card]);
+      // Every printing of a card shares its names, so they're indexed from the first one.
+      for (const name of new Set([card.name, card.frontName])) {
+        getOrCreate(oracleIdsByName, normalizeName(name), () => new Set()).add(card.oracleId);
+      }
     }
+    getOrCreate(byPrinting, printingKey(card.set, card.collectorNumber), () => card);
   }
   for (const printings of byOracleId.values()) printings.sort(defaultFirst);
 
@@ -47,8 +71,33 @@ export function cardIndex(cache) {
     }
     const { oracleId, ambiguous } = oracleIdFor(name);
     if (ambiguous) return { problem: `${name}: ambiguous name; add scryfall_id` };
-    if (!oracleId) return { problem: `${name}: not in card cache; check the spelling or run scryfall:refresh` };
+    if (!oracleId) return { problem: notCachedProblem(name) };
     return { card: byOracleId.get(oracleId)[0] };
+  }
+
+  // Cached names close to a misspelled one: within about a quarter of its length in edits, or containing
+  // it, closest first.
+  function suggestNames(name) {
+    const wanted = normalizeName(name);
+    const limit = Math.max(2, Math.floor(wanted.length / 4));
+    const scored = [];
+    for (const [known, oracleIds] of oracleIdsByName) {
+      const distance = known.includes(wanted) ? 0 : editDistance(wanted, known, limit);
+      if (distance <= limit) scored.push({ distance, name: byOracleId.get([...oracleIds][0])[0].name });
+    }
+    const names = scored.sort((first, second) => first.distance - second.distance).map((entry) => entry.name);
+    return [...new Set(names)].slice(0, SUGGESTION_COUNT);
+  }
+
+  // With bulk data every card is cached, so a miss is a misspelling; otherwise it may not be fetched yet.
+  function notCachedProblem(name) {
+    const suggestions = suggestNames(name);
+    const refresh = 'run scryfall:refresh -- --missing';
+    if (suggestions.length) {
+      const guess = `${name}: not in card cache; did you mean ${suggestions.join(', ')}?`;
+      return isFromBulk() ? guess : `${guess} If not, ${refresh}`;
+    }
+    return `${name}: not in card cache; check the spelling${isFromBulk() ? '' : ` or ${refresh}`}`;
   }
 
   // A printing by set code and collector number, e.g. ('tmc', '54').
@@ -66,7 +115,9 @@ export function cardIndex(cache) {
   const playableOracleIds = () =>
     [...byOracleId.keys()].filter((oracleId) => isLegalSomewhere(printingsOf(oracleId)[0]));
   // Bulk data marks each card's default printing; a cache without one holds only owned and deck cards.
-  const isFromBulk = () => [...byId.values()].some((card) => card.defaultPrinting);
+  let fromBulk;
+  const isFromBulk = () =>
+    (fromBulk ??= Boolean(cache.bulkBuiltAt) || [...byId.values()].some((card) => card.defaultPrinting));
 
-  return { byId, lookup, isCached, printing, printingsOf, playableOracleIds, isFromBulk };
+  return { byId, lookup, suggestNames, isCached, printing, printingsOf, playableOracleIds, isFromBulk };
 }

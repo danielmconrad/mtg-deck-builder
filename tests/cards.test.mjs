@@ -46,8 +46,46 @@ test('fetchCards reports Scryfall not_found entries and card objects without an 
 });
 
 test('fetchCards rejects HTTP failures and paginated responses', async () => {
-  await assert.rejects(fetchCards([{ id: 'x' }], { fetchFn: async () => ({ ok: false, status: 429 }) }), /HTTP 429/);
-  await assert.rejects(fetchCards([{ id: 'x' }], { fetchFn: respondWith({ data: [], has_more: true }) }), /Unexpected/);
+  const pause = noPause;
+  await assert.rejects(
+    fetchCards([{ id: 'x' }], { pause, fetchFn: async () => ({ ok: false, status: 400 }) }),
+    /HTTP 400/,
+  );
+  await assert.rejects(
+    fetchCards([{ id: 'x' }], { pause, fetchFn: async () => ({ ok: false, status: 429 }) }),
+    /HTTP 429/,
+  );
+  await assert.rejects(
+    fetchCards([{ id: 'x' }], { pause, fetchFn: respondWith({ data: [], has_more: true }) }),
+    /Unexpected/,
+  );
+});
+
+test('fetchCards retries rate limits, server errors and dropped connections, honoring Retry-After', async () => {
+  const pauses = [];
+  const replies = [
+    () => ({ ok: false, status: 429, headers: new Headers({ 'retry-after': '3' }) }),
+    () => ({ ok: false, status: 503, headers: new Headers() }),
+    () => {
+      throw new TypeError('fetch failed');
+    },
+    () => ({ ok: true, json: async () => ({ data: [scryfallCard('x')] }) }),
+  ];
+  const { cards } = await fetchCards([{ id: 'x' }], {
+    pause: async (milliseconds) => pauses.push(milliseconds),
+    fetchFn: async () => replies.shift()(),
+  });
+  assert.deepEqual(Object.keys(cards), ['x']);
+  assert.deepEqual(pauses, [3000, 2000, 4000]);
+  const failing = async () => {
+    throw new TypeError('fetch failed');
+  };
+  await assert.rejects(
+    fetchCards([{ id: 'x' }], { pause: noPause, fetchFn: failing }),
+    /Scryfall request failed \(fetch failed\); cache was not changed/,
+  );
+  const unavailable = async () => ({ ok: false, status: 503, headers: new Headers() });
+  await assert.rejects(fetchCards([{ id: 'x' }], { pause: noPause, fetchFn: unavailable }), /HTTP 503/);
 });
 
 // A fake Scryfall serving each bulk file's listing and its gzipped JSON Lines download.
@@ -75,7 +113,10 @@ test('fetchBulkCards caches every printing, marking Scryfall defaults, dated whe
 test('fetchBulkCards rejects failed, unexpected, empty and truncated downloads', async () => {
   const whole = jsonLines(scryfallCard('a'), scryfallCard('b'));
   const withDefaults = (defaultCards) => bulkFetch({ oracle_cards: whole, default_cards: defaultCards });
-  await assert.rejects(fetchBulkCards({ fetchFn: async () => ({ ok: false, status: 503 }) }), /HTTP 503/);
+  await assert.rejects(
+    fetchBulkCards({ pause: noPause, fetchFn: async () => ({ ok: false, status: 503 }) }),
+    /HTTP 503/,
+  );
   await assert.rejects(fetchBulkCards({ fetchFn: bulkFetch({}, {}) }), /Unexpected/);
   await assert.rejects(fetchBulkCards({ fetchFn: withDefaults(gzipSync('')) }), /default_cards was empty/);
   await assert.rejects(

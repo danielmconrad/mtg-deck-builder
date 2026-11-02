@@ -2,6 +2,7 @@ import Ajv from 'ajv';
 import { parseDocument, stringify } from 'yaml';
 import schema from '../schemas/deck.schema.json' with { type: 'json' };
 import { normalizeName } from './card.mjs';
+import { isCommanderFormat } from './formats.mjs';
 
 // Deck objects mirror the YAML document, so they keep its snake_case field names.
 
@@ -10,10 +11,6 @@ const MAX_YAML_ALIASES = 50;
 // The editor schema path is relative to the deck file; the default fits builds/<slug>/deck.yaml.
 const DEFAULT_SCHEMA_PATH = '../../schemas/deck.schema.json';
 export const PRIMER_PLACEHOLDER = 'Describe the game plan.';
-
-// Formats played with commanders, and their exact deck size including the commanders.
-export const COMMANDER_DECK_SIZES = { commander: 100, 'custom-dollar-brawl': 60 };
-export const isCommanderFormat = (format) => Object.hasOwn(COMMANDER_DECK_SIZES, format);
 
 export const deckEntries = (deck) => [...deck.commanders, ...deck.mainboard];
 

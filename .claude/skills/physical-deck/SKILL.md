@@ -14,8 +14,10 @@ These are the only commands that edit collection files (AGENTS.md). Run each **o
    - **Protection:** the tool warns if the destination isn't protected. Other decks would then count the built deck's cards.
    - **Foil-only copies:** point out any cards it can only take as foil.
    - **Basics:** with `unlimited_basics`, basics the collections lack are listed as untracked.
+   - **Other drafts:** it names the drafts that play any card it takes, which may come up short afterwards. Tell the user before applying.
+   - **Upgrades:** problems only the unapplied upgrades cause don't block a build.
 3. After the user confirms: `mise run deck:build -- <slug> --apply`. It writes the deck's own list, takes the cards out of the source files, and sets `collection_destination` and `status: built`.
-4. Run `mise run deck:check -- <slug>` and `mise run deck:files -- <slug>`. Then run `mise run decks:check` and tell the user which other drafts now fail because they used these cards. Don't edit those decks.
+4. Run `mise run deck:check -- <slug>` and `mise run deck:files -- <slug>`. The dry run already named the drafts that play cards it takes; run `mise run decks:check -- --status draft` and tell the user which of them now fail. Don't edit those decks.
 5. **ManaBox:** if cards came from a ManaBox CSV, remind the user to move the same cards into a deck binder in ManaBox (or out of the app) before their next export, or they'll count twice.
 
 ## Swapping cards in a built deck

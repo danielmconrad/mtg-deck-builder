@@ -17,6 +17,14 @@ run = "node scripts/cli.mjs collection:check"
 description = "Search owned cards by color identity, type, rules text and mana value (-- --help for filters)"
 run = "node scripts/cli.mjs collection:search"
 
+[tasks."collection:diff"]
+description = "Show what each collection file gained or lost since a Git commit, and the decks naming those cards: -- [--ref REF]"
+run = "node scripts/cli.mjs collection:diff"
+
+[tasks."card:show"]
+description = "Show any card by name, owned or not: text, legality, value, copies held and the decks that name it: -- NAME..."
+run = "node scripts/cli.mjs card:show"
+
 [tasks."scryfall:refresh"]
 description = "Fetch Scryfall card data and prices for every collection and deck (network; -- --help)"
 run = "node scripts/cli.mjs scryfall:refresh"
@@ -115,5 +123,6 @@ description = "Run offline tests"
 run = "node --test"
 
 [tasks.check]
-description = "Run lint, collection check, tests and all deck checks (offline)"
-depends = ["lint", "collection:check", "test", "decks:check"]
+description = "Run lint, collection check, tests and the built decks' checks (offline); drafts: mise run decks:check"
+depends = ["lint", "collection:check", "test"]
+run = "node scripts/cli.mjs decks:check --status built"

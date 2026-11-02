@@ -19,7 +19,7 @@ The rules in AGENTS.md still apply: only unprotected collections supply cards, p
 
 - **Defaults:** read `.env` and memory for the user's standing answers. `MTG_UNLIMITED_BASICS` and `MTG_ALLOW_PROXIES` fill `deck:new`'s ownership policies, `MTG_COLLECTIONS` and `MTG_PROTECTED_COLLECTIONS` decide which cards count, and `MTG_BUILD_DESTINATION` is where a built deck goes.
 - **Existing decks:** `grep -rh -A1 '^commanders:' builds --include=deck.yaml | grep name` lists the commanders already used. Don't propose one that already has a deck unless the user wants a second build.
-- **Card data:** `deck:check` notes data older than 30 days. `collection:search --unowned` (for upgrades) needs a bulk cache, and warns without one.
+- **Card data:** `mise run collection:check` starts with the cache's size, whether it came from bulk data, and when it was last refreshed. `collection:search --unowned` (for upgrades) and `card:show` for unowned cards need a bulk cache.
 - **Continuing a draft:** read its `deck.yaml` (`primer`, the engine map in `notes`, `considered`, `history`), run `mise run deck:verify -- <slug>`, and resume at the step its state implies.
 
 ## 1. Settle the brief

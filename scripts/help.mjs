@@ -14,6 +14,9 @@ function optionLabel(name, { type, short, multiple, placeholder }) {
   return `${flag}${value}${multiple ? ' (repeatable)' : ''}`;
 }
 
+const optionDescription = ({ description, choices }) =>
+  choices ? `${description} (one of: ${choices.join(', ')})` : description;
+
 export const withHelpOption = (options = {}) => ({ ...options, help: HELP_OPTION });
 
 // Node's parseArgs accepts only its own keys, so documentation fields are stripped.
@@ -26,8 +29,8 @@ export const parseArgsOptions = (options) =>
   );
 
 export function commandUsage(name, command) {
-  const slug = command.takesSlug ? ' <deck-slug>' : '';
-  return `Usage: mise run ${name} --${slug} [options]`;
+  const positional = (command.takesSlug && ' <deck-slug>') || (command.takesNames && ' <card-name>...') || '';
+  return `Usage: mise run ${name} --${positional} [options]`;
 }
 
 export function commandHelp(name, command) {
@@ -39,7 +42,7 @@ export function commandHelp(name, command) {
     ...(command.details ? ['', command.details] : []),
     '',
     'Options:',
-    ...table(Object.entries(options).map(([option, spec]) => [optionLabel(option, spec), spec.description])),
+    ...table(Object.entries(options).map(([option, spec]) => [optionLabel(option, spec), optionDescription(spec)])),
   ].join('\n');
 }
 

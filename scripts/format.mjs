@@ -4,6 +4,10 @@ import { holdingsNote } from './collection.mjs';
 import { CARD_TYPES, CHEAP_MANA_VALUE, CURVE_TOP_BUCKET, MANA_SYMBOLS, OPENING_HAND } from './stats.mjs';
 import { CENTS_PER_UNIT, PRICE_MAX_AGE_DAYS } from './upgrades.mjs';
 
+export const printAll = (write, lines) => {
+  for (const line of lines) write(line);
+};
+
 const OUTCOME_LABELS = { pass: 'PASS', incomplete: 'INCOMPLETE', fail: 'FAIL' };
 const LEVEL_LABELS = { error: 'ERROR', incomplete: 'INCOMPLETE', note: 'NOTE' };
 const BUDGET_LABELS = { pass: 'WITHIN BUDGET', fail: 'OVER BUDGET', incomplete: 'INCOMPLETE: known prices total' };
@@ -28,7 +32,7 @@ const valueNote = ({ edhrecRank, priceUsd }) =>
 
 const gameChangerNote = (card) => (card.gameChanger ? ' [Game Changer]' : '');
 
-const oracleLines = (card) => card.oracleText.split('\n').map((line) => `    ${line}`);
+const oracleLines = (card) => (card.oracleText ? card.oracleText.split('\n').map((line) => `    ${line}`) : []);
 
 export function searchLines(results, { withOracleText = false, withValues = false } = {}) {
   const lines = results.flatMap((result) => {
@@ -168,5 +172,60 @@ export function showLines({ commanders, groups, problems }, { withOracleText = f
       ...items.flatMap(withText).map(indent),
     ]),
     ...problems.map((problem) => indent(`INCOMPLETE: ${problem}`)),
+  ];
+}
+
+const useNote = ({ deck, as, roles, reason }) => {
+  if (as === 'mainboard') return `${deck} (mainboard${roles.length ? `: ${roles.join(', ')}` : ''})`;
+  if (as === 'considered') return `${deck} (left out: ${reason})`;
+  return `${deck} (${as})`;
+};
+
+// card:show: each card's text, legality and value, the copies held and where decks use it.
+export function cardReportLines(reports) {
+  return reports.flatMap((report) => {
+    if (report.problem) return [`INCOMPLETE: ${report.problem}`];
+    const { card, available, protectedIn, uses, printings } = report;
+    const commander = card.legalities.commander ?? 'unknown';
+    const copies = protectedIn.length ? `; ${holdingsNote(protectedIn)} (protected)` : '';
+    return [
+      `${card.name} ${card.manaCost} — ${card.typeLine} [${identityLabel(card)}]${gameChangerNote(card)}`,
+      ...oracleLines(card),
+      indent(`Commander: ${commander}; ${valueNote(report)}; ${printings} printings cached`),
+      indent(`Copies: ${available} available${copies}`),
+      indent(`Decks: ${uses.length ? uses.map(useNote).join('; ') : 'none'}`),
+    ];
+  });
+}
+
+const dateOf = (iso) => iso?.slice(0, 10) ?? 'unknown';
+
+// collection:check's line about the card cache.
+export function cacheStatusLine({ printings, cards, fromBulk, bulkBuiltAt, refreshedAt, daysSinceRefresh }) {
+  const source = fromBulk ? `from bulk data built ${dateOf(bulkBuiltAt)}` : 'collection and deck cards only';
+  const age = refreshedAt ? `; last refreshed ${dateOf(refreshedAt)} (${daysSinceRefresh} days ago)` : '';
+  const stale =
+    daysSinceRefresh > PRICE_MAX_AGE_DAYS
+      ? `; prices over ${PRICE_MAX_AGE_DAYS} days old count as unknown, so refresh`
+      : '';
+  return `Card cache: ${printings} printings of ${cards} cards, ${source}${age}${stale}`;
+}
+
+// collection:diff's lines: each changed collection with its card changes (+2 Sol Ring, -1 Forest), at
+// most DIFF_CARDS_SHOWN of them, then the decks naming changed cards.
+const DIFF_CARDS_SHOWN = 30;
+export function collectionDiffLines(ref, changes, decks) {
+  if (!changes.length) return [`No collection changes since ${ref}.`];
+  const signed = ({ name, change }) => `${change > 0 ? '+' : ''}${change} ${name}`;
+  return [
+    `Collection changes since ${ref}:`,
+    ...changes.map(({ collection, status, cards }) => {
+      const shown = cards.slice(0, DIFF_CARDS_SHOWN).map(signed).join(', ');
+      const more = cards.length > DIFF_CARDS_SHOWN ? `, and ${cards.length - DIFF_CARDS_SHOWN} more` : '';
+      return indent(`${collection}${status === 'changed' ? '' : ` (${status})`}: ${shown}${more}`);
+    }),
+    ...(decks.length
+      ? ['Decks naming changed cards:', ...decks.map(({ deck, cards }) => indent(`${deck}: ${cards.join(', ')}`))]
+      : ['No deck names a changed card.']),
   ];
 }

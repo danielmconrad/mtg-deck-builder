@@ -1,13 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import { tmpdir } from 'node:os';
 import { parse, stringify } from 'yaml';
 import { readCache, writeCache } from '../scripts/card-cache.mjs';
 import { runCli } from '../scripts/cli.mjs';
-import { cacheOf, card } from './fixtures.mjs';
+import { openWorkspace } from '../scripts/workspace.mjs';
+import { NOW, cacheOf, card } from './fixtures.mjs';
+
+const runFile = promisify(execFile);
 
 const FOREST_ID = '00000000-0000-4000-8000-000000000001';
 const forest = card('Forest', {
@@ -46,7 +51,13 @@ async function inWorkspace(run) {
     await writeCache(join(root, '.cache', 'cards.json'), cacheOf(forest));
     // An empty env by default, so a developer's shell or .env cannot change test results.
     const cliWithEnv = (env, ...args) =>
-      runCli(args, { root, env, write: (line) => stdout.push(line), warn: (line) => stderr.push(line) });
+      runCli(args, {
+        root,
+        env,
+        pause: async () => {},
+        write: (line) => stdout.push(line),
+        warn: (line) => stderr.push(line),
+      });
     const cli = (...args) => cliWithEnv({}, ...args);
     const writeDeck = (deck) => writeFile(join(root, 'builds', 'fixture', 'deck.yaml'), stringify(deck));
     await run({ root, cli, cliWithEnv, writeDeck, stdout, stderr });
@@ -91,6 +102,25 @@ test('decks:check reports a broken deck file and still checks the others', () =>
     assert.equal(await cli('decks:check'), 1);
     assert.match(stdout.join('\n'), /FAIL: broken/);
     assert.match(stdout.join('\n'), /PASS: fixture/);
+  }));
+
+test('decks:check --status and --decks narrow the decks checked', () =>
+  inWorkspace(async ({ root, cli, writeDeck, stdout }) => {
+    await writeDeck(casualDeck([{ name: 'Forest', quantity: 59 }]));
+    await mkdir(join(root, 'builds', 'conrad', 'done'), { recursive: true });
+    await writeFile(
+      join(root, 'builds', 'conrad', 'done', 'deck.yaml'),
+      stringify({ ...casualDeck(), status: 'built' }),
+    );
+    assert.equal(await cli('decks:check'), 1);
+    stdout.length = 0;
+    assert.equal(await cli('decks:check', '--status', 'built'), 0);
+    assert.deepEqual(stdout, ['PASS: conrad/done (60 cards)']);
+    stdout.length = 0;
+    assert.equal(await cli('decks:check', '--decks', 'conrad/*'), 0);
+    assert.deepEqual(stdout, ['PASS: conrad/done (60 cards)']);
+    assert.equal(await cli('decks:check', '--decks', 'nobody/*'), 0);
+    assert.equal(stdout.pop(), 'No decks match.');
   }));
 
 test('deck:new writes the chosen commander into a new draft', () =>
@@ -450,6 +480,51 @@ test('MTG_BUILD_DESTINATION sets where deck:build writes a deck, from {owner} an
     );
   }));
 
+test('collection paths must stay inside collections/, in deck.yaml and in every file a command touches', () =>
+  inWorkspace(async ({ root, cli, writeDeck }) => {
+    await writeDeck({ ...casualDeck(), status: 'built', collection_destination: 'collections/../../outside.txt' });
+    await assert.rejects(cli('deck:check', 'fixture'), /collection_destination must match pattern/);
+    const workspace = openWorkspace(root);
+    await assert.rejects(
+      workspace.readCollectionFile('collections/../outside.txt'),
+      /must be a .csv or .txt file under collections/,
+    );
+    await assert.rejects(
+      workspace.commitFiles([{ path: 'collections/../../outside.txt', text: 'x' }]),
+      /must be a .csv or .txt file under collections/,
+    );
+    await assert.rejects(workspace.commitFiles([{ path: 'builds/../x.yaml', text: 'x' }]), /under collections/);
+  }));
+
+test('commitFiles writes every change or none: a failed write leaves the other files as they were', () =>
+  inWorkspace(async ({ root }) => {
+    const workspace = openWorkspace(root);
+    // A file can't be written beneath another file, so the second write fails after the first.
+    await assert.rejects(
+      workspace.commitFiles([
+        { path: 'collections/Organized.csv', text: 'changed' },
+        { path: 'collections/precons.csv/inner.txt', text: 'x' },
+        { path: 'collections/precons.csv', text: null },
+      ]),
+    );
+    assert.equal(await readFile(join(root, 'collections', 'Organized.csv'), 'utf8'), CSV);
+    assert.equal(await readFile(join(root, 'collections', 'precons.csv'), 'utf8'), CSV);
+    assert.deepEqual(
+      (await readdir(join(root, 'collections'))).filter((name) => name.endsWith('.tmp')),
+      [],
+    );
+    await assert.rejects(
+      workspace.commitFiles([{ path: 'collections/precons.csv', text: 'x', create: true }]),
+      /EEXIST/,
+    );
+    await workspace.commitFiles([
+      { path: 'collections/Organized.csv', text: 'changed' },
+      { path: 'collections/precons.csv', text: null },
+    ]);
+    assert.equal(await readFile(join(root, 'collections', 'Organized.csv'), 'utf8'), 'changed');
+    await assert.rejects(readFile(join(root, 'collections', 'precons.csv')), /ENOENT/);
+  }));
+
 test('deck:teardown returns a built deck to a text list only with --apply, and makes it a draft', () =>
   inWorkspace(async ({ root, cli, stdout, stderr }) => {
     const deckPath = join(root, 'builds', 'fixture', 'deck.yaml');
@@ -463,6 +538,12 @@ test('deck:teardown returns a built deck to a text list only with --apply, and m
     await writeFile(binder, '1 Forest (TST) 1\n');
     await assert.rejects(cli('deck:teardown', 'fixture'), /needs --to PATH/);
     await assert.rejects(cli('deck:teardown', 'fixture', '--to', 'collections/Organized.csv'), /must be a text list/);
+    assert.equal(await cli('deck:teardown', 'fixture', '--to', 'collections/binders/Lands.txt', '--json'), 0);
+    const plan = JSON.parse(stdout.pop()).data;
+    assert.deepEqual(
+      [plan.applied, plan.deleted, plan.returns[0].quantity, plan.untracked_basics],
+      [false, 'collections/decks/Fixture.txt', 60, [{ quantity: 4, name: 'Forest' }]],
+    );
     assert.equal(await cli('deck:teardown', 'fixture', '--to', 'collections/binders/Lands.txt'), 0);
     assert.match(
       stdout.join('\n'),
@@ -524,6 +605,12 @@ test("deck:swap edits a draft deck.yaml, and moves a built deck's cards only wit
     const swap = ['deck:swap', 'fixture', '--out', 'Old Draw', '--in', 'New Draw'];
     await assert.rejects(cli(...swap), /needs --to PATH for a built deck/);
     await assert.rejects(cli(...swap, '--to', 'collections/decks/Fixture.txt'), /the deck's own list/);
+    assert.equal(await cli(...swap, '--to', 'collections/binders/Binder.txt', '--json'), 0);
+    const plan = JSON.parse(stdout.pop()).data;
+    assert.deepEqual(
+      [plan.applied, plan.into.takes[0].name, plan.out_of.returns[0].name, plan.out_of.returns[0].to],
+      [false, 'New Draw', 'Old Draw', 'collections/binders/Binder.txt'],
+    );
     assert.equal(await cli(...swap, '--to', 'collections/binders/Binder.txt'), 0);
     assert.match(
       stdout.join('\n'),
@@ -643,6 +730,212 @@ test('deck:files keeps lowest_legal_bracket current and drops plays_like_bracket
     assert.match(stdout.join('\n'), /plays_like_bracket 4 is above target_bracket 3/);
   }));
 
+test('card:show reads any cached card, with its copies and every deck that names it', () =>
+  inWorkspace(async ({ root, cli, writeDeck, stdout }) => {
+    const spare = card('Spare Spell', { collectorNumber: '2', oracleText: 'Draw a card.', edhrecRank: 9 });
+    const unowned = card('Unowned Card', { collectorNumber: '3' });
+    await writeCache(join(root, '.cache', 'cards.json'), cacheOf(forest, spare, unowned));
+    await writeFile(join(root, 'collections', 'Spells.txt'), '1 Spare Spell (TST) 2\n');
+    const upgrade = { add: { name: 'Unowned Card', quantity: 1 }, cut: { name: 'Forest', quantity: 1 }, reason: 'x' };
+    await writeDeck({
+      ...casualDeck(),
+      considered: [{ name: 'Spare Spell', reason: 'Off plan' }],
+      upgrades: [upgrade],
+    });
+    assert.equal(await cli('card:show', 'Spare Spell', 'Unowned Card'), 0);
+    assert.deepEqual(stdout.slice(0, 5), [
+      'Spare Spell  — Sorcery [C]',
+      '    Draw a card.',
+      '  Commander: legal; EDHREC #9, $1.00; 1 printings cached',
+      '  Copies: 1 available',
+      '  Decks: fixture (left out: Off plan)',
+    ]);
+    assert.ok(stdout.includes('  Decks: fixture (upgrade add)'));
+    stdout.length = 0;
+    assert.equal(await cli('card:show', 'Forrest', '--json'), 2);
+    const [missing] = JSON.parse(stdout.pop()).data.cards;
+    assert.deepEqual(missing.suggestions, ['Forest']);
+    await assert.rejects(cli('card:show'), /card:show needs at least one <card-name>/);
+  }));
+
+test('collection:check describes the card cache first', () =>
+  inWorkspace(async ({ root, cliWithEnv, stdout }) => {
+    const cache = { ...cacheOf(forest), refreshedAt: '2026-10-01T00:00:00.000Z' };
+    await writeCache(join(root, '.cache', 'cards.json'), cache);
+    const now = Date.parse('2026-10-15T00:00:00Z');
+    const cli = (...args) => runCli(args, { root, env: {}, now, write: (line) => stdout.push(line), warn() {} });
+    assert.equal(await cli('collection:check'), 0);
+    assert.equal(
+      stdout[0],
+      'Card cache: 1 printings of 1 cards, collection and deck cards only; last refreshed 2026-10-01 (14 days ago); prices over 7 days old count as unknown, so refresh',
+    );
+    assert.equal(await cliWithEnv({ MTG_OUTPUT: 'json' }, 'collection:check'), 0);
+    assert.equal(JSON.parse(stdout.pop()).data.cache.from_bulk, false);
+  }));
+
+// The keys of each command's JSON data are a contract for scripts; this pins them.
+test("every JSON command's data keeps its documented keys", () =>
+  inWorkspace(async ({ root, cli, writeDeck, stdout }) => {
+    const swap = { add: { name: 'Forest', quantity: 1 }, cut: { name: 'Forest', quantity: 1 }, reason: 'x' };
+    await writeDeck({ ...casualDeck(), budget: { amount: 5, currency: 'USD' }, upgrades: [swap] });
+    const keysOf = async (...args) => {
+      stdout.length = 0;
+      await cli(...args, '--json');
+      return Object.keys(JSON.parse(stdout.at(-1)).data).sort();
+    };
+    const contract = {
+      'collection:check': ['cache', 'collections'],
+      'collection:search': ['available_collections', 'cards'],
+      'card:show Forest': ['cards'],
+      'scryfall:refresh --missing': ['fetched', 'mode', 'skipped_decks', 'unresolved'],
+      'deck:check fixture': ['findings', 'outcome', 'total_cards'],
+      'deck:stats fixture': [
+        'average_mana_value',
+        'brackets',
+        'cheap_ramp_and_draw',
+        'curve',
+        'land_sources',
+        'lands',
+        'mainboard_cards',
+        'opening_hand',
+        'pips',
+        'problems',
+        'role_targets',
+        'roles',
+        'suggested_lands',
+        'types',
+        'upgrades_applied',
+      ],
+      'deck:show fixture': ['commanders', 'mainboard', 'problems'],
+      'deck:candidates fixture': [
+        'cards',
+        'left_out',
+        'over_price_cap',
+        'shown',
+        'unexplained_shown',
+        'unexplained_total',
+        'unresolved_rows',
+      ],
+      'deck:verify fixture': ['findings', 'outcome', 'total_cards'],
+      'deck:upgrades fixture': ['budget', 'currency', 'problems', 'purchases', 'total', 'unresolved_rows'],
+      'deck:files fixture': [
+        'card_list_changed',
+        'lowest_legal_bracket',
+        'plays_like_bracket_removed',
+        'removed',
+        'written',
+      ],
+      'deck:swap fixture --out Forest --in Forest': undefined,
+      'deck:build fixture --protect collections/precons.csv': [
+        'affected_drafts',
+        'applied',
+        'destination',
+        'takes',
+        'untracked_basics',
+      ],
+      'decks:check': ['decks'],
+      'deck:new other --format casual-60': ['deck', 'path'],
+    };
+    for (const [command, keys] of Object.entries(contract)) {
+      if (keys) assert.deepEqual(await keysOf(...command.split(' ')), keys, command);
+    }
+    await writeFile(join(root, 'collections', 'Spells.txt'), '');
+  }));
+
+test('deck:show lists the deck by role, and the upgraded deck with --upgrades apply', () =>
+  inWorkspace(async ({ root, cli, writeDeck, stdout }) => {
+    const spell = card('Spare Spell', { collectorNumber: '2', manaCost: '{G}', oracleText: 'Draw a card.' });
+    await writeCache(join(root, '.cache', 'cards.json'), cacheOf(forest, spell));
+    const swap = {
+      add: { name: 'Spare Spell', quantity: 1, role: 'draw' },
+      cut: { name: 'Forest', quantity: 1 },
+      reason: 'x',
+    };
+    await writeDeck({ ...casualDeck([{ name: 'Forest', quantity: 60, role: 'land' }]), upgrades: [swap] });
+    assert.equal(await cli('deck:show', 'fixture'), 0);
+    assert.deepEqual(stdout, ['land (60)', '  60x Forest  — Basic Land — Forest [land]']);
+    stdout.length = 0;
+    assert.equal(await cli('deck:show', 'fixture', '--upgrades', 'apply', '--oracle'), 0);
+    assert.deepEqual(stdout, [
+      'land (59)',
+      '  59x Forest  — Basic Land — Forest [land]',
+      'draw (1)',
+      '  1x Spare Spell {G} — Sorcery [draw] (upgrade)',
+      '      Draw a card.',
+    ]);
+    await assert.rejects(cli('deck:show', 'fixture', '--upgrades', 'split'), /--upgrades must be one of: apply/);
+    await assert.rejects(cli('deck:show', 'fixture', '--role', 'tutor'), /--role must be one of: land, ramp/);
+  }));
+
+test('deck:build names drafts that play cards it takes, and upgrade-only problems never block it', () =>
+  inWorkspace(async ({ root, cli, writeDeck, stdout }) => {
+    const changer = card('Changer', { gameChanger: true, collectorNumber: '2' });
+    await writeCache(join(root, '.cache', 'cards.json'), cacheOf(forest, changer));
+    const leader = { name: 'Forest', quantity: 1 };
+    await writeDeck({
+      ...casualDeck(),
+      upgrades: [{ add: { name: 'Changer', quantity: 1 }, cut: leader, reason: 'x' }],
+    });
+    await mkdir(join(root, 'builds', 'other'));
+    await writeFile(join(root, 'builds', 'other', 'deck.yaml'), stringify(casualDeck()));
+    assert.equal(await cli('deck:build', 'fixture', '--protect', 'collections/precons.csv', '--json'), 0);
+    const { data } = JSON.parse(stdout.pop());
+    assert.deepEqual(data.affected_drafts, [{ deck: 'other', cards: ['Forest'] }]);
+    assert.deepEqual(
+      data.takes.map(({ from, quantity, name }) => [from, quantity, name]),
+      [['collections/Organized.csv', 60, 'Forest']],
+    );
+    assert.equal(await cli('deck:build', 'fixture', '--protect', 'collections/precons.csv'), 0);
+    assert.ok(stdout.includes('  other: Forest'));
+  }));
+
+test('deck:verify fails upgrades over budget, and deck:upgrades reports them as JSON', () =>
+  inWorkspace(async ({ root, writeDeck, stdout }) => {
+    // Prices are fresh only within 7 days of the fixtures' date.
+    const cli = (...args) => runCli(args, { root, env: {}, now: NOW, write: (line) => stdout.push(line), warn() {} });
+    const pricey = card('Pricey Card', { collectorNumber: '2', prices: { usd: '9.00', eur: null } });
+    await writeCache(join(root, '.cache', 'cards.json'), cacheOf(forest, pricey));
+    const swap = { add: { name: 'Pricey Card', quantity: 1 }, cut: { name: 'Forest', quantity: 1 }, reason: 'x' };
+    await writeDeck({ ...casualDeck(), budget: { amount: 5, currency: 'USD' }, upgrades: [swap] });
+    assert.equal(await cli('deck:files', 'fixture'), 0);
+    assert.equal(await cli('deck:verify', 'fixture'), 1);
+    assert.match(stdout.join('\n'), /ERROR: upgrades: 9\.00 of 5\.00 USD budget; cut or reorder the swaps/);
+    assert.equal(await cli('deck:upgrades', 'fixture', '--json'), 1);
+    const { data } = JSON.parse(stdout.pop());
+    assert.deepEqual(
+      [data.total, data.budget, data.purchases[0].name, data.purchases[0].unit_price],
+      [9, 5, 'Pricey Card', 9],
+    );
+  }));
+
+test('collection:diff compares every collection with a Git commit and names the decks using changed cards', async (t) => {
+  const git = (root, ...args) => runFile('git', ['-C', root, ...args]);
+  try {
+    await runFile('git', ['--version']);
+  } catch {
+    t.skip('git is not installed');
+    return;
+  }
+  await inWorkspace(async ({ root, cli, stdout }) => {
+    await git(root, 'init', '--quiet');
+    await git(root, 'add', 'collections');
+    await git(root, '-c', 'user.name=Test', '-c', 'user.email=test@example.com', 'commit', '--quiet', '-m', 'x');
+    assert.equal(await cli('collection:diff'), 0);
+    assert.deepEqual(stdout.splice(0), ['No collection changes since HEAD.']);
+    await writeFile(join(root, 'collections', 'Organized.csv'), CSV.replace(',60,', ',58,'));
+    await writeFile(join(root, 'collections', 'New.txt'), '2 Forest (TST) 1\n');
+    assert.equal(await cli('collection:diff'), 0);
+    assert.deepEqual(stdout.splice(0), [
+      'Collection changes since HEAD:',
+      '  New (added): +2 Forest',
+      '  Organized: -2 Forest',
+      'Decks naming changed cards:',
+      '  fixture: Forest',
+    ]);
+    await assert.rejects(cli('collection:diff', '--ref', 'nope'), /Can't read collections at nope from Git/);
+  });
+});
+
 test('deck:candidates lists left-out cards with their considered reasons, and collection:search sorts by value', () =>
   inWorkspace(async ({ root, cli, writeDeck, stdout }) => {
     const ranked = card('Ranked Spell', { collectorNumber: '2', edhrecRank: 7, prices: { usd: '3.00', eur: null } });
@@ -701,7 +994,42 @@ test('scryfall:refresh --bulk caches bulk data, then fetches only what it lacks 
       uncachedId,
     ]);
     assert.match(stdout.at(-1), /Cached 2 printings \(1 fetched/);
-    await assert.rejects(cli('scryfall:refresh', '--bulk', '--missing'), /not both/);
+    await assert.rejects(cli('scryfall:refresh', '--bulk', '--missing'), /Use only one of --bulk, --missing/);
+  }));
+
+test('a plain refresh keeps bulk data and fetches the collection and deck cards again; --prune drops it', () =>
+  inWorkspace(async ({ root, cli, stdout }) => {
+    const unowned = card('Unowned Card', { id: '00000000-0000-4000-8000-000000000003', defaultPrinting: true });
+    const cachePath = join(root, '.cache', 'cards.json');
+    await writeCache(cachePath, cacheOf({ ...forest, defaultPrinting: true }, unowned));
+    const requested = [];
+    globalThis.fetch = async (url, { body }) => {
+      const { identifiers } = JSON.parse(body);
+      requested.push(...identifiers);
+      return Response.json({
+        data: [{ id: FOREST_ID, oracle_id: 'forest', name: 'Forest', type_line: 'Basic Land — Forest' }],
+      });
+    };
+    assert.equal(await cli('scryfall:refresh', '--json'), 0);
+    const report = JSON.parse(stdout.pop());
+    assert.deepEqual([report.data.mode, report.data.fetched], ['keep-bulk', 1]);
+    assert.deepEqual(requested, [{ id: FOREST_ID }, { name: 'Forest' }]);
+    const kept = await readCache(cachePath);
+    assert.deepEqual(Object.keys(kept.cards).sort(), [FOREST_ID, unowned.id].sort());
+    assert.ok(kept.refreshedAt);
+    assert.equal(await cli('scryfall:refresh', '--prune'), 0);
+    assert.deepEqual(Object.keys((await readCache(cachePath)).cards), [FOREST_ID]);
+    await assert.rejects(cli('scryfall:refresh', '--prune', '--missing'), /Use only one of --missing, --prune/);
+  }));
+
+test('only one scryfall:refresh runs at a time; a lock left by an ended process is taken over', () =>
+  inWorkspace(async ({ root, cli }) => {
+    const lock = join(root, '.cache', 'refresh.lock');
+    await writeFile(lock, `${process.pid}\n`);
+    await assert.rejects(cli('scryfall:refresh', '--missing'), new RegExp(`process ${process.pid}\\) is running`));
+    await writeFile(lock, '999999999\n');
+    assert.equal(await cli('scryfall:refresh', '--missing'), 0);
+    await assert.rejects(readFile(lock), /ENOENT/);
   }));
 
 test('text lists are collections, matched to cached printings', () =>
@@ -742,7 +1070,7 @@ test('--help prints the command overview, and with a command, its options', () =
     assert.equal(await cli('deck:export', '--help'), 0);
     assert.match(
       stdout.pop(),
-      /--format FORMAT +text, moxfield, archidekt; defaults to MTG_EXPORT_FORMAT in \.env, else text/,
+      /--format FORMAT +Defaults to MTG_EXPORT_FORMAT in \.env, else text \(one of: text, moxfield, archidekt\)/,
     );
     assert.equal(await cli('collection:search', '-h'), 0);
     assert.match(stdout.pop(), /--type REGEX \(repeatable\)/);
@@ -797,7 +1125,7 @@ test('deck:new fills header fields from options, and the ownership policies from
     assert.equal(parse(await readFile(join(root, 'builds', 'other', 'deck.yaml'), 'utf8')).unlimited_basics, false);
     await assert.rejects(
       cli('deck:new', 'bad', '--commander', 'X', '--target-bracket', '6'),
-      /--target-bracket must be 1 to 5/,
+      /--target-bracket must be one of: 1, 2, 3, 4, 5/,
     );
     await assert.rejects(cli('deck:new', 'bad', '--commander', 'X', '--budget', 'lots'), /--budget must be an amount/);
     await assert.rejects(

@@ -26,7 +26,7 @@ Repeat until `deck:verify` exits 0 and every NOTE it prints is explained:
    mise run deck:show -- <slug> --role removal --oracle
    ```
 
-   Check that each card does the job its `role` claims, and that every ability and target works the way the plan assumes.
+   Check that each card does the job its `role` claims, and that every ability and target works the way the plan assumes. `mise run card:show -- "Card Name"` reads any single card, owned or not, with the decks that use it.
 
 3. **Measure:**
 

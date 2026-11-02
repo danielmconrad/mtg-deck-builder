@@ -390,6 +390,24 @@ test('deckListing groups the mainboard by first role, marking upgrades and filte
   );
   assert.deepEqual(ramp, ['Example Spell', 'Llanowar Elves']);
   assert.deepEqual(deckListing({ ...deck, mainboard: [entry('Nope')] }, index).problems, [
-    'Nope: not in card cache; check the spelling or run scryfall:refresh',
+    'Nope: not in card cache; check the spelling or run scryfall:refresh -- --missing',
   ]);
+});
+
+test('a name the cache lacks gets close suggestions, and refresh advice only without bulk data', () => {
+  const sol = card('Sol Ring');
+  const swords = card('Swords to Plowshares');
+  const lookupProblem = (cards, name) => indexOf(...cards).lookup({ name }).problem;
+  assert.equal(
+    lookupProblem([sol, swords], 'Sol Rng'),
+    'Sol Rng: not in card cache; did you mean Sol Ring? If not, run scryfall:refresh -- --missing',
+  );
+  assert.equal(
+    lookupProblem([{ ...sol, defaultPrinting: true }, swords], 'swords to plowshare'),
+    'swords to plowshare: not in card cache; did you mean Swords to Plowshares?',
+  );
+  assert.equal(
+    lookupProblem([{ ...sol, defaultPrinting: true }], 'Qwxzv'),
+    'Qwxzv: not in card cache; check the spelling',
+  );
 });

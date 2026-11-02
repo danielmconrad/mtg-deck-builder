@@ -143,3 +143,31 @@ export const showJson = ({ commanders, groups, problems }) => ({
   mainboard: groups.flatMap(({ items }) => items.map(shownJson)),
   problems,
 });
+
+export const cardReportJson = (report) =>
+  report.problem
+    ? { name: report.name, problem: report.problem, suggestions: report.suggestions }
+    : {
+        ...cardJson(report.card),
+        commander_legality: report.card.legalities.commander ?? null,
+        price_usd: report.priceUsd,
+        edhrec_rank: report.edhrecRank,
+        printings_cached: report.printings,
+        available: report.available,
+        protected_in: report.protectedIn.map(({ name, copies }) => ({ collection: name, copies })),
+        decks: report.uses.map(({ deck, as, roles, reason }) => ({
+          deck,
+          as,
+          ...(roles && { roles }),
+          ...(reason && { reason }),
+        })),
+      };
+
+export const cacheStatusJson = ({ printings, cards, fromBulk, bulkBuiltAt, refreshedAt, daysSinceRefresh }) => ({
+  printings,
+  cards,
+  from_bulk: fromBulk,
+  bulk_built_at: bulkBuiltAt,
+  refreshed_at: refreshedAt,
+  days_since_refresh: daysSinceRefresh,
+});

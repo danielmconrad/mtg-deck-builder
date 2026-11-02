@@ -9,6 +9,10 @@ const REQUEST_TIMEOUT_MS = 30_000;
 const BULK_TIMEOUT_MS = 600_000;
 const BULK_PROGRESS_EVERY = 25_000;
 const USER_AGENT = 'CollectionFirstDeckBuilder/1.0';
+// A rate limit (429), a server error or a dropped connection is retried after each of these pauses,
+// or after Scryfall's Retry-After when it sends one (capped at a minute).
+const RETRY_PAUSES_MS = [1000, 2000, 4000];
+const MAX_RETRY_AFTER_MS = 60_000;
 const HEADERS = {
   'User-Agent': USER_AGENT,
   Accept: 'application/json',
@@ -56,13 +60,44 @@ const uniqueIdentifiers = (identifiers) => [
   ...new Map(identifiers.map((identifier) => [JSON.stringify(identifier), identifier])).values(),
 ];
 
-async function requestBatch(batch, fetchFn) {
-  const response = await fetchFn(COLLECTION_URL, {
-    method: 'POST',
-    headers: HEADERS,
-    body: JSON.stringify({ identifiers: batch }),
-    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-  });
+const isRetryable = (status) => status === 429 || status >= 500;
+
+function retryAfterMs(response) {
+  const seconds = Number(response?.headers?.get?.('retry-after'));
+  return Number.isFinite(seconds) && seconds > 0 ? Math.min(seconds * 1000, MAX_RETRY_AFTER_MS) : undefined;
+}
+
+// Sends a request, retrying rate limits, server errors and network failures. The last response is
+// returned whatever its status, so callers report it; the last network failure is thrown.
+async function withRetries(send, pause) {
+  for (let attempt = 0; ; attempt += 1) {
+    let response;
+    let failure;
+    try {
+      response = await send();
+    } catch (error) {
+      failure = error;
+    }
+    const retryable = failure !== undefined || isRetryable(response.status);
+    if (!retryable || attempt === RETRY_PAUSES_MS.length) {
+      if (failure) throw new Error(`Scryfall request failed (${failure.message}); cache was not changed. Retry later.`);
+      return response;
+    }
+    await pause(retryAfterMs(response) ?? RETRY_PAUSES_MS[attempt]);
+  }
+}
+
+async function requestBatch(batch, fetchFn, pause) {
+  const response = await withRetries(
+    () =>
+      fetchFn(COLLECTION_URL, {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify({ identifiers: batch }),
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+      }),
+    pause,
+  );
   if (!response.ok) throw new Error(`Scryfall returned HTTP ${response.status}; cache was not changed. Retry later.`);
   const body = await response.json();
   if (!Array.isArray(body.data) || body.has_more) {
@@ -92,7 +127,7 @@ export async function fetchCards(identifiers, { fetchFn = fetch, pause = setTime
   for (let offset = 0; offset < unique.length; offset += BATCH_SIZE) {
     if (offset) await pause(REQUEST_GAP_MS);
     const batch = unique.slice(offset, offset + BATCH_SIZE);
-    const sorted = sortBatch(await requestBatch(batch, fetchFn), new Date().toISOString());
+    const sorted = sortBatch(await requestBatch(batch, fetchFn, pause), new Date().toISOString());
     for (const card of sorted.cards) cards[card.id] = card;
     notFound.push(...sorted.notFound);
     onProgress(offset + batch.length, unique.length);
@@ -111,28 +146,28 @@ async function* textLines(chunks) {
   if (buffer.trim()) yield buffer;
 }
 
-async function openBulkFile(type, fetchFn) {
-  const listing = await fetchFn(`${BULK_DATA_URL}/${type}`, {
-    headers: HEADERS,
-    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-  });
+async function openBulkFile(type, fetchFn, pause) {
+  const listing = await withRetries(
+    () => fetchFn(`${BULK_DATA_URL}/${type}`, { headers: HEADERS, signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) }),
+    pause,
+  );
   if (!listing.ok) throw new Error(`Scryfall returned HTTP ${listing.status}; cache was not changed. Retry later.`);
   const { jsonl_download_uri: uri, updated_at: updatedAt } = await listing.json();
   if (!uri || Number.isNaN(Date.parse(updatedAt))) {
     throw new Error('Unexpected Scryfall bulk data response; cache was not changed');
   }
-  const download = await fetchFn(uri, {
-    headers: { 'User-Agent': USER_AGENT },
-    signal: AbortSignal.timeout(BULK_TIMEOUT_MS),
-  });
+  const download = await withRetries(
+    () => fetchFn(uri, { headers: { 'User-Agent': USER_AGENT }, signal: AbortSignal.timeout(BULK_TIMEOUT_MS) }),
+    pause,
+  );
   if (!download.ok) throw new Error(`Scryfall returned HTTP ${download.status}; cache was not changed. Retry later.`);
   return { body: download.body, fetchedAt: new Date(updatedAt).toISOString() };
 }
 
 // Streams one bulk file, gzipped JSON Lines with a card per line, so it is never held whole. Each
 // card's fetchedAt is the time Scryfall built the file.
-async function readBulkFile(type, { fetchFn, onProgress }, onCard) {
-  const { body, fetchedAt } = await openBulkFile(type, fetchFn);
+async function readBulkFile(type, { fetchFn, pause, onProgress }, onCard) {
+  const { body, fetchedAt } = await openBulkFile(type, fetchFn, pause);
   const text = body.pipeThrough(new DecompressionStream('gzip')).pipeThrough(new TextDecoderStream());
   let read = 0;
   try {
@@ -151,12 +186,12 @@ async function readBulkFile(type, { fetchFn, onProgress }, onCard) {
 // Every printing on Scryfall in English, or in its only language (Default Cards), with the printing
 // Scryfall shows for each card's name marked as its default (Oracle Cards). Throws before returning
 // anything if either download fails or is truncated.
-export async function fetchBulkCards({ fetchFn = fetch, onProgress = () => {} } = {}) {
+export async function fetchBulkCards({ fetchFn = fetch, pause = setTimeout, onProgress = () => {} } = {}) {
   const cards = {};
   const keep = (card) => {
     if (card.id && card.oracleId && card.name) cards[card.id] = card;
   };
-  const context = { fetchFn, onProgress };
+  const context = { fetchFn, pause, onProgress };
   await readBulkFile('oracle_cards', context, (object, at) => keep(toCard(object, at, { defaultPrinting: true })));
   const fetchedAt = await readBulkFile('default_cards', context, (object, at) => {
     if (!cards[object.id]) keep(toCard(object, at));

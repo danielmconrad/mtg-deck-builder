@@ -24,7 +24,7 @@ mise run collection:search -- --commander "$C" --unowned --text 'whenever you ga
 
 - **Bulk cache:** `--unowned` finds every card only after `scryfall:refresh -- --bulk` (about 105 MB). It warns when the cache holds only collection and deck cards. Ask before that refresh. Otherwise name candidates in `upgrades`, ask, then run `scryfall:refresh -- --missing` and read their text before keeping them.
 - **Protected copies:** results note copies the user owns in protected collections ("1 in conrad/protected/precons/..."). Mention them, since moving a copy may be cheaper than buying one.
-- **Never cite card text, legality or prices from memory.** Read them from the cache.
+- **Never cite card text, legality or prices from memory.** Read them from the cache: `mise run card:show -- "Card Name"` gives one card's text, legality, price and the decks already using it.
 
 ## 3. Pair each add with a cut
 
@@ -39,7 +39,7 @@ mise run collection:search -- --commander "$C" --unowned --text 'whenever you ga
 
 ## 5. Price and record
 
-1. **Ask before** `mise run scryfall:refresh -- --missing` if any add isn't cached; it uses the network.
+1. **Ask before** `mise run scryfall:refresh -- --missing` if any add isn't cached, or a plain refresh if prices are over 7 days old (`collection:check`'s first line says); both use the network, and both keep bulk data.
 2. `mise run deck:upgrades -- <slug>`: report the total against the budget. Unknown prices stay unknown, never zero.
 3. `mise run deck:check -- <slug>`, then `mise run deck:files -- <slug>` right away. That writes `decklist-upgraded.archidekt.txt` and `decklist-upgraded.moxfield.txt` with every swap made, and the plain decklists carry the adds under Considering (Maybeboard in Archidekt) for buying.
 4. Describe the upgraded deck from the tools: `mise run deck:stats -- <slug> --upgrades apply` and `mise run deck:show -- <slug> --upgrades apply --oracle`.

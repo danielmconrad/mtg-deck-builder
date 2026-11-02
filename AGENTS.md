@@ -29,7 +29,8 @@ Every command documents its options with `mise run <task> -- --help`. Ask before
 - Build from owned cards. Suggest purchases only as `upgrades` swaps with a reason, and don't apply them without approval. A card the user approved but hasn't bought is still unowned.
 - Unowned cards have no card data until they're named in the deck and `scryfall:refresh -- --missing` runs, unless the cache came from `scryfall:refresh -- --bulk`, which holds every card (`deck:check` reports `not in card cache` otherwise). Ask before any refresh, since it uses the network, then price with `deck:upgrades`.
 - Give mainboard entries a `role` from: `land`, `ramp`, `draw`, `removal`, `wipe`, `protection`, `wincon`, `synergy`.
-- Never invent card text, legality, ownership, prices or test results. Use the cache via the CLI. If data is missing or stale, say so.
+- Never invent card text, legality, ownership, prices or test results. Use the cache via the CLI: `card:show NAME` reads any card, owned or not. If data is missing or stale, say so; `collection:check`'s first line gives the cache's age.
+- After the user drops in a new collection export, run `collection:diff` to see what changed and which decks name those cards.
 - Record games in `playtests` and list reviews or swaps in `history` (`deck:swap --reason` adds both a `considered` reason and a `history` entry). A few games don't make statistics.
 
 ## Commands
@@ -37,8 +38,8 @@ Every command documents its options with `mise run <task> -- --help`. Ask before
 - Run `mise run deck:check -- <slug>` after every deck edit, and read every ERROR and INCOMPLETE line. Exit code 2 is not a pass. Then run `mise run deck:files -- <slug>` so the committed decklist files match `deck.yaml`.
 - Read commands print text by default. Add `--json` (or set `MTG_OUTPUT=json`) when a script will consume the output: one line of `{ command, deck, outcome, data, warnings }`.
 - Project defaults such as the export format live in `.env` (copied from `.env.example`). Don't pass `--format` unless the user asks for a different one.
-- `scryfall:refresh` is the only command that uses the network. Run it when cards are missing (`-- --missing`) or prices are stale. `-- --bulk` downloads all of Scryfall's card data (about 105 MB), so run it only when the user asks. A plain refresh drops the bulk data; prefer `--missing` once it's there. Never run two at once.
-- For code changes, run the relevant test file, then `mise run check`. Tests must stay offline and use only fixtures from `tests/fixtures.mjs`, never the real collection. Other people's unfinished decks may make the all-decks `decks:check` fail; say so rather than editing them.
+- `scryfall:refresh` is the only command that uses the network. Run it when cards are missing (`-- --missing`) or prices are stale (a plain refresh, which keeps bulk data). `-- --bulk` downloads all of Scryfall's card data (about 105 MB), and `--prune` drops it, so run either only when the user asks. A second refresh stops while one is running.
+- For code changes, run the relevant test file, then `mise run check`, which checks built decks only. Tests must stay offline and use only fixtures from `tests/fixtures.mjs`, never the real collection. Other people's unfinished decks may make the all-decks `decks:check` fail; say so rather than editing them.
 - Run `mise run fix` before finishing a code change; `check` fails on lint errors or unformatted files. Don't silence a lint rule without a comment saying why.
 - Use the existing CSV, YAML and schema libraries. Pin new dependencies through npm.
 
