@@ -1,0 +1,86 @@
+Commander
+1 Veyran, Voice of Duality (TDC) 310
+
+Deck
+1 Command Tower (TDC) 107
+1 Sulfur Falls (TDC) 396
+1 Shivan Reef (TDC) 393
+1 Cascade Bluffs (TDC) 345
+1 Ferrous Lake (TDC) 361
+1 Highland Lake (M19) 252
+1 Izzet Guildgate (RVR) 405
+1 TCRI Building (TMT) 189
+1 Temple of Epiphany (TDC) 402
+1 Exotic Orchard (TDC) 360
+1 Path of Ancestry (TDC) 382
+1 Reliquary Tower (TDC) 386
+1 Evolving Wilds (TDM) 255
+1 Ash Barrens (FIC) 374
+1 Lindblum, Industrial Regency // Mage Siege (FIN) 285
+1 Cori Mountain Monastery (TDM) 252
+10 Island (DFT) 280
+9 Mountain (HOB) 197
+1 Sol Ring (MSC) 213
+1 Arcane Signet (TDC) 105
+1 Izzet Signet (TDC) 320
+1 Fellwar Stone (TDC) 318
+1 Commander's Sphere (ECC) 139
+1 Thought Vessel (FIC) 368
+1 Storm-Kiln Artist (TDC) 235
+1 Goblin Electromancer (TDC) 99
+1 Glóin the Mighty // Easy Pickings (HOB) 99
+1 Big Score (TDC) 206
+1 Mana Geyser (TDC) 223
+1 Archmage Emeritus (TDC) 145
+1 Guttersnipe (TDC) 217
+1 Young Pyromancer (TDC) 95
+1 Third Path Iconoclast (TDC) 307
+1 Thunderdrum Soloist (SOS) 134
+1 Caldera Pyremaw (TDC) 33
+1 Manaform Hellkite (TDC) 224
+1 Hermes, Overseer of Elpis (FIC) 36
+1 Saheeli, Jewel of Avishkar (FRA) 275
+1 Mysidian Elder (FIN) 145
+1 Haughty Djinn (TDC) 154
+1 Baral and Kari Zev (TDC) 282
+1 Lier, Disciple of the Drowned (TDC) 157
+1 Torrential Gearhulk (FIC) 272
+1 Bothersome Noisemaker (HOB) 89
+1 Frantic Search (TDC) 153
+1 Faithless Looting (TDC) 213
+1 Ponder (TDC) 159
+1 Preordain (TDC) 161
+1 Opt (TDC) 158
+1 Consider (TDC) 148
+1 Expressive Iteration (TDC) 288
+1 Fact or Fiction (CMM) 91
+1 Dig Through Time (FIC) 263
+1 Stock Up (DFT) 67
+1 Ancestral Vision (TDC) 144
+1 Think Twice (TDC) 168
+1 Deep Analysis (TDC) 150
+1 Abrade (TDC) 203
+1 Pongify (TDC) 160
+1 Lightning Strike (MSH) 142
+1 Rolling Thunder (BFZ) 154
+1 Electrodominance (TDC) 212
+1 Broadside Barrage (DFT) 192
+1 Fire // Ice (DMR) 215
+1 Transforming Flourish (TDC) 39
+1 Imprisoned in the Moon (INR) 69
+1 Prismari Command (TDC) 299
+1 Negate (TMT) 47
+1 Fierce Guardianship (CMM) 94
+1 Rewind (M21) 63
+1 Unwind (DOM) 72
+1 Sublime Epiphany (TDC) 167
+1 Curse of the Swine (TDC) 149
+1 Fulminous Forte (FRA) 84
+1 Narset's Reversal (TDC) 92
+1 Expansion // Explosion (TDC) 287
+1 Magma Opus (TDC) 296
+1 Will of the Jeskai (TDC) 40
+1 Rite of Replication (TDC) 165
+1 Swiftfoot Boots (TDC) 328
+1 Lightning Greaves (LTC) 281
+1 Propaganda (FIC) 268

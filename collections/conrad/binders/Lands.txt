@@ -1,15 +1,22 @@
+1 Access Tunnel (TDC) 337
+1 Adarkar Wastes (TDC) 338
 1 Ash Barrens (FIC) 374
 1 Avengers Tower (MSH) 260
 1 Avengers Tower (MSH) 334
 1 Avishkar Raceway (DFT) 249
+1 Battlefield Forge (TDC) 340
 1 Bleachbone Verge (DFT) 250
 1 Blossoming Sands (DFT) 252 *F*
 1 Blossoming Sands (TDM) 251
+1 Bojuka Bog (TDC) 341
+1 Canopy Vista (TDC) 343
 1 Capital City (FIN) 274
+1 Clifftop Retreat (TDC) 351
 2 Command Tower (DRC) 60
-1 Cori Mountain Monastery (TDM) 252
+1 Command Tower (TDC) 107
 1 Crossroads Village (FIN) 276
 2 Daily Bugle Building (SPM) 179
+1 Deceptive Landscape (TDC) 356
 1 Dedicated Commons (FRA) 175 *F*
 1 Deserted Beach (FRA) 397
 1 Dragon-Cursed Halls (HOC) 8 *F*
@@ -17,7 +24,9 @@
 1 Dromar's Cavern (DMR) 246
 1 Eclipsed Realms (ECL) 263
 3 Elvenking's Halls (HOB) 182
+1 Evolving Wilds (TDM) 255
 1 Exotic Orchard (FIC) 390
+1 Exotic Orchard (TDC) 360
 1 Fatehold Annex (FRA) 177 *F*
 1 Fetid Heath (FIC) 391
 1 Forest (DFT) 289 *F*
@@ -30,24 +39,25 @@
 1 Forest (TMT) 195
 2 Forest (HOB) 198 *F*
 1 Forest (DFT) 276 *F*
+4 Forest (TDM) 285
+3 Forest (TDM) 286
 1 Formidable Commons (FRA) 178 *F*
+1 Fortified Village (TDC) 366
 1 Foul Roads (DFT) 255
+1 Glacial Fortress (TDC) 367
 1 Gleaming Bastion (MSH) 267
 3 Goblin-town (HOB) 183
 1 Goblin-town (HOB) 183 *F*
 1 Hidden Lair (MSH) 269 *F*
-1 Highland Lake (M19) 252
 3 Hobbit Hole (HOB) 184
 1 Idyllic Beachfront (FIC) 404
 3 Iron Hills (HOB) 185
 1 Iron Hills (HOB) 185 *F*
-1 Island (DFT) 273
+1 Irrigated Farmland (TDC) 372
 1 Island (DFT) 273 *F*
-2 Island (DFT) 280
 1 Island (DFT) 280 *F*
 1 Island (DFT) 281
 1 Island (DFT) 281 *F*
-2 Island (DFT) 282
 1 Island (DFT) 282 *F*
 1 Island (FIN) 297
 1 Island (FIN) 298
@@ -59,11 +69,10 @@
 1 Island (SPM) 190
 1 Island (TMT) 192 *F*
 1 Isolated Chapel (FIC) 405
-1 Izzet Guildgate (RVR) 405
+1 Isolated Chapel (TDC) 373
 1 Jungle Hollow (DFT) 256
 1 Ketria Triome (IKO) 250
 4 Lake-town (HOB) 186
-1 Lindblum, Industrial Regency // Mage Siege (FIN) 285
 1 Los Diablos Missile Base (MSH) 270
 1 Los Diablos Missile Base (MSH) 270 *F*
 1 Meticulous Commons (FRA) 184 *F*
@@ -88,15 +97,18 @@
 1 Mountain (SOS) 270
 1 Mountain (SPM) 192
 1 Mountain (SPM) 197
-3 Mountain (DFT) 275
-2 Mountain (HOB) 197
 2 Mountain (DFT) 286
+1 Mountain (TDM) 284
+1 Mystic Monastery (TDM) 262
 1 Nantuko Monastery (DMR) 252
 1 Night Market (DFT) 258
 1 Northampton Farm (TMT) 188
 1 Ominous Asylum (SPM) 181
+1 Overgrown Farmland (TDC) 381
 1 Paradox Gardens (SOS) 258
 1 Path of Ancestry (FIC) 411
+1 Path of Ancestry (TDC) 382
+1 Perilous Landscape (TDC) 383
 1 Plains (HOB) 189
 1 Plains (MSH) 278
 1 Plains (SPM) 194
@@ -118,10 +130,16 @@
 1 Plains (DFT) 279
 1 Plains (DFT) 279 *F*
 2 Plains (FRA) 383 *F*
+5 Plains (TDM) 277
+5 Plains (TDM) 278
 1 Prairie Stream (FIC) 413
+1 Prairie Stream (TDC) 384
+1 Radiant Grove (TDC) 385
 1 Reef Roads (DFT) 259
 1 Room of Refuge (FRA) 188
 1 Room of Refuge (FRA) 188 *F*
+1 Rugged Prairie (TDC) 389
+1 Sandsteppe Citadel (TDM) 266
 2 Savage Mansion (SPM) 183
 1 Savage Mansion (SPM) 183 *F*
 1 Scavenger Grounds (FIC) 419
@@ -130,12 +148,15 @@
 1 Sinister Hideout (SPM) 184
 1 Sinister Hideout (SPM) 184 *F*
 1 Skycloud Expanse (FIC) 423
+1 Skycloud Expanse (TDC) 394
 1 Slippery Karst (DMR) 256
 1 Smoldering Crater (DMR) 257
 1 Soulstone Sanctuary (FDN) 133
 1 Stingerquill Annex (FRA) 190 *F*
 1 Subterranean Cavern (MSH) 273
+1 Sungrass Prairie (TDC) 397
 1 Sunlit Marsh (FIC) 431
+1 Sunpetal Grove (TDC) 399
 1 Swamp (DFT) 284
 1 Swamp (DFT) 284 *F*
 1 Swamp (DFT) 285
@@ -159,8 +180,15 @@
 1 Swamp (DFT) 274 *F*
 1 Swamp (DFT) 283
 1 Swamp (DFT) 283 *F*
-2 TCRI Building (TMT) 189
+3 Swamp (TDM) 281
+2 Swamp (TDM) 282
+1 TCRI Building (TMT) 189
+1 Temple of Enlightenment (TDC) 401
+1 Temple of Malady (TDC) 403
+1 Temple of Plenty (TDC) 405
+1 Temple of Silence (TDC) 406
 1 Temple of the False God (FIC) 438
+1 Temple of Triumph (TDC) 407
 1 The Lonely Mountain (HOB) 187
 1 Theorist's Sanctum (FRA) 381
 1 Theorist's Sanctum (FRA) 381 *F*
@@ -172,8 +200,10 @@
 1 Turbulent Wetlands (FRC) 103
 1 Turtle Lair (TMT) 190
 1 Turtle Lair (TMT) 190 *F*
+1 Twilight Mire (TDC) 409
 1 Underground River (FIC) 439
 2 University Campus (SPM) 186
 1 Vibrant Cityscape (SPM) 188
 1 Villainous Hideout (MSH) 276
 1 Wind-Scarred Crag (TDM) 271 *F*
+1 Woodland Cemetery (TDC) 412
