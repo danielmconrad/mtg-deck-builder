@@ -10,8 +10,6 @@ Deck
 1 Evolving Wilds (FIC) 389
 1 Vibrant Cityscape (SPM) 188
 1 Hobbit Hole (HOB) 184
-1 Ash Barrens (FIC) 374
-1 Path of Ancestry (FIC) 411
 1 Minas Tirith (LTR) 256
 1 Surveillance Room (MSH) 274 *F*
 1 Forest (DFT) 276
@@ -32,13 +30,11 @@ Deck
 1 Arcane Signet (FIC) 335
 1 Delighted Halfling (LTR) 158
 1 Great Forest Druid (ECL) 178
-1 Three Tree Rootweaver (BLB) 198
 1 Frog Butler (TMT) 114
 1 Undercover Skrull (MSH) 194
 1 Goobbue Gardener (FIN) 188
 1 Studious First-Year // Rampant Growth (SOS) 162
 1 Wood Elves (HOB) 142
-1 Entish Restoration (LTR) 163
 1 Many Partings (LTR) 445 *F*
 1 Hot Dog Cart (SPM) 164
 1 Bilbo, Fellow Conspirator (HOC) 4 *F*
@@ -48,7 +44,6 @@ Deck
 1 Daxos, Blessed by the Sun (THB) 258
 1 Authority of the Consuls (FIC) 232
 1 Courier of Comestibles (TMT) 112
-1 Resolute Reinforcements (FDN) 145
 1 Squirrel Nest (BLC) 239
 1 Hop to It (BLB) 16
 1 Battle Screech (ONC) 59
@@ -71,7 +66,6 @@ Deck
 1 Make Your Move (FDN) 143
 1 Pest Infestation (SOC) 282
 1 Bite Down (FDN) 212
-1 Darksteel Mutation (SOC) 142
 1 Liminal Hold (ECL) 24
 1 Hour of Reckoning (GK1) 104
 1 Settle the Wreckage (HOB) 26
@@ -92,3 +86,9 @@ Deck
 1 Tataru Taru (FIC) 30
 1 Bastion Protector (MSC) 122
 1 Defense of the Heart (MAR) 76
+1 Archangel of Thune (MAR) 41
+1 Beast Within (EOC) 93
+1 Canopy Vista (FIC) 378
+1 Essence Warden (CMA) 106
+1 Farseek (TDC) 255
+1 Sunpetal Grove (FIC) 432

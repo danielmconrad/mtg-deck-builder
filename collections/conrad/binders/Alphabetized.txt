@@ -34,6 +34,7 @@
 1 Aquitect's Defenses (ECL) 44
 1 Arcane Amphisbaena (FRA) 97
 1 Arcane Sanctum (FIC) 373
+3 Arcane Signet (TDC) 105
 1 Archaeomancer's Map (FIC) 230
 1 Archive Arbiter (FRA) 167 *F*
 1 Archmage Emeritus (FIC) 261
@@ -73,6 +74,7 @@
 1 Baxter, Fly in the Ointment (TMC) 10
 1 Bayou Groff (STX) 121
 2 Beamsplitter Mage (GRN) 155
+1 Beast Within (EOC) 93
 1 Bedeck // Bedazzle (RVR) 244
 1 Behind the Mask (MKM) 39
 2 Bejeweled Warg (HOB) 117 *F*
@@ -230,6 +232,7 @@
 3 Daily Bugle Reporters (SPM) 6
 1 Dáin Ironfoot (HOB) 91
 1 Danitha, Sword of Hope (FRA) 196 *F*
+1 Darksteel Mutation (SOC) 142
 1 Dawn's Light Archer (ECL) 174
 1 Dimir House Guard (RVR) 73
 1 Dreadful as the Storm (LTR) 48
@@ -342,6 +345,7 @@
 1 Encouraging Aviator // Jump (SOS) 46
 1 Endrider Catalyzer (DFT) 124
 1 Endrider Catalyzer (DFT) 124 *F*
+1 Entish Restoration (LTR) 163
 1 Entrust the Spark (FRA) 131 *F*
 1 Entrust the Spark (FRA) 350
 1 EPF Point Squad (TMT) 145
@@ -774,43 +778,6 @@
 2 Now for Wrath, Now for Ruin! (LTR) 24
 1 Oath of the Grey Host (LTR) 101 *F*
 1 Observed Stasis (FIC) 40
-1 Ori, Plate Stacker (HOC) 6 *F*
-1 Peregrin Took (LTR) 315
-1 Phantom Flock (DMR) 20
-1 Phial of Galadriel (LTR) 248
-1 Pictures of Spider-Man (SPM) 109
-1 Primordial Pachyderm (TMT) 129
-1 Relic of Legends (FIC) 354
-1 Rent Is Due (SPM) 11
-1 Ride's End (DFT) 25
-1 Rising of the Day (LTR) 145
-1 Sarkhan, Dragon Ascendant (TDM) 302
-1 Scout the Wilderness (DMU) 176
-1 Send in the Pest (SOS) 100
-1 Shire Shirriff (LTR) 441
-1 Snakeskin Veil (FDN) 233 *F*
-1 Solitary Cell (FRA) 355
-1 Spider-Rex, Daring Dino (SPM) 116
-1 Spiteful Squad (STX) 237
-1 Sting, Bilbo's Sword (HOB) 178
-1 Stingerfling Spider (CMR) 258
-1 Surgical Precision (FRA) 22
-1 Syphon Mind (FIC) 288
-1 Take Up the Shield (MSH) 39
-1 Talisman of Conviction (TDC) 329
-1 Talisman of Hierarchy (FIC) 365
-1 Teyo, Lightshield Expert (FRA) 295 *F*
-2 The Black Arrow (HOB) 171
-1 Thorin Oakenshield (HOB) 165
-1 Thought Vessel (FIC) 368
-1 Thrór's Map (HOB) 179
-1 Unburied Earthcarver (TDM) 95
-1 Vindicate (FIC) 330
-1 Vitu-Ghazi Inspector (MKM) 183 *F*
-1 Voracious Fell Beast (LTR) 113
-1 Wall of Omens (FCA) 27
-2 Web Up (SPM) 21
-1 Westfold Rider (HOC) 172
 4 Óin the Brave (HOB) 106
 3 Old Fat Spider (HOB) 132
 1 Old Fat Spider Can't See Me (HOB) 50 *F*
@@ -824,6 +791,7 @@
 1 Order // Chaos (DMR) 212
 6 Ordinary Bear (HOB) 133
 4 Ori, Keeper of Songs (HOB) 23
+1 Ori, Plate Stacker (HOC) 6 *F*
 2 Oscorp Research Team (SPM) 40
 1 Otterball Antics (BLB) 63
 1 Out of Time (MH2) 23
@@ -843,15 +811,19 @@
 3 Pedal to the Metal (DFT) 141
 1 Peerless Recycling (BLB) 188
 1 Penumbra Bobcat (DMR) 172
+1 Peregrin Took (LTR) 315
 1 Perilous Snare (DFT) 23
 1 Pest Summoning (STX) 211
 1 Pestered Wellguard (ECL) 63
 1 Peter Parker's Camera (SPM) 171 *F*
+1 Phantom Flock (DMR) 20
+1 Phial of Galadriel (LTR) 248
 1 Phyrexian Debaser (DMR) 97
 1 Pia, Aether Ascetic (FRA) 264
 2 Pia, Aether Ascetic (FRA) 264 *F*
 2 Pia, Determined Rebuilder (FRA) 250 *F*
 1 Pick Up the Pace (MSC) 702 *F*
+1 Pictures of Spider-Man (SPM) 109
 1 Pigment Storm (STX) 111
 1 Pillardrop Warden (STX) 112
 3 Pinecone Strike (HOB) 107
@@ -872,6 +844,7 @@
 1 Predictive Preparations (FRA) 16 *F*
 1 Preordain (TDC) 161
 1 Prescient Chimera (THS) 59
+1 Primordial Pachyderm (TMT) 129
 1 Prodigy's Prototype (NEO) 231
 2 Professional Wrestler (SPM) 110
 1 Proft, Consulting Detective (FRA) 218
@@ -927,8 +900,10 @@
 1 Refute Destiny (FRA) 361 *F*
 2 Regal Imperiosaur (DFT) 177
 1 Relentless X-ATM092 (FIN) 268
+1 Relic of Legends (FIC) 354
 1 Render Silent (GK2) 18
 1 Renewed Faith (DMR) 23
+1 Rent Is Due (SPM) 11
 1 Reptil, Dinomorpher (MSH) 182 *F*
 1 Repulsor Blast (MSH) 150
 1 Repurposed Enforcer (FRA) 335
@@ -936,6 +911,7 @@
 1 Requisition Raid (SOA) 10
 1 Reroute Systems (EOE) 31
 1 Rescue Leopard (TDM) 116
+1 Resolute Reinforcements (FDN) 145
 1 Restore with Empathy (FRA) 112 *F*
 1 Retrieve the Esper (FIN) 68
 1 Return to the Light Realms (FRA) 323
@@ -946,9 +922,11 @@
 1 Rhovanion Rampager (HOB) 82
 1 Rick Jones, Destined Sidekick (MSH) 184
 1 Riddles in the Dark (HOB) 53
+1 Ride's End (DFT) 25
 1 Riling Dawnbreaker // Signaling Roar (TDM) 21
 1 Rime Chill (ECL) 64
 1 Rise of the Witch-king (LTR) 221
+1 Rising of the Day (LTR) 145
 2 Risky Research (SPM) 62
 2 Risky Shortcut (DFT) 103
 1 Risky Shortcut (DFT) 103 *F*
@@ -965,6 +943,9 @@
 1 Roxxon Brutes (MSH) 113
 1 Run Away Together (ECL) 67
 1 Rust-Shield Rampager (BLB) 190
+1 Sarkhan, Dragon Ascendant (TDM) 302
+1 Scout the Wilderness (DMU) 176
+1 Send in the Pest (SOS) 100
 1 S.H.I.E.L.D. Deployment Drone (MSH) 73
 1 S.H.I.E.L.D. Flying Car (MSH) 74
 2 Sage's Nouliths (FIN) 70
@@ -1012,6 +993,7 @@
 2 Shattered Wings (EOE) 206
 1 Shatterwing Pegasus (FRA) 21 *F*
 1 Shefet Archfiend (DFT) 104
+1 Shire Shirriff (LTR) 441
 2 Shock (SPM) 88
 1 Shocker, Unshakable (SPM) 89
 1 Shocking Sharpshooter (TDM) 121
@@ -1043,10 +1025,13 @@
 1 Smaug, Wicked Worm (HOB) 164
 6 Smaug's Fury (HOB) 111
 1 Smaug's Fury (HOB) 111 *F*
+1 Snakeskin Veil (FDN) 233 *F*
 1 Snarl Song (SOS) 161
 2 Snowslope Hunter (HOB) 112
 1 Snuff Out (FIC) 285
 1 Soaring Stoneglider (SOS) 32
+2 Sol Ring (MSC) 213
+1 Solitary Cell (FRA) 355
 1 Something Worth Saving (FRA) 114 *F*
 1 Soul's Fire (CMR) 200
 3 Sound the Trumpets (HOB) 55
@@ -1072,6 +1057,7 @@
 2 Spider-Man, Brooklyn Visionary (SPM) 115
 3 Spider-Man, Web-Slinger (SPM) 16
 1 Spider-Mobile (SPM) 174
+1 Spider-Rex, Daring Dino (SPM) 116
 1 Spider-UK (SPM) 17
 1 Spider-Woman, Secret Agent (MSH) 229 *F*
 1 Spikeshell Harrier (DFT) 65
@@ -1083,6 +1069,7 @@
 1 Spiritcall Enthusiast // Scrollboost (SOS) 33
 1 Spiritmonger (DMR) 202
 1 Spite // Malice (DMR) 208
+1 Spiteful Squad (STX) 237
 1 Spring of Eternal Peace (PTK) 148
 1 Springleaf Drum (ECL) 260
 2 Sprouting Goblin (EOC) 90
@@ -1101,6 +1088,8 @@
 1 Stegron the Dinosaur Man (SPM) 95 *F*
 1 Stickytongue Sentinel (BLB) 193
 1 Sting, Bilbo's Sword (HOB) 178 *F*
+1 Sting, Bilbo's Sword (HOB) 178
+1 Stingerfling Spider (CMR) 258
 5 Stir Up Trouble (HOB) 84
 1 Stock Up (DFT) 67
 1 Stoic Grove-Guide (ECL) 243
@@ -1140,17 +1129,22 @@
 1 Supportive Parents (SPM) 119
 1 Suq'Ata Lancer (DMR) 145
 1 Surgical Precision (FRA) 22 *F*
+1 Surgical Precision (FRA) 22
 3 Swarm, Being of Bees (SPM) 69
 1 Swat Away (ECL) 75
 1 Swathcutter Giant (GRN) 202
 1 Swift Kick (KTK) 122
 1 Symbiotic Beast (DMR) 180
+1 Syphon Mind (FIC) 288
 1 Syr Vondam, the Lucent (EOE) 232
 2 Systems Override (EOE) 161
 1 Tackle Artist (SOS) 133
 1 Tainted Treats (TMT) 170
+1 Take Up the Shield (MSH) 39
 1 Tale of Tinúviel (LTR) 34
+1 Talisman of Conviction (TDC) 329
 1 Talisman of Dominance (FIC) 364
+1 Talisman of Hierarchy (FIC) 365
 1 Talisman of Progress (FIC) 367
 1 Tam, Observant Sequencer // Deep Sight (SOS) 237
 1 Tam's Resistance (FRA) 153 *F*
@@ -1169,11 +1163,13 @@
 1 Tetsuko Umezawa, Pursuer (FRA) 252 *F*
 1 Textbook Tabulator (SOS) 70
 1 Teyo, Diamondblade Mage (FRA) 306 *F*
+1 Teyo, Lightshield Expert (FRA) 295 *F*
 1 Thalia, the Survivor (FRA) 296 *F*
 1 Thancred Waters (FIC) 31
 1 Thaumaton Torpedo (EOE) 246
 1 The Astonishing Ant-Man (MSH) 204
 1 The Black Arrow (HOB) 171 *F*
+2 The Black Arrow (HOB) 171
 1 The Black Breath (LTR) 78
 2 The Chief Warg (HOB) 150
 2 The Death of Gwen Stacy (SPM) 54
@@ -1201,11 +1197,13 @@
 1 Thorin Oakenshield (HOB) 202
 1 Thorin, King of Durin's Folk (HOC) 3 *F*
 1 Thorin, Mountain-king (HOB) 114 *F*
+1 Thorin Oakenshield (HOB) 165
 2 Thorin's Last Stand (HOB) 28
 1 Thorin's Last Stand (HOB) 209
 1 Thornplate Intimidator (BLB) 117
 1 Thought Erasure (GRN) 206
 1 Thought Shucker (BLB) 77
+1 Thought Vessel (FIC) 368
 1 Thoughtweft Charge (ECL) 198
 2 Thran Golem (DMR) 234
 1 Thran Golem (PCA) 114
@@ -1214,6 +1212,8 @@
 2 Thranduil's Company (HOB) 168
 4 Thranduil's Decree (HOB) 56
 1 Three Tree Mascot (FDN) 682
+1 Three Tree Rootweaver (BLB) 198
+1 Thrór's Map (HOB) 179
 1 Thunder Magic (FIN) 165
 1 Thunderdrum Soloist (SOS) 134
 1 Thundering Broodwagon (DFT) 225
@@ -1251,6 +1251,7 @@
 2 Ultimate Green Goblin (SPM) 157
 2 Ultron Drone (MSH) 253
 1 Ultron Drone (MSH) 253 *F*
+1 Unburied Earthcarver (TDM) 95
 1 Uncover the Moon-Letters (HOB) 57
 1 Underfoot Underdogs (TDM) 129 *F*
 1 Undergrowth Leopard (TDM) 165
@@ -1279,17 +1280,21 @@
 1 Vernadi Shieldmate (CLU) 216
 1 Vigilant Sentry (DMR) 33
 1 Vincent Valentine // Galian Beast (FIN) 125
+1 Vindicate (FIC) 330
 1 Vision of Love (MSH) 158
 1 Vision of Love (MSH) 158 *F*
+1 Vitu-Ghazi Inspector (MKM) 183 *F*
 1 Void Extrapolator // Omit Variables (FRA) 70
 1 Void Rend (FIC) 331
 1 Voidforged Titan (EOE) 125
 1 Volcanic Villain (MSH) 159
+1 Voracious Fell Beast (LTR) 113
 5 Vow to Erebor (HOB) 31
 1 Vraska, the Cutting Glare (FRA) 319
 1 Vraska, the Cutting Glare (FRA) 319 *F*
 1 Wakestone Gargoyle (TDC) 137
 1 Walking Corpse (M21) 128
+1 Wall of Omens (FCA) 27
 1 Wand of Wonder (CLB) 204
 6 Warg Tactics (HOB) 139
 4 Wargling (HOB) 140
@@ -1302,11 +1307,13 @@
 1 Way of the Warlord (FRA) 255 *F*
 1 We Say Thee Nay! (MSH) 82
 1 Web Up (MSH) 41
+2 Web Up (SPM) 21
 3 Web-Shooters (SPM) 22
 1 Web-Warriors (SPM) 159
 1 Web-Warriors (SPM) 159 *F*
 4 Well-Worn Spatula (HOB) 180
 2 Well-Worn Spatula (HOB) 180 *F*
+1 Westfold Rider (HOC) 172
 1 Whisper Agent (CLU) 218
 1 Whispersilk Cloak (DSC) 257
 1 White Auracite (FIN) 41

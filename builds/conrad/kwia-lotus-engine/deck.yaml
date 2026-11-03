@@ -9,9 +9,9 @@ lowest_legal_bracket: 1
 allow_proxies: false
 unlimited_basics: true
 primer: >-
-  Selesnya Food-and-tokens ramp. Accelerate into Kwia on turn three or four with dorks, rocks and land ramp, then gain life on every player's turn (Food sacrificed at instant speed, Squirrel Nest and flash tokens feeding Liliana, Daxos and Belladonna, Authority of the Consuls, Verdant Kraken's upkeep Tentacles) so Kwia makes a Lotus each turn. Peregrin Took turns every Lotus and token into an extra Food and Bilbo turns every Food into a Treasure, so the engine snowballs into mana, cards (Peregrin, Rent Is Due, Belladonna, Elven Chorus) and a wide board. Win by going wide and casting Strength of the Pack, Rabbit Response, Champions from Beyond or Garruk, or a cheap Ghalta, with Kwia flying over for lifelink damage; asymmetric wipes (Hour of Reckoning, Settle the Wreckage) and twelve spot removal spells keep the table in check.
+  Selesnya Food-and-tokens ramp. Accelerate into Kwia on turn three or four with dorks, rocks and land ramp, then gain life on every player's turn (Food sacrificed at instant speed, Squirrel Nest and flash tokens feeding Liliana, Daxos and Belladonna, Essence Warden, Authority of the Consuls, Verdant Kraken's upkeep Tentacles) so Kwia makes a Lotus each turn, and Archangel of Thune puts a counter on every creature with each life gain. Peregrin Took turns every Lotus and token into an extra Food and Bilbo turns every Food into a Treasure, so the engine snowballs into mana, cards (Peregrin, Rent Is Due, Belladonna, Elven Chorus) and a wide board. Win by going wide and casting Strength of the Pack, Rabbit Response, Champions from Beyond or Garruk, or a cheap Ghalta, with Kwia flying over for lifelink damage; asymmetric wipes (Hour of Reckoning, Settle the Wreckage) and twelve spot removal spells keep the table in check.
 power_notes: >-
-  Plays like Bracket 3 (Upgraded), near its top end: Sol Ring, fifteen ramp pieces and the Lotus engine put Kwia out on turn three or four and snowball from there. Built only from owned, unprotected cards: no Game Changers, mass land denial, extra turns or two-card infinite combos, so it fits Bracket 3 comfortably. Pulls from the binders and from the three built custom decks (Kwia's Canopy, Bifur, Edgar), so building it dismantles parts of those. The One Ring and Seedborn Muse, plus staples like Path to Exile, Birds of Paradise, Cultivate, Beast Within, Heroic Intervention and the Selesnya duals, are only in protected collections. Caution on upgrades: Heliod, Sun-Crowned with Walking Ballista is a two-card infinite, which Bracket 3 forbids before turn six; agree on it with the table or swap one of them out before applying the upgrades.
+  Plays like Bracket 3 (Upgraded), near its top end: Sol Ring, fourteen ramp pieces and the Lotus engine put Kwia out on turn three or four and snowball from there. Built only from owned, unprotected cards: no Game Changers, mass land denial, extra turns or two-card infinite combos, so it fits Bracket 3 comfortably. Pulls from the binders and from the three built custom decks (Kwia's Canopy, Bifur, Edgar), so building it dismantles parts of those. The One Ring and Seedborn Muse, plus staples like Path to Exile, Birds of Paradise, Cultivate, Heroic Intervention and the Selesnya duals other than Canopy Vista and Sunpetal Grove, are only in protected collections. Caution on upgrades: Heliod, Sun-Crowned with Walking Ballista is a two-card infinite, which Bracket 3 forbids before turn six; agree on it with the table or swap one of them out before applying the upgrades.
 budget:
   amount: 130
   currency: USD
@@ -41,10 +41,10 @@ mainboard:
   - name: 'Hobbit Hole'
     quantity: 1
     role: land
-  - name: 'Ash Barrens'
+  - name: Sunpetal Grove
     quantity: 1
     role: land
-  - name: 'Path of Ancestry'
+  - name: Canopy Vista
     quantity: 1
     role: land
   - name: 'Minas Tirith'
@@ -72,7 +72,7 @@ mainboard:
   - name: 'Great Forest Druid'
     quantity: 1
     role: ramp
-  - name: 'Three Tree Rootweaver'
+  - name: Farseek
     quantity: 1
     role: ramp
   - name: 'Frog Butler'
@@ -88,9 +88,6 @@ mainboard:
     quantity: 1
     role: ramp
   - name: 'Wood Elves'
-    quantity: 1
-    role: ramp
-  - name: 'Entish Restoration'
     quantity: 1
     role: ramp
   # ramp,synergy
@@ -123,7 +120,7 @@ mainboard:
   - name: 'Courier of Comestibles'
     quantity: 1
     role: synergy
-  - name: 'Resolute Reinforcements'
+  - name: Essence Warden
     quantity: 1
     role: synergy
   - name: 'Squirrel Nest'
@@ -169,6 +166,9 @@ mainboard:
     quantity: 1
     role: draw,wincon
   # synergy,wincon
+  - name: Archangel of Thune
+    quantity: 1
+    role: synergy,wincon
   - name: 'Ajani Resolute'
     quantity: 1
     role: synergy,wincon
@@ -203,7 +203,7 @@ mainboard:
   - name: 'Bite Down'
     quantity: 1
     role: removal
-  - name: 'Darksteel Mutation'
+  - name: Beast Within
     quantity: 1
     role: removal
   - name: 'Liminal Hold'
@@ -283,9 +283,9 @@ considered:
   - name: "Archaeomancer's Map"
     reason: 'Two Plains to hand is card advantage, not mana the turn it lands; fifteen faster ramp pieces are in already.'
   - name: 'Aftermath Analyst'
-    reason: 'Land recursion with little to return: only Evolving Wilds and Ash Barrens put lands in the graveyard.'
+    reason: 'Land recursion with little to return: only Evolving Wilds puts a land in the graveyard.'
   - name: 'Inspiring Call'
-    reason: 'The baseline puts few +1/+1 counters on creatures; revisit if the Heliod and Archangel of Thune upgrades go in.'
+    reason: 'Archangel of Thune is the only card that spreads +1/+1 counters, so it draws well only while she is on the battlefield; revisit if the Heliod upgrade goes in.'
   - name: 'Whispersilk Cloak'
     reason: 'Kwia already flies and has ward {2}; Swiftfoot Boots protects it for less and grants haste.'
   - name: 'Darksteel Plate'
@@ -308,6 +308,18 @@ considered:
     reason: 'Six mana, and any opponent who attacks you unblocked takes it and draws three cards.'
   - name: 'Lithoform Engine'
     reason: "Copying Kwia's Lotus trigger costs two mana to gain three, a slow return on a four-mana artifact."
+  - name: Entish Restoration
+    reason: 'Swapped out for Archangel of Thune: with every-turn lifegain the Archangel grows the whole token board, and the deck keeps fourteen ramp pieces without it.'
+  - name: Resolute Reinforcements
+    reason: Swapped out for Essence Warden, which gains life on any player's turn for one mana so Kwia makes a Lotus nearly every turn; Reinforcements makes only one token.
+  - name: Darksteel Mutation
+    reason: Swapped out for Beast Within, an instant answer to any permanent rather than a sorcery-speed creature-only one.
+  - name: Path of Ancestry
+    reason: Swapped out for Canopy Vista, a green-white dual that usually enters untapped; Path of Ancestry enters tapped and its scry rarely triggers.
+  - name: Ash Barrens
+    reason: Swapped out for Sunpetal Grove, an untapped green-white dual instead of a colorless land that costs mana to fix.
+  - name: Three Tree Rootweaver
+    reason: 'Swapped out for Farseek: two-mana land ramp whose Plains survives Hour of Reckoning, Settle the Wreckage and opposing wipes, where the dork does not.'
 upgrades:
   - add:
       name: 'Craterhoof Behemoth'
@@ -366,22 +378,6 @@ upgrades:
       quantity: 1
     reason: 'One-mana instant exile for any creature instead of a conditional three-mana answer. Your copies are in protected precons.'
   - add:
-      name: 'Beast Within'
-      quantity: 1
-      role: removal
-    cut:
-      name: 'Darksteel Mutation'
-      quantity: 1
-    reason: 'Instant answer to any permanent, not just creatures.'
-  - add:
-      name: 'Essence Warden'
-      quantity: 1
-      role: synergy
-    cut:
-      name: 'Resolute Reinforcements'
-      quantity: 1
-    reason: "One-mana lifegain on every creature entering, on any player's turn, so Kwia makes a Lotus nearly every turn."
-  - add:
       name: 'Soul Warden'
       quantity: 1
       role: synergy
@@ -426,9 +422,9 @@ upgrades:
       quantity: 1
       role: ramp
     cut:
-      name: 'Three Tree Rootweaver'
+      name: 'Farseek'
       quantity: 1
-    reason: 'Two-mana land ramp in place of a two-mana dork: the land survives Hour of Reckoning, Settle the Wreckage and opposing wipes, and the dork upgrades already supply the early creature mana.'
+    reason: 'The same two-mana land ramp as Farseek, but the land enters untapped and can be a Forest or a Plains.'
   - add:
       name: 'Three Visits'
       quantity: 1
@@ -437,30 +433,6 @@ upgrades:
       name: 'Courier of Comestibles'
       quantity: 1
     reason: "Same as Nature's Lore; more early ramp means an earlier Kwia."
-  - add:
-      name: 'Canopy Vista'
-      quantity: 1
-      role: land
-    cut:
-      name: 'Path of Ancestry'
-      quantity: 1
-    reason: 'Green-white dual that usually enters untapped with basics, instead of a tapped land whose scry rarely triggers.'
-  - add:
-      name: 'Sunpetal Grove'
-      quantity: 1
-      role: land
-    cut:
-      name: 'Ash Barrens'
-      quantity: 1
-    reason: 'Untapped green-white dual instead of a colorless land that needs mana to fix.'
-  - add:
-      name: 'Archangel of Thune'
-      quantity: 1
-      role: synergy,wincon
-    cut:
-      name: 'Entish Restoration'
-      quantity: 1
-    reason: 'Flying lifelinker that puts a counter on every creature you control each time you gain life; with every-turn lifegain it grows the whole token board. The deck has plenty of ramp after the dork upgrades.'
   - add:
       name: 'Generous Gift'
       quantity: 1
@@ -498,4 +470,7 @@ history:
     notes: >-
       Two more swaps from the deck:candidates review. Bastion Protector makes Kwia indestructible, so it survives the deck's own Hour of Reckoning; Lightning Greaves goes, since its shroud stops the deck's own protection spells and Swiftfoot Boots stays. Defense of the Heart usually triggers in a four-player game and puts two creatures such as Ghalta and Verdant Kraken, or Peregrin and Bilbo, onto the battlefield; Pictures of Spider-Man goes, as the weaker way to find creatures.
     changes: '-Lightning Greaves, +Bastion Protector, -Pictures of Spider-Man, +Defense of the Heart'
+  - date: 2026-11-03
+    changes: -Entish Restoration, +Archangel of Thune, -Resolute Reinforcements, +Essence Warden, -Darksteel Mutation, +Beast Within, -Path of Ancestry, +Canopy Vista, -Ash Barrens, +Sunpetal Grove, -Three Tree Rootweaver, +Farseek
+    notes: "Swapped out for Archangel of Thune: with every-turn lifegain the Archangel grows the whole token board, and the deck keeps fourteen ramp pieces without it. Swapped out for Essence Warden, which gains life on any player's turn for one mana so Kwia makes a Lotus nearly every turn; Reinforcements makes only one token. Swapped out for Beast Within, an instant answer to any permanent rather than a sorcery-speed creature-only one. Swapped out for Canopy Vista, a green-white dual that usually enters untapped; Path of Ancestry enters tapped and its scry rarely triggers. Swapped out for Sunpetal Grove, an untapped green-white dual instead of a colorless land that costs mana to fix. Swapped out for Farseek: two-mana land ramp whose Plains survives Hour of Reckoning, Settle the Wreckage and opposing wipes, where the dork does not."
 collection_destination: collections/conrad/protected/custom/Kwia Lotus Engine.txt

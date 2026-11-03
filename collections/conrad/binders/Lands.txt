@@ -1,3 +1,4 @@
+1 Ash Barrens (FIC) 374
 1 Avengers Tower (MSH) 260
 1 Avengers Tower (MSH) 334
 1 Avishkar Raceway (DFT) 249
@@ -5,6 +6,7 @@
 1 Blossoming Sands (DFT) 252 *F*
 1 Blossoming Sands (TDM) 251
 1 Capital City (FIN) 274
+2 Command Tower (DRC) 60
 1 Cori Mountain Monastery (TDM) 252
 1 Crossroads Village (FIN) 276
 2 Daily Bugle Building (SPM) 179
@@ -94,6 +96,7 @@
 1 Northampton Farm (TMT) 188
 1 Ominous Asylum (SPM) 181
 1 Paradox Gardens (SOS) 258
+1 Path of Ancestry (FIC) 411
 1 Plains (HOB) 189
 1 Plains (MSH) 278
 1 Plains (SPM) 194
