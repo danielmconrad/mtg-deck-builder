@@ -63,7 +63,6 @@ Deck
 1 Web Up (SPM) 21
 1 Celebrate the Mountain-king (HOB) 7
 1 Your Fate Ends Here (FRA) 24 *F*
-1 Make Your Move (FDN) 143
 1 Pest Infestation (SOC) 282
 1 Bite Down (FDN) 212
 1 Liminal Hold (ECL) 24
@@ -90,5 +89,6 @@ Deck
 1 Beast Within (EOC) 93
 1 Canopy Vista (FIC) 378
 1 Essence Warden (CMA) 106
-1 Farseek (TDC) 255
 1 Sunpetal Grove (FIC) 432
+1 Nature's Lore (FIC) 311
+1 Path to Exile (FIC) 248

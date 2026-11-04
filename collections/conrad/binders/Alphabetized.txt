@@ -392,6 +392,7 @@
 1 Fandaniel, Telophoroi Ascian (FIC) 46
 1 Fang-Druid Summoner (DFT) 163
 1 Faramir, Field Commander (LTR) 303
+1 Farseek (TDC) 255
 1 Fatal Push (FCA) 9
 1 Fate of the Sun-Cryst (FIN) 19
 1 Fatehold Charm (FRA) 132
@@ -706,6 +707,7 @@
 1 Magitek Armor (FIN) 24
 2 Magmakin Artillerist (DFT) 137
 6 Magnificent End (HOB) 20
+1 Make Your Move (FDN) 143
 1 Mangara, the Diplomat (TDC) 124
 1 Man-o'-War (DMR) 58
 1 Maralen, Fae Ascendant (ECL) 233

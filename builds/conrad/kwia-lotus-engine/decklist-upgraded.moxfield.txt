@@ -6,17 +6,18 @@ Deck
 1 Gathering Place (MSH) 266
 1 Blossoming Sands (DFT) 252
 1 Suburban Sanctuary (SPM) 185
-1 Evolving Wilds (FIC) 389
+1 Evolving Wilds (TDM) 255
 1 Vibrant Cityscape (SPM) 188
-1 Sunpetal Grove (FIC) 432
-1 Canopy Vista (FIC) 378
+1 Sunpetal Grove (TDC) 399
+1 Canopy Vista (TDC) 343
 1 Minas Tirith (LTR) 256
-12 Forest (DFT) 289
+12 Forest (TDM) 285
 12 Plains (MDD) 292
 1 Sol Ring (MSC) 213
 1 Arcane Signet (TDC) 105
 1 Delighted Halfling (LTR) 158
 1 Great Forest Druid (ECL) 178
+1 Nature's Lore (FIC) 311
 1 Frog Butler (TMT) 114
 1 Studious First-Year // Rampant Growth (SOS) 162
 1 Many Partings (LTR) 445
@@ -41,12 +42,12 @@ Deck
 1 Champions from Beyond (FIC) 11
 1 Archangel of Thune (MAR) 41
 1 Ajani Resolute (FRA) 291
-1 Swords to Plowshares (FIC) 256
+1 Swords to Plowshares (TDC) 134
 1 Erode (SOS) 15
 1 Banishing Light (BLB) 1
 1 Memory Trap (FRA) 15
-1 Web Up (SPM) 21
 1 Celebrate the Mountain-king (HOB) 7
+1 Path to Exile (FIC) 248
 1 Pest Infestation (SOC) 282
 1 Beast Within (EOC) 93
 1 Hour of Reckoning (GK1) 104
@@ -68,14 +69,13 @@ Deck
 1 Birds of Paradise (MSC) 170
 1 Llanowar Elves (FDN) 227
 1 Elvish Mystic (HOC) 205
-1 Path to Exile (TRC) 425
 1 Soul Warden (MM3) 24
 1 Academy Manufactor (OTC) 251
 1 Tireless Provisioner (MOC) 313
 1 Avenger of Zendikar (ECC) 98
 1 Heroic Intervention (TRC) 465
-1 Nature's Lore (TRC) 467
 1 Three Visits (MSC) 181
 1 Generous Gift (MSC) 133
 1 Temple Garden (TRK) 301
 1 Brushland (BRO) 259
+1 Seedborn Muse (TDC) 268

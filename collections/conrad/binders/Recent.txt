@@ -61,3 +61,5 @@
 1 Arc-Slogger (MRD) 85
 1 Lluwen, Imperfect Naturalist (ECL) 232
 2 Scour from Existence (BFZ) 13
+1 Path to Exile (FIC) 248
+1 Swords to Plowshares (FIC) 256
