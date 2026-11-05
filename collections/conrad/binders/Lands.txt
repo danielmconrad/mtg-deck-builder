@@ -145,6 +145,7 @@
 1 Scavenger Grounds (FIC) 419
 1 Secluded Starforge (EOE) 316
 1 Shineshadow Snarl (FIC) 422
+1 Silverquill Campus (SOC) 405
 1 Sinister Hideout (SPM) 184
 1 Sinister Hideout (SPM) 184 *F*
 1 Skycloud Expanse (FIC) 423
