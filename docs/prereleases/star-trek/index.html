@@ -58,6 +58,8 @@
       }
       html {
         background: var(--black);
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
       }
       body {
         background: var(--black);
@@ -599,8 +601,7 @@
         row-gap: 3px;
         align-items: center;
       }
-      a.nm,
-      a.sl {
+      a.nm {
         color: inherit;
         text-decoration: underline;
         text-decoration-color: var(--dim);
@@ -608,7 +609,7 @@
         text-underline-offset: 3px;
       }
       a.nm:hover,
-      a.sl:hover {
+      a.nm:focus-visible {
         color: var(--ice);
         text-decoration-color: var(--ice);
       }
@@ -737,6 +738,18 @@
         color: var(--text);
         border-radius: 999px;
         padding: 1px 10px;
+        text-decoration: none;
+      }
+      .sign:hover,
+      .sign:focus-visible {
+        background: var(--c);
+        color: var(--black);
+        outline: none;
+      }
+      .sign:focus-visible {
+        box-shadow:
+          0 0 0 2px var(--black),
+          0 0 0 4px var(--ice);
       }
       .wants {
         font-size: 0.97rem;
@@ -817,6 +830,47 @@
         display: flex;
         align-items: center;
         line-height: 1;
+      }
+      /* Landscape phones: short and wide. Keep the console compact so the nav and content show on the first screen. */
+      @media (orientation: landscape) and (max-height: 520px) {
+        :root {
+          --rail: 44px;
+        }
+        .wrap.top {
+          padding-top: 14px;
+        }
+        .hero h1 {
+          font-size: clamp(2rem, 5.6vw, 2.8rem);
+        }
+        .hero .body {
+          gap: 10px;
+          padding-block: 10px 8px;
+        }
+        .hero .lede {
+          max-width: 75ch;
+        }
+        .rail span {
+          min-height: 30px;
+          font-size: 0.7rem;
+        }
+        .segs {
+          height: 24px;
+        }
+        nav.jump {
+          padding-block: 6px;
+        }
+        nav.jump a {
+          height: 28px;
+          padding-bottom: 3px;
+          font-size: 0.82rem;
+        }
+        .frame {
+          scroll-margin-top: 54px;
+        }
+        main {
+          gap: 34px;
+          padding-top: 14px;
+        }
       }
     </style>
   </head>
@@ -1454,18 +1508,16 @@
                   <span class="code">WU</span>
                 </header>
                 <div class="signs">
-                  <span class="sign"
-                    ><a class="sl" href="https://scryfall.com/card/trk/239">Hemmer, Fixing What Is Broken</a
-                    ><span class="cost"
+                  <a class="sign" href="https://scryfall.com/card/trk/239"
+                    >Hemmer, Fixing What Is Broken<span class="cost"
                       ><svg class="ms" role="img" aria-label="white">
                         <title>white</title>
                         <use href="#ms-W" /></svg
                       ><svg class="ms" role="img" aria-label="blue">
                         <title>blue</title>
-                        <use href="#ms-U" /></svg></span></span
-                  ><span class="sign"
-                    ><a class="sl" href="https://scryfall.com/card/trk/230">Constable Odo</a
-                    ><span class="cost"
+                        <use href="#ms-U" /></svg></span></a
+                  ><a class="sign" href="https://scryfall.com/card/trk/230"
+                    >Constable Odo<span class="cost"
                       ><svg class="ms" role="img" aria-label="3 generic">
                         <title>3 generic</title>
                         <use href="#ms-3" /></svg
@@ -1475,7 +1527,7 @@
                       ><svg class="ms" role="img" aria-label="white or blue">
                         <title>white or blue</title>
                         <use href="#ms-WU" /></svg></span
-                  ></span>
+                  ></a>
                 </div>
                 <p class="wants">
                   Spacecraft (Suurok-Class, Oberth-Class, Enterprise NX-01), Warp Core, Rutherford, stun effects.
@@ -1495,9 +1547,8 @@
                   <span class="code">UB</span>
                 </header>
                 <div class="signs">
-                  <span class="sign"
-                    ><a class="sl" href="https://scryfall.com/card/trk/252">Seven of Nine</a
-                    ><span class="cost"
+                  <a class="sign" href="https://scryfall.com/card/trk/252"
+                    >Seven of Nine<span class="cost"
                       ><svg class="ms" role="img" aria-label="2 generic">
                         <title>2 generic</title>
                         <use href="#ms-2" /></svg
@@ -1506,10 +1557,9 @@
                         <use href="#ms-U" /></svg
                       ><svg class="ms" role="img" aria-label="black">
                         <title>black</title>
-                        <use href="#ms-B" /></svg></span></span
-                  ><span class="sign"
-                    ><a class="sl" href="https://scryfall.com/card/trk/246">Lore, Positronic Provocateur</a
-                    ><span class="cost"
+                        <use href="#ms-B" /></svg></span></a
+                  ><a class="sign" href="https://scryfall.com/card/trk/246"
+                    >Lore, Positronic Provocateur<span class="cost"
                       ><svg class="ms" role="img" aria-label="1 generic">
                         <title>1 generic</title>
                         <use href="#ms-1" /></svg
@@ -1519,7 +1569,7 @@
                       ><svg class="ms" role="img" aria-label="blue or black">
                         <title>blue or black</title>
                         <use href="#ms-UB" /></svg></span
-                  ></span>
+                  ></a>
                 </div>
                 <p class="wants">
                   Modal spells (the “Test of…” cycle, Consider the Prime Directive), Melkotian Adjudicator, Obsidian
@@ -1540,9 +1590,8 @@
                   <span class="code">BR</span>
                 </header>
                 <div class="signs">
-                  <span class="sign"
-                    ><a class="sl" href="https://scryfall.com/card/trk/247">L&#x27;Rell, Fierce Visionary</a
-                    ><span class="cost"
+                  <a class="sign" href="https://scryfall.com/card/trk/247"
+                    >L&#x27;Rell, Fierce Visionary<span class="cost"
                       ><svg class="ms" role="img" aria-label="1 generic">
                         <title>1 generic</title>
                         <use href="#ms-1" /></svg
@@ -1551,17 +1600,16 @@
                         <use href="#ms-B" /></svg
                       ><svg class="ms" role="img" aria-label="red">
                         <title>red</title>
-                        <use href="#ms-R" /></svg></span></span
-                  ><span class="sign"
-                    ><a class="sl" href="https://scryfall.com/card/trk/235">The Duras Sisters</a
-                    ><span class="cost"
+                        <use href="#ms-R" /></svg></span></a
+                  ><a class="sign" href="https://scryfall.com/card/trk/235"
+                    >The Duras Sisters<span class="cost"
                       ><svg class="ms" role="img" aria-label="black or red">
                         <title>black or red</title>
                         <use href="#ms-BR" /></svg
                       ><svg class="ms" role="img" aria-label="black or red">
                         <title>black or red</title>
                         <use href="#ms-BR" /></svg></span
-                  ></span>
+                  ></a>
                 </div>
                 <p class="wants">
                   Hasty 2/1 Klingon tokens, Battle-Scarred Survivalist, Dahar Master, Planetary Bombardment, Eject the
@@ -1582,9 +1630,8 @@
                   <span class="code">RG</span>
                 </header>
                 <div class="signs">
-                  <span class="sign"
-                    ><a class="sl" href="https://scryfall.com/card/trk/231">Dal R&#x27;El, Augment Orphan</a
-                    ><span class="cost"
+                  <a class="sign" href="https://scryfall.com/card/trk/231"
+                    >Dal R&#x27;El, Augment Orphan<span class="cost"
                       ><svg class="ms" role="img" aria-label="1 generic">
                         <title>1 generic</title>
                         <use href="#ms-1" /></svg
@@ -1593,10 +1640,9 @@
                         <use href="#ms-R" /></svg
                       ><svg class="ms" role="img" aria-label="green">
                         <title>green</title>
-                        <use href="#ms-G" /></svg></span></span
-                  ><span class="sign"
-                    ><a class="sl" href="https://scryfall.com/card/trk/229">Cleveland Booker, Empath</a
-                    ><span class="cost"
+                        <use href="#ms-G" /></svg></span></a
+                  ><a class="sign" href="https://scryfall.com/card/trk/229"
+                    >Cleveland Booker, Empath<span class="cost"
                       ><svg class="ms" role="img" aria-label="2 generic">
                         <title>2 generic</title>
                         <use href="#ms-2" /></svg
@@ -1606,7 +1652,7 @@
                       ><svg class="ms" role="img" aria-label="red or green">
                         <title>red or green</title>
                         <use href="#ms-RG" /></svg></span
-                  ></span>
+                  ></a>
                 </div>
                 <p class="wants">
                   Xindi Surveyors, Planetary Patrol, Saurian Explorer, Syndicate Liquidators, Final Frontier,
@@ -1627,9 +1673,8 @@
                   <span class="code">WG</span>
                 </header>
                 <div class="signs">
-                  <span class="sign"
-                    ><a class="sl" href="https://scryfall.com/card/trk/250">Phlox, Unorthodox Doctor</a
-                    ><span class="cost"
+                  <a class="sign" href="https://scryfall.com/card/trk/250"
+                    >Phlox, Unorthodox Doctor<span class="cost"
                       ><svg class="ms" role="img" aria-label="2 generic">
                         <title>2 generic</title>
                         <use href="#ms-2" /></svg
@@ -1638,10 +1683,9 @@
                         <use href="#ms-G" /></svg
                       ><svg class="ms" role="img" aria-label="white">
                         <title>white</title>
-                        <use href="#ms-W" /></svg></span></span
-                  ><span class="sign"
-                    ><a class="sl" href="https://scryfall.com/card/trk/234">The Doctor, EMH</a
-                    ><span class="cost"
+                        <use href="#ms-W" /></svg></span></a
+                  ><a class="sign" href="https://scryfall.com/card/trk/234"
+                    >The Doctor, EMH<span class="cost"
                       ><svg class="ms" role="img" aria-label="3 generic">
                         <title>3 generic</title>
                         <use href="#ms-3" /></svg
@@ -1651,7 +1695,7 @@
                       ><svg class="ms" role="img" aria-label="green or white">
                         <title>green or white</title>
                         <use href="#ms-GW" /></svg></span
-                  ></span>
+                  ></a>
                 </div>
                 <p class="wants">
                   Emergency Medical Hologram, Dominion Supervisor, Pure Energy, Support Mission, Dr. McCoy.
@@ -1672,18 +1716,16 @@
                   <span class="code">WB</span>
                 </header>
                 <div class="signs">
-                  <span class="sign"
-                    ><a class="sl" href="https://scryfall.com/card/trk/245">Locutus, the One Who Speaks</a
-                    ><span class="cost"
+                  <a class="sign" href="https://scryfall.com/card/trk/245"
+                    >Locutus, the One Who Speaks<span class="cost"
                       ><svg class="ms" role="img" aria-label="white">
                         <title>white</title>
                         <use href="#ms-W" /></svg
                       ><svg class="ms" role="img" aria-label="black">
                         <title>black</title>
-                        <use href="#ms-B" /></svg></span></span
-                  ><span class="sign"
-                    ><a class="sl" href="https://scryfall.com/card/trk/258">Zero, Incorporeal Sensate</a
-                    ><span class="cost"
+                        <use href="#ms-B" /></svg></span></a
+                  ><a class="sign" href="https://scryfall.com/card/trk/258"
+                    >Zero, Incorporeal Sensate<span class="cost"
                       ><svg class="ms" role="img" aria-label="1 generic">
                         <title>1 generic</title>
                         <use href="#ms-1" /></svg
@@ -1693,7 +1735,7 @@
                       ><svg class="ms" role="img" aria-label="white or black">
                         <title>white or black</title>
                         <use href="#ms-WB" /></svg></span
-                  ></span>
+                  ></a>
                 </div>
                 <p class="wants">
                   Drones (Tenacious, Vexing, Collective, Assault), Assembly Specialist, Command Subadjunct, Conquest
@@ -1715,18 +1757,16 @@
                   <span class="code">UR</span>
                 </header>
                 <div class="signs">
-                  <span class="sign"
-                    ><a class="sl" href="https://scryfall.com/card/trk/253">Spock, Always Your Friend</a
-                    ><span class="cost"
+                  <a class="sign" href="https://scryfall.com/card/trk/253"
+                    >Spock, Always Your Friend<span class="cost"
                       ><svg class="ms" role="img" aria-label="blue">
                         <title>blue</title>
                         <use href="#ms-U" /></svg
                       ><svg class="ms" role="img" aria-label="red">
                         <title>red</title>
-                        <use href="#ms-R" /></svg></span></span
-                  ><span class="sign"
-                    ><a class="sl" href="https://scryfall.com/card/trk/238">Gray and Adira, Forever Joined</a
-                    ><span class="cost"
+                        <use href="#ms-R" /></svg></span></a
+                  ><a class="sign" href="https://scryfall.com/card/trk/238"
+                    >Gray and Adira, Forever Joined<span class="cost"
                       ><svg class="ms" role="img" aria-label="2 generic">
                         <title>2 generic</title>
                         <use href="#ms-2" /></svg
@@ -1736,7 +1776,7 @@
                       ><svg class="ms" role="img" aria-label="blue or red">
                         <title>blue or red</title>
                         <use href="#ms-UR" /></svg></span
-                  ></span>
+                  ></a>
                 </div>
                 <p class="wants">
                   Academy Instructor, Tal Shiar Analyst, Cetacean Ops, Anthropological Mission. Spacecraft count as
@@ -1758,9 +1798,8 @@
                   <span class="code">BG</span>
                 </header>
                 <div class="signs">
-                  <span class="sign"
-                    ><a class="sl" href="https://scryfall.com/card/trk/255">Vash, Freelance Archaeologist</a
-                    ><span class="cost"
+                  <a class="sign" href="https://scryfall.com/card/trk/255"
+                    >Vash, Freelance Archaeologist<span class="cost"
                       ><svg class="ms" role="img" aria-label="1 generic">
                         <title>1 generic</title>
                         <use href="#ms-1" /></svg
@@ -1769,10 +1808,9 @@
                         <use href="#ms-B" /></svg
                       ><svg class="ms" role="img" aria-label="green">
                         <title>green</title>
-                        <use href="#ms-G" /></svg></span></span
-                  ><span class="sign"
-                    ><a class="sl" href="https://scryfall.com/card/trk/232">Daniels, Temporal Agent</a
-                    ><span class="cost"
+                        <use href="#ms-G" /></svg></span></a
+                  ><a class="sign" href="https://scryfall.com/card/trk/232"
+                    >Daniels, Temporal Agent<span class="cost"
                       ><svg class="ms" role="img" aria-label="2 generic">
                         <title>2 generic</title>
                         <use href="#ms-2" /></svg
@@ -1782,7 +1820,7 @@
                       ><svg class="ms" role="img" aria-label="black or green">
                         <title>black or green</title>
                         <use href="#ms-BG" /></svg></span
-                  ></span>
+                  ></a>
                 </div>
                 <p class="wants">
                   Cards that leave your graveyard: beam me up spells, Relentless Drednok, Storied Veteran, Blastoneuron,
@@ -1803,9 +1841,8 @@
                   <span class="code">WR</span>
                 </header>
                 <div class="signs">
-                  <span class="sign"
-                    ><a class="sl" href="https://scryfall.com/card/trk/243">Kirk, Commanding Officer</a
-                    ><span class="cost"
+                  <a class="sign" href="https://scryfall.com/card/trk/243"
+                    >Kirk, Commanding Officer<span class="cost"
                       ><svg class="ms" role="img" aria-label="1 generic">
                         <title>1 generic</title>
                         <use href="#ms-1" /></svg
@@ -1814,17 +1851,16 @@
                         <use href="#ms-R" /></svg
                       ><svg class="ms" role="img" aria-label="white">
                         <title>white</title>
-                        <use href="#ms-W" /></svg></span></span
-                  ><span class="sign"
-                    ><a class="sl" href="https://scryfall.com/card/trk/256">Worf, Honor-Bound Warrior</a
-                    ><span class="cost"
+                        <use href="#ms-W" /></svg></span></a
+                  ><a class="sign" href="https://scryfall.com/card/trk/256"
+                    >Worf, Honor-Bound Warrior<span class="cost"
                       ><svg class="ms" role="img" aria-label="red or white">
                         <title>red or white</title>
                         <use href="#ms-RW" /></svg
                       ><svg class="ms" role="img" aria-label="red or white">
                         <title>red or white</title>
                         <use href="#ms-RW" /></svg></span
-                  ></span>
+                  ></a>
                 </div>
                 <p class="wants">
                   “Whenever you attack while creatures you control have total power 8 or greater”: Tactical Officer,
@@ -1845,18 +1881,16 @@
                   <span class="code">UG</span>
                 </header>
                 <div class="signs">
-                  <span class="sign"
-                    ><a class="sl" href="https://scryfall.com/card/trk/254">The Traveler</a
-                    ><span class="cost"
+                  <a class="sign" href="https://scryfall.com/card/trk/254"
+                    >The Traveler<span class="cost"
                       ><svg class="ms" role="img" aria-label="green">
                         <title>green</title>
                         <use href="#ms-G" /></svg
                       ><svg class="ms" role="img" aria-label="blue">
                         <title>blue</title>
-                        <use href="#ms-U" /></svg></span></span
-                  ><span class="sign"
-                    ><a class="sl" href="https://scryfall.com/card/trk/236">D&#x27;Vana Tendi, Optimistic Ensign</a
-                    ><span class="cost"
+                        <use href="#ms-U" /></svg></span></a
+                  ><a class="sign" href="https://scryfall.com/card/trk/236"
+                    >D&#x27;Vana Tendi, Optimistic Ensign<span class="cost"
                       ><svg class="ms" role="img" aria-label="1 generic">
                         <title>1 generic</title>
                         <use href="#ms-1" /></svg
@@ -1866,7 +1900,7 @@
                       ><svg class="ms" role="img" aria-label="green or blue">
                         <title>green or blue</title>
                         <use href="#ms-GU" /></svg></span
-                  ></span>
+                  ></a>
                 </div>
                 <p class="wants">
                   Differently named lands: Planets, Anomalies, Final Frontier, Warp Speed, Astute Terraformer, Cloak and
