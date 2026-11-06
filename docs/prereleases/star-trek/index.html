@@ -491,6 +491,7 @@
         text-align: right;
         padding: 3px 10px 2px;
         border-radius: 13px 0 0 13px;
+        margin-top: 6px;
       }
       .facts dd {
         margin: 0;
@@ -533,19 +534,23 @@
         display: grid;
         grid-template-columns: 2.4rem minmax(0, 1fr);
         gap: 10px;
-        align-items: baseline;
+        align-items: start;
+      }
+      ol.steps li > span {
+        padding-top: 1px;
       }
       ol.steps li::before {
         content: counter(s, decimal-leading-zero);
         font-family: var(--display);
-        font-weight: 700;
-        font-size: 1.05rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        letter-spacing: 0.06em;
         color: var(--black);
         background: var(--c);
-        border-radius: 12px 0 0 12px;
+        border-radius: 13px 0 0 13px;
         text-align: right;
-        padding: 1px 7px 0 0;
-        line-height: 1.4;
+        padding: 3px 7px 2px 0;
+        margin-top: 6px;
       }
       .sub {
         display: grid;
