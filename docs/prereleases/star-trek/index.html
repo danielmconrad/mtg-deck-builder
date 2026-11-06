@@ -1022,6 +1022,22 @@
     </style>
   </head>
   <body>
+    <script>
+      /* Past the layout's widest breakpoint, zoom the whole console to fill the window instead of
+   centering it. Short landscape screens keep their compact layout. */
+      (function () {
+        var DESIGN_WIDTH = 860;
+        var root = document.documentElement;
+        function fit() {
+          root.style.zoom = '';
+          var width = root.clientWidth;
+          var zoom = width > DESIGN_WIDTH && window.innerHeight > 520 ? width / DESIGN_WIDTH : 1;
+          if (zoom > 1) root.style.zoom = String(zoom);
+        }
+        fit();
+        window.addEventListener('resize', fit);
+      })();
+    </script>
     <svg class="sprite" aria-hidden="true" focusable="false">
       <symbol id="ms-1" viewBox="0 0 100 100">
         <g transform="translate(0 -1)" fill="none">
