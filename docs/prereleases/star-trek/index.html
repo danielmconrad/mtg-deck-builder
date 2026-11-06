@@ -78,6 +78,7 @@
       }
       .wrap.top {
         padding-top: 28px;
+        padding-bottom: 22px;
       }
       @media (min-width: 640px) {
         .wrap.top {
@@ -358,7 +359,60 @@
       main {
         display: grid;
         gap: 44px;
-        padding-block: 22px 64px;
+        padding-block: 22px 44px;
+      }
+      /* Credit: a closing LCARS bar with the author between its end caps. */
+      .credit {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-bottom: 40px;
+      }
+      .credit .cap {
+        width: var(--rail);
+        height: 22px;
+        background: var(--lilac);
+        border-radius: 11px 0 0 11px;
+        flex: none;
+      }
+      .credit .fill {
+        flex: 1;
+        height: 22px;
+        background: var(--lilac);
+        border-radius: 0 11px 11px 0;
+        min-width: 24px;
+      }
+      .credit p {
+        font-family: var(--display);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.9rem;
+        color: var(--peach);
+        white-space: nowrap;
+      }
+      .credit b {
+        font-weight: 700;
+        color: var(--orange);
+      }
+      .credit a {
+        color: var(--ice);
+        text-decoration: none;
+      }
+      .credit a:hover,
+      .credit a:focus-visible {
+        text-decoration: underline;
+      }
+      @media (max-width: 560px) {
+        .credit {
+          flex-wrap: wrap;
+          row-gap: 10px;
+        }
+        .credit p {
+          order: 1;
+          width: 100%;
+          padding-left: calc(var(--rail) + 14px);
+          white-space: normal;
+        }
       }
 
       /* ---------- Content pieces ---------- */
@@ -838,6 +892,7 @@
         }
         .wrap.top {
           padding-top: 14px;
+          padding-bottom: 14px;
         }
         .hero h1 {
           font-size: clamp(2rem, 5.6vw, 2.8rem);
@@ -1167,7 +1222,7 @@
       </symbol>
     </svg>
 
-    <div class="wrap top">
+    <div class="wrap top" id="top">
       <section class="frame hero" style="--c: var(--orange); --c2: var(--lilac); --c3: var(--blue)">
         <div class="head">
           <div class="corner"></div>
@@ -1199,12 +1254,13 @@
 
     <nav class="jump" aria-label="Sections">
       <ul>
+        <li><a href="#top">Top</a></li>
         <li><a href="#tonight">Tonight</a></li>
         <li><a href="#build">Build</a></li>
         <li><a href="#mechanics">Mechanics</a></li>
         <li><a href="#archetypes">Archetypes</a></li>
         <li><a href="#removal">Removal</a></li>
-        <li><a href="#top">Top picks</a></li>
+        <li><a href="#picks">Top picks</a></li>
         <li><a href="#tricks">Tricks</a></li>
         <li><a href="#rares">Rares</a></li>
         <li><a href="#draft">Draft</a></li>
@@ -2427,7 +2483,7 @@
           </div>
         </section>
 
-        <section class="frame" id="top" style="--c: var(--orange); --c2: var(--blue); --c3: var(--gold)">
+        <section class="frame" id="picks" style="--c: var(--orange); --c2: var(--blue); --c3: var(--gold)">
           <div class="head">
             <div class="corner"></div>
             <div class="bar"><h2>Top commons &amp; uncommons</h2></div>
@@ -3787,6 +3843,11 @@
           </div>
         </section>
       </main>
+      <footer class="credit">
+        <span class="cap"></span>
+        <p>Made by <b>Daniel Conrad</b> · <a href="https://github.com/danielmconrad">github.com/danielmconrad</a></p>
+        <span class="fill"></span>
+      </footer>
     </div>
   </body>
 </html>
