@@ -93,6 +93,13 @@ Load `artifact-design`, write the page in the scratchpad and publish it as an Ar
 
 Mark every rating as the source's and every unknown as unknown. Don't fill gaps from memory.
 
+On every card:
+
+- **Link the name to Scryfall** by set and collector number: `https://scryfall.com/card/<set>/<collector_number>`. The `--json` output's `printing` field has both.
+- **Draw mana costs with Scryfall's symbol images, not colored dots.** The user is colorblind, and the symbols carry the color in their shape. The page can't load images from another site, so download the symbols the page uses. `https://api.scryfall.com/symbology` gives each symbol's `svg_uri`; save the files to their own folder in the scratchpad. Embed each one once as a `<symbol id="ms-W">` in a hidden `<svg>` sprite at the top of the page, then reference it with `<svg class="ms" role="img" aria-label="white"><title>white</title><use href="#ms-W"/></svg>`. Strip the `id` attributes inside the files, since they all reuse the same ones, and refuse any file containing a script, an event handler or an `href`.
+
+Give the sheet a look from the set's own world, as the Star Trek sheet does with LCARS.
+
 Generate the page with a throwaway script in the scratchpad that reads `collection:search -- --all-cards --set CODE --json` and fails on any card name the set doesn't have. That way every cost and rarity on the sheet comes from the cache.
 
 ## 7. Save it to the repo
