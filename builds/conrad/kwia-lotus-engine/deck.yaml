@@ -4,14 +4,14 @@ name: Kwia Lotus Engine
 format: commander
 status: built
 target_bracket: 3
-lowest_legal_bracket: 1
+lowest_legal_bracket: 3
 plays_like_bracket: 3
 allow_proxies: false
 unlimited_basics: true
 primer: >-
-  Selesnya Food-and-tokens ramp. Accelerate into Kwia on turn three or four with dorks, rocks and land ramp, then gain life on every player's turn (Food sacrificed at instant speed, Squirrel Nest and flash tokens feeding Liliana, Daxos and Belladonna, Essence Warden, Authority of the Consuls, Verdant Kraken's upkeep Tentacles) so Kwia makes a Lotus each turn, and Archangel of Thune puts a counter on every creature with each life gain. Peregrin Took turns every Lotus and token into an extra Food and Bilbo turns every Food into a Treasure, so the engine snowballs into mana, cards (Peregrin, Rent Is Due, Belladonna, Elven Chorus) and a wide board. Win by going wide and casting Strength of the Pack, Rabbit Response, Champions from Beyond or Garruk, or a cheap Ghalta, with Kwia flying over for lifelink damage; asymmetric wipes (Hour of Reckoning, Settle the Wreckage) and twelve spot removal spells keep the table in check.
+  Selesnya Food-and-tokens ramp. Accelerate into Kwia on turn three or four with dorks, rocks and land ramp, then gain life on every player's turn (Food sacrificed at instant speed, Squirrel Nest and flash tokens feeding Liliana, Daxos and Belladonna, Essence Warden, Authority of the Consuls, Verdant Kraken's upkeep Tentacles) so Kwia makes a Lotus each turn, and Archangel of Thune puts a counter on every creature with each life gain. Peregrin Took turns every Lotus and token into an extra Food and Bilbo turns every Food into a Treasure, so the engine snowballs into mana, cards (Peregrin, Rent Is Due, Belladonna, Elven Chorus) and a wide board. Win by going wide and casting Strength of the Pack, Rabbit Response, Champions from Beyond or Garruk, or a cheap Ghalta, with Kwia flying over for lifelink damage; asymmetric wipes (Hour of Reckoning, Settle the Wreckage) and eleven spot removal spells keep the table in check. Seedborn Muse untaps everything on each opponent's turn, so the deck has full mana to sacrifice Food, tap Squirrel Nest and activate Gleaming Splendor on every turn.
 power_notes: >-
-  Plays like Bracket 3 (Upgraded), near its top end: Sol Ring, fourteen ramp pieces (Nature's Lore now in place of Farseek) and the Lotus engine put Kwia out on turn three or four and snowball from there. Built only from owned, unprotected cards: no Game Changers, mass land denial, extra turns or two-card infinite combos, so it fits Bracket 3 comfortably. Pulls from the binders and from the three built custom decks (Kwia's Canopy, Bifur, Edgar), so building it dismantles parts of those. Seedborn Muse is now available but left out as a Game Changer. The One Ring, plus staples like Birds of Paradise, Cultivate, Heroic Intervention and the Selesnya duals other than Canopy Vista and Sunpetal Grove, are only in protected collections. Caution on upgrades: Heliod, Sun-Crowned with Walking Ballista is a two-card infinite, which Bracket 3 forbids before turn six; agree on it with the table or swap one of them out before applying the upgrades.
+  Plays like Bracket 3 (Upgraded), near its top end: Sol Ring, fourteen ramp pieces (Nature's Lore now in place of Farseek) and the Lotus engine put Kwia out on turn three or four and snowball from there. Built only from owned, unprotected cards. Its one Game Changer, Seedborn Muse, sets the lowest legal bracket at 3 (Bracket 3 allows up to three), and it has no mass land denial, extra turns or two-card infinite combos. Seedborn pushes it further toward the top of Bracket 3, since the Lotus engine now runs at full speed on every opponent's turn. Pulls from the binders and from the three built custom decks (Kwia's Canopy, Bifur, Edgar), so building it dismantles parts of those. The One Ring, plus staples like Birds of Paradise, Heroic Intervention and the Selesnya duals other than Canopy Vista and Sunpetal Grove, are only in protected collections. Caution on upgrades: Heliod, Sun-Crowned with Walking Ballista is a two-card infinite, which Bracket 3 forbids before turn six; agree on it with the table or swap one of them out before applying the upgrades.
 budget:
   amount: 130
   currency: USD
@@ -132,6 +132,9 @@ mainboard:
   - name: 'Battle Screech'
     quantity: 1
     role: synergy
+  - name: 'Seedborn Muse'
+    quantity: 1
+    role: synergy
   # synergy,draw
   - name: 'Belladonna Took'
     quantity: 1
@@ -183,9 +186,6 @@ mainboard:
     quantity: 1
     role: removal
   - name: 'Memory Trap'
-    quantity: 1
-    role: removal
-  - name: 'Web Up'
     quantity: 1
     role: removal
   - name: 'Celebrate the Mountain-king'
@@ -266,10 +266,10 @@ mainboard:
     quantity: 1
     role: wincon,removal
 considered:
+  - name: 'Cultivate'
+    reason: "Three-mana ramp that puts its land onto the battlefield tapped, so it comes too late to speed up a turn-three Kwia. The deck already has fourteen ramp pieces, mostly at one and two mana, including Nature's Lore and Rampant Growth."
   - name: 'Ghostly Prison'
     reason: 'Taxes attacks on you, but it neither gains life nor makes tokens, so it does nothing for the Lotus engine; the slot goes to ramp and lifegain.'
-  - name: 'Seedborn Muse'
-    reason: 'A Game Changer: it untaps Kwia, the dorks and the Lotuses on every turn, which is strong, but the deck runs no Game Changers on purpose to sit comfortably in Bracket 3. Listed as an upgrade for Web Up, to add if the table agrees.'
   - name: 'Welcoming Vampire'
     reason: 'Draws once a turn off small tokens, but it gains no life, and the deck already draws through Peregrin Took, Rent Is Due, Belladonna and Elven Chorus.'
   - name: 'Faeburrow Elder'
@@ -340,6 +340,8 @@ considered:
     reason: "Swapped out for Nature's Lore: the same two-mana land ramp, but the land enters untapped and can be a Forest or a Plains."
   - name: Make Your Move
     reason: 'Swapped out for Path to Exile: one-mana instant exile for any creature instead of a conditional three-mana answer.'
+  - name: Web Up
+    reason: "Swapped out for Seedborn Muse: Web Up has the same text as Memory Trap and removal was over the template at 14, while Seedborn untaps every mana source on each opponent's turn so the deck can crack Food and gain life on every turn."
 upgrades:
   - add:
       name: 'Craterhoof Behemoth'
@@ -461,14 +463,6 @@ upgrades:
       name: 'Surveillance Room'
       quantity: 1
     reason: 'Untapped green-white source instead of a colorless land that costs {1} to fix.'
-  - add:
-      name: 'Seedborn Muse'
-      quantity: 1
-      role: synergy
-    cut:
-      name: 'Web Up'
-      quantity: 1
-    reason: "Owned (in Alphabetized), not bought. Untaps every mana source on each opponent's turn, so the deck can crack Food and gain life on every turn for a Lotus each turn, and Squirrel Nest and Gleaming Splendor fire every turn. Web Up has the same text as Memory Trap, and removal is over the template at 14. A Game Changer: it raises lowest_legal_bracket to 3, so agree on it with the table."
 history:
   - date: '2026-11-02'
     notes: >-
@@ -488,4 +482,7 @@ history:
   - date: 2026-11-04
     changes: -Farseek, +Nature's Lore, -Make Your Move, +Path to Exile
     notes: "Swapped out for Nature's Lore: the same two-mana land ramp, but the land enters untapped and can be a Forest or a Plains. Swapped out for Path to Exile: one-mana instant exile for any creature instead of a conditional three-mana answer."
+  - date: 2026-11-06
+    changes: -Web Up, +Seedborn Muse
+    notes: "Swapped out for Seedborn Muse: Web Up has the same text as Memory Trap and removal was over the template at 14, while Seedborn untaps every mana source on each opponent's turn so the deck can crack Food and gain life on every turn."
 collection_destination: collections/conrad/protected/custom/Kwia Lotus Engine.txt

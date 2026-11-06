@@ -411,7 +411,7 @@
 1 Fandaniel, Telophoroi Ascian (FIC) 46
 1 Fang-Druid Summoner (DFT) 163
 1 Faramir, Field Commander (LTR) 303
-1 Farseek (TDC) 255
+1 Farseek (M13) 170
 1 Fatal Push (FCA) 9
 1 Fate of the Sun-Cryst (FIN) 19
 1 Fatehold Charm (FRA) 132
@@ -1028,7 +1028,6 @@
 1 Rust-Shield Rampager (BLB) 190
 1 Sarkhan, Dragon Ascendant (TDM) 302
 1 Scout the Wilderness (DMU) 176
-1 Seedborn Muse (TDC) 268
 1 Selesnya Signet (TDC) 324
 1 Send in the Pest (SOS) 100
 1 Shadrix Silverquill (TDC) 302
@@ -1426,7 +1425,7 @@
 1 We Say Thee Nay! (MSH) 82
 1 Weathered Sentinels (TDC) 336
 1 Web Up (MSH) 41
-2 Web Up (SPM) 21
+3 Web Up (SPM) 21
 3 Web-Shooters (SPM) 22
 1 Web-Warriors (SPM) 159
 1 Web-Warriors (SPM) 159 *F*

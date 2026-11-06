@@ -1,5 +1,5 @@
 1x Veyran, Voice of Duality (TDC) 310 [Commander{top}]
-1x Command Tower (TDC) 107 [Land]
+1x Command Tower (DRC) 60 [Land]
 1x Sulfur Falls (TDC) 396 [Land]
 1x Shivan Reef (TDC) 393 [Land]
 1x Cascade Bluffs (TDC) 345 [Land]

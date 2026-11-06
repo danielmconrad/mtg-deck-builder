@@ -2,7 +2,7 @@ Commander
 1 Veyran, Voice of Duality (TDC) 310
 
 Deck
-1 Command Tower (TDC) 107
+1 Command Tower (DRC) 60
 1 Sulfur Falls (TDC) 396
 1 Shivan Reef (TDC) 393
 1 Cascade Bluffs (TDC) 345

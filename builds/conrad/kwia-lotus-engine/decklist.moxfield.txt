@@ -31,6 +31,7 @@ Deck
 1 Essence Warden (CMA) 106
 1 Squirrel Nest (BLC) 239
 1 Battle Screech (ONC) 59
+1 Seedborn Muse (TDC) 268
 1 Belladonna Took (HOB) 4
 1 Omni-Cheese Pizza (TMT) 176
 1 Bagel and Schmear (SPM) 161
@@ -80,7 +81,6 @@ Sideboard
 1 Liminal Hold (ECL) 24
 1 Hobbit Hole (HOB) 184
 1 Surveillance Room (MSH) 274
-1 Web Up (SPM) 21
 
 Considering
 1 Craterhoof Behemoth (TDM) 138
@@ -91,11 +91,10 @@ Considering
 1 Elvish Mystic (HOC) 205
 1 Soul Warden (MM3) 24
 1 Academy Manufactor (OTC) 251
-1 Tireless Provisioner (MOC) 313
+1 Tireless Provisioner (J25) 728
 1 Avenger of Zendikar (ECC) 98
 1 Heroic Intervention (TRC) 465
 1 Three Visits (MSC) 181
 1 Generous Gift (MSC) 133
 1 Temple Garden (TRK) 301
 1 Brushland (BRO) 259
-1 Seedborn Muse (TDC) 268
