@@ -1,0 +1,3167 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Staples to Buy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Spectral:wght@600;700;800&display=swap"
+    />
+    <style>
+      /* Look: a full-art Magic card. Smoky charcoal art behind everything, parchment name and type bars
+         with a dark inner line and a pale rim, a translucent parchment text box, and the small white
+         credit line along the bottom. One dark world by design: the parchment carries the contrast. */
+      :root {
+        --smoke-0: #121315;
+        --smoke-1: #1d1f22;
+        --smoke-2: #2e3034;
+        --smoke-3: #4a4d53;
+        --mist: #c9ccd2;
+        --silver: #9da2aa;
+        --white: #f4f1ea;
+        --parch-hi: #f3eee2;
+        --parch-lo: #d8d0bc;
+        --parch-box: rgba(241, 236, 224, 0.93);
+        --ink: #17140f;
+        --ink-soft: #4d463b;
+        --rim: #c3beb3;
+        --bar-line: #121212;
+        --ember: #e8843a;
+        --ember-ink: #8c3a0e;
+        --pad: 16px;
+        --display: 'Spectral', 'Crimson Pro', Georgia, serif;
+        --serif: 'Crimson Pro', Georgia, 'Times New Roman', serif;
+        color-scheme: dark;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) {
+          color-scheme: dark;
+        }
+      }
+      :root[data-theme='dark'] {
+        color-scheme: dark;
+      }
+      @media (min-width: 600px) {
+        :root {
+          --pad: 24px;
+        }
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--smoke-0);
+        color: var(--white);
+        font: 400 17px/1.4 var(--serif);
+      }
+      /* The "art": smoke, a cold flash of light from the upper right and a few embers low left. */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          radial-gradient(2px 2px at 8% 82%, rgba(240, 150, 70, 0.9), transparent 70%),
+          radial-gradient(3px 3px at 14% 74%, rgba(240, 150, 70, 0.75), transparent 70%),
+          radial-gradient(2px 2px at 5% 64%, rgba(240, 150, 70, 0.6), transparent 70%),
+          radial-gradient(2px 2px at 21% 88%, rgba(240, 150, 70, 0.7), transparent 70%),
+          radial-gradient(3px 3px at 92% 92%, rgba(240, 150, 70, 0.55), transparent 70%),
+          radial-gradient(2px 2px at 86% 70%, rgba(240, 150, 70, 0.45), transparent 70%),
+          radial-gradient(900px 520px at 88% -8%, rgba(205, 215, 235, 0.2), transparent 62%),
+          radial-gradient(700px 480px at -5% 105%, rgba(232, 132, 58, 0.13), transparent 60%),
+          radial-gradient(600px 600px at 30% 40%, rgba(90, 95, 105, 0.22), transparent 70%),
+          linear-gradient(180deg, #2a2c30 0%, #1d1e21 48%, #111214 100%);
+      }
+      a {
+        color: inherit;
+      }
+      .sprite {
+        position: absolute;
+        width: 0;
+        height: 0;
+        overflow: hidden;
+      }
+      .wrap {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 0 var(--pad);
+      }
+
+      /* Name bar, sampled from the reference card and shared by the page title and every card name.
+         .frame is a chrome bevel that runs white to charcoal left to right. Its ends are elliptical
+         (about a quarter of the bar's height across, half its height down), so they bulge slightly
+         rather than forming a semicircle. .plaque is the mottled parchment inside, ivory to taupe and
+         darker toward the bottom right, with corners concentric with the frame: the frame's radii less
+         the bevel (50% of a height two bevels shorter is the frame's half-height less one bevel).
+         Per-bar sizes: --bevel (bevel width), --rx (horizontal end radius), --band (dark bottom band),
+         --side (left shadow and right light band). */
+      .frame {
+        --bevel: 4px;
+        --rx: 0.46em;
+        --band: 4px;
+        --side: 7px;
+        padding: var(--bevel);
+        border-radius: var(--rx) / 50%;
+        background: linear-gradient(
+          90deg,
+          #fefefe 0%,
+          #fdfdfd 26%,
+          #d5d5d8 38%,
+          #939393 50%,
+          #515152 61%,
+          #2b2c2c 70%,
+          #242424 100%
+        );
+        box-shadow:
+          0 0 0 1.5px #0d0d0d,
+          0 4px 12px rgba(0, 0, 0, 0.5);
+      }
+      .plaque {
+        color: var(--ink);
+        border-radius: calc(var(--rx) - var(--bevel)) / 50%;
+        background:
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='120'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.035 0.09' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.31 0 0 0 0 0.24 0 0 0 0.32 -0.05'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)'/%3E%3C/svg%3E"),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 30%),
+          linear-gradient(180deg, rgba(70, 58, 40, 0) 45%, rgba(70, 58, 40, 0.14) 100%),
+          linear-gradient(
+            90deg,
+            #ece9dd 0%,
+            #e9e5d7 26%,
+            #e1ddd0 36%,
+            #d7d3c9 48%,
+            #cac2b8 58%,
+            #c2b8ad 68%,
+            #bfb4a8 84%,
+            #c2b7ab 100%
+          );
+        /* Inner edge, measured from the card: a thin black line, then a raised plaque lit from the
+           upper right: a 1px highlight along the top, a soft light band down the right, a solid dark
+           band along the bottom and a dark-to-parchment shadow down the left. Listed top layer first. */
+        box-shadow:
+          inset 0 0 0 1.5px #0a0807,
+          inset 0 2.5px 0 0 rgba(255, 253, 245, 0.9),
+          inset 0 calc(-1.5px - var(--band)) 0 0 #433e37,
+          inset 0 calc(-3px - var(--band)) 2px -0.5px rgba(70, 62, 52, 0.5),
+          inset calc(-1 * var(--side)) 0 5px -2px rgba(255, 251, 243, 0.6),
+          inset var(--side) 0 5px -2px rgba(28, 24, 20, 0.7);
+      }
+
+      /* Header */
+      header.wrap {
+        padding-top: 26px;
+        padding-bottom: 18px;
+      }
+      .eyebrow {
+        margin: 0 0 12px;
+        font: 600 0.8rem/1.3 var(--serif);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--mist);
+      }
+      .eyebrow .nowrap {
+        white-space: nowrap;
+      }
+      /* Page title: the full-size bar. Sizes are in em so the shape scales with the title. */
+      .titlebar {
+        margin: 0 2px;
+        font-size: clamp(1.9rem, 7vw, 2.6rem);
+      }
+      .titlebar .plaque {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 0.2em 0.3em 0.24em 0.45em;
+      }
+      h1 {
+        margin: 0;
+        font: 800 1em/1.05 var(--display);
+        letter-spacing: -0.005em;
+      }
+      .titlebar .count {
+        flex: none;
+        width: 2.2em;
+        height: 2.2em;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #e9e5de, #b9b3a8);
+        color: var(--ink);
+        font: 800 1rem/1 var(--display);
+        box-shadow:
+          -1px 2px 0 var(--bar-line),
+          0 0 0 1px rgba(0, 0, 0, 0.25);
+      }
+      .lede {
+        margin: 16px 2px 0;
+        color: var(--mist);
+        font-size: 1.05rem;
+        max-width: 40em;
+      }
+      .readout {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 16px 2px 0;
+        padding: 0;
+        list-style: none;
+      }
+      /* Readouts are plain figures, not parchment: parchment is kept for card parts. */
+      .readout {
+        gap: 12px 26px;
+      }
+      .readout li {
+        padding: 1px 0 2px 12px;
+        border-left: 2px solid rgba(201, 204, 210, 0.3);
+        font-size: 0.9rem;
+        color: var(--silver);
+      }
+      .readout b {
+        display: block;
+        font: 800 1.3rem/1.1 var(--display);
+        color: var(--parch-hi);
+      }
+      .roles {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px 14px;
+        margin: 14px 2px 0;
+        padding: 0;
+        list-style: none;
+        font-size: 0.95rem;
+        color: var(--silver);
+      }
+      .roles b {
+        color: var(--white);
+        font-weight: 700;
+      }
+
+      /* Sticky bar: top button, A-Z jumps, progress */
+      .bar {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: rgba(18, 19, 21, 0.86);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(201, 204, 210, 0.18);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+      }
+      .bar .wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+      }
+      .jumps {
+        display: flex;
+        align-items: center;
+        -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+        mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+        gap: 2px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        flex: 1;
+        min-width: 0;
+        padding: 3px 3px;
+      }
+      .jumps::-webkit-scrollbar {
+        display: none;
+      }
+      .jumps a {
+        flex: none;
+        min-width: 30px;
+        height: 32px;
+        display: grid;
+        place-items: center;
+        border-radius: 8px;
+        font: 700 1rem/1 var(--display);
+        text-decoration: none;
+        color: var(--mist);
+      }
+      /* Top is a link like the letters, set apart by an arrow and a divider. */
+      .jumps a.top {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+        position: relative;
+        padding: 0 14px 0 6px;
+        margin-right: 6px;
+        font: 700 1rem/1 var(--display);
+        color: var(--white);
+      }
+      .jumps a.top svg {
+        width: 0.8em;
+        height: 0.8em;
+        flex: none;
+      }
+      .jumps a.top::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 8px;
+        bottom: 8px;
+        width: 1px;
+        background: rgba(201, 204, 210, 0.35);
+      }
+      .jumps a:hover,
+      .jumps a:focus-visible {
+        background: rgba(243, 238, 226, 0.14);
+        color: var(--white);
+      }
+      .jumps a.top:hover,
+      .jumps a.top:focus-visible {
+        color: var(--ember);
+        background: transparent;
+      }
+      .progress {
+        flex: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.9rem;
+        color: var(--silver);
+      }
+      .progress output {
+        font: 700 1rem var(--display);
+        color: var(--white);
+      }
+      /* The page's one button: an ember pill that fills when on. */
+      .progress button {
+        font: 700 0.88rem/1 var(--serif);
+        color: var(--ember);
+        background: transparent;
+        border: 1.5px solid var(--ember);
+        border-radius: 999px;
+        padding: 7px 13px;
+        cursor: pointer;
+        transition: background-color 0.15s;
+      }
+      .progress button:hover {
+        background: rgba(232, 132, 58, 0.16);
+      }
+      .progress button:focus-visible {
+        outline: 2px solid var(--white);
+        outline-offset: 2px;
+      }
+      .progress button[aria-pressed='true'] {
+        background: var(--ember);
+        color: #1a120b;
+      }
+
+      /* List */
+      main.wrap {
+        padding-top: 18px;
+        padding-bottom: 8px;
+      }
+      ol.list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      li.letter {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font: 800 1.35rem/1 var(--display);
+        color: var(--parch-hi);
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+        padding: 18px 4px 10px;
+        scroll-margin-top: 60px;
+      }
+      li.letter::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, rgba(201, 204, 210, 0.5), transparent);
+      }
+      li.letter:first-child {
+        padding-top: 0;
+      }
+
+      /* Each card is a small full-art frame. */
+      li.card {
+        position: relative;
+        display: flex;
+        gap: 12px;
+        margin-bottom: 12px;
+        padding: 8px 8px 7px;
+        border-radius: 14px;
+        background:
+          radial-gradient(260px 120px at 92% 0%, rgba(205, 215, 235, 0.14), transparent 70%),
+          linear-gradient(160deg, var(--smoke-3) 0%, var(--smoke-2) 38%, var(--smoke-1) 100%);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+      }
+      .content {
+        flex: 1;
+        min-width: 0;
+      }
+      /* Card preview: one fixed width for every card, at a card's 488:680 ratio. */
+      .thumb {
+        flex: none;
+        align-self: center;
+        position: relative;
+        width: 76px;
+        aspect-ratio: 488 / 680;
+        border-radius: 5px;
+        overflow: hidden;
+        background: rgba(0, 0, 0, 0.35);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+      }
+      @media (min-width: 600px) {
+        .thumb {
+          width: 104px;
+        }
+      }
+      .thumb img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      /* Card name: the same bar at about two-thirds the height, so a thinner bevel and edge bands,
+         and a slightly larger end radius in em to keep the card's height-to-radius proportion. */
+      .namebar {
+        --bevel: 3px;
+        --rx: 0.6em;
+        --band: 2.5px;
+        --side: 5px;
+        font-size: 1.12rem;
+        box-shadow:
+          0 0 0 1.5px #0d0d0d,
+          0 2px 6px rgba(0, 0, 0, 0.45);
+      }
+      .namebar .plaque {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 6px 10px calc(5px + var(--band)) 9px;
+      }
+      .tick {
+        flex: none;
+        position: relative;
+        width: 22px;
+        height: 22px;
+        cursor: pointer;
+      }
+      .tick input {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        margin: 0;
+        cursor: pointer;
+      }
+      .tick span {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 1.5px solid var(--ink-soft);
+        background: transparent;
+      }
+      .tick input:checked + span {
+        background: var(--ink);
+        border-color: var(--ink);
+      }
+      .tick input:checked + span::after {
+        content: '';
+        position: absolute;
+        left: 6px;
+        top: 2.5px;
+        width: 6px;
+        height: 11px;
+        border: solid var(--parch-hi);
+        border-width: 0 3px 3px 0;
+        transform: rotate(45deg);
+      }
+      .tick input:focus-visible + span {
+        outline: 2px solid var(--ember);
+        outline-offset: 2px;
+      }
+      .nm {
+        flex: 1;
+        min-width: 0;
+        font: 700 1.12rem/1.15 var(--display);
+        text-decoration: underline;
+        text-decoration-color: rgba(23, 20, 15, 0.22);
+        text-decoration-thickness: 1.5px;
+        text-underline-offset: 3px;
+      }
+      .nm:hover,
+      .nm:focus-visible {
+        text-decoration-color: var(--ember-ink);
+      }
+      .cost {
+        flex: none;
+        display: inline-flex;
+        gap: 2px;
+      }
+      .noc {
+        font-size: 0.8rem;
+        font-style: italic;
+        color: var(--ink-soft);
+      }
+      .ms {
+        width: 1.15em;
+        height: 1.15em;
+        flex: none;
+        display: inline-block;
+        vertical-align: -0.2em;
+        border-radius: 50%;
+      }
+      .cost .ms {
+        width: 1.2rem;
+        height: 1.2rem;
+        box-shadow: -1px 1.5px 0 var(--bar-line);
+      }
+      .note .ms {
+        width: 0.95em;
+        height: 0.95em;
+        vertical-align: -0.12em;
+      }
+      /* Type line: plain text on the art, no bar. */
+      .typebar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin: 8px 10px 0;
+      }
+      .type {
+        font: 600 0.9rem/1.2 var(--display);
+        letter-spacing: 0.01em;
+        color: var(--silver);
+        min-width: 0;
+      }
+      .set {
+        flex: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        color: var(--silver);
+      }
+      .rar {
+        display: inline-block;
+        width: 1.4rem;
+        text-align: center;
+        font: 800 0.75rem/1.4 var(--display);
+        border-radius: 4px;
+      }
+      .rC {
+        background: #0c0c0c;
+        color: var(--parch-hi);
+        box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.4);
+      }
+      .rU {
+        background: linear-gradient(180deg, #eef0f3, #a3abb5);
+        color: #111;
+      }
+      .cn {
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.02em;
+      }
+      .note {
+        margin: 5px 10px 0;
+        color: #dcd8d0;
+        font-size: 1.02rem;
+        line-height: 1.32;
+      }
+      .role {
+        font: 700 0.72rem/1 var(--display);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ember);
+        margin-right: 4px;
+      }
+      .meta {
+        display: flex;
+        gap: 14px;
+        margin: 6px 10px 1px;
+        font-size: 0.8rem;
+        color: var(--silver);
+        font-variant-numeric: tabular-nums;
+        text-shadow: 0 1px 2px #000;
+      }
+      .meta span + span::before {
+        content: '';
+      }
+      li.card.got {
+        opacity: 0.5;
+        filter: grayscale(0.6);
+      }
+      li.card.got .nm {
+        text-decoration-line: line-through;
+        text-decoration-color: var(--ink);
+        text-decoration-thickness: 2px;
+      }
+      body.hide-got li.card.got {
+        display: none;
+      }
+
+      /* About: a text box. */
+      section.about {
+        margin: 28px 0 0;
+        padding: 16px 18px 6px;
+        background: var(--parch-box);
+        color: var(--ink);
+        border-radius: 10px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+        font-size: 1rem;
+      }
+      section.about h2 {
+        margin: 0 0 8px;
+        font: 800 1.3rem/1.2 var(--display);
+      }
+      section.about p,
+      section.about ul {
+        margin: 0 0 10px;
+      }
+      section.about ul {
+        padding-left: 1.2em;
+      }
+      section.about li {
+        margin-bottom: 4px;
+      }
+      section.about code {
+        font-size: 0.88em;
+        background: rgba(0, 0, 0, 0.07);
+        padding: 0 4px;
+        border-radius: 3px;
+      }
+      section.about .rar {
+        vertical-align: 1px;
+      }
+
+      /* Credit: the card's bottom legal line. */
+      .credit {
+        margin: 20px 4px 30px;
+        font-size: 0.85rem;
+        color: var(--mist);
+        letter-spacing: 0.02em;
+      }
+      .credit p {
+        margin: 0;
+      }
+      .credit b {
+        font-variant: small-caps;
+        letter-spacing: 0.06em;
+        color: var(--white);
+      }
+      .credit a {
+        color: var(--white);
+        font-weight: 600;
+        text-decoration-color: rgba(244, 241, 234, 0.35);
+        text-underline-offset: 3px;
+      }
+      .credit a:hover,
+      .credit a:focus-visible {
+        text-decoration-color: var(--ember);
+      }
+      @media (max-width: 480px) {
+        .credit .sep {
+          display: none;
+        }
+        .credit a {
+          display: block;
+          margin-top: 2px;
+        }
+        .progress .label {
+          display: none;
+        }
+        .readout b {
+          font-size: 1.15rem;
+        }
+      }
+
+      /* Short landscape phones: keep the header, the bar and the first card on screen. */
+      @media (orientation: landscape) and (max-height: 520px) {
+        header.wrap {
+          padding-top: 10px;
+          padding-bottom: 10px;
+        }
+        .eyebrow {
+          margin-bottom: 8px;
+        }
+        .titlebar {
+          font-size: 1.6rem;
+        }
+        .titlebar .count {
+          width: 1.9em;
+          height: 1.9em;
+        }
+        .lede {
+          margin-top: 10px;
+          font-size: 0.95rem;
+        }
+        .readout {
+          margin-top: 10px;
+        }
+        .readout b {
+          display: inline;
+          font-size: 1rem;
+          margin-right: 4px;
+        }
+        .roles {
+          display: none;
+        }
+        main.wrap {
+          padding-top: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      /* Past the layout's widest breakpoint, zoom the whole page to fill the window instead of
+         centering it. Short landscape screens keep their compact layout. */
+      (function () {
+        var DESIGN_WIDTH = 768;
+        var root = document.documentElement;
+        function fit() {
+          root.style.zoom = '';
+          var width = root.clientWidth;
+          var zoom = width > DESIGN_WIDTH && window.innerHeight > 520 ? width / DESIGN_WIDTH : 1;
+          if (zoom > 1) root.style.zoom = String(zoom);
+        }
+        fit();
+        window.addEventListener('resize', fit);
+      })();
+    </script>
+    <svg class="sprite" aria-hidden="true" focusable="false">
+      <symbol id="ms-0" viewBox="0 0 100 100">
+        <g fill="none">
+          <circle fill="#CAC5C0" cx="50" cy="50" r="50" />
+          <path
+            d="M23 52.428c0-9.787 2.061-18.813 6.191-27.072 5.117-10.236 12.123-15.355 21.012-15.355 8.797 0 15.666 4.359 20.605 13.064 4.127 7.186 6.191 15.537 6.191 25.051 0 9.881-2.064 18.814-6.191 26.803-5.031 10.058-12.035 15.081-21.011 15.081-8.531 0-15.305-4.307-20.336-12.926-4.308-7.361-6.461-15.576-6.461-24.646zm11.309-4.444c0 12.926 1.93 22.984 5.795 30.168 2.691 5.025 6.146 7.541 10.367 7.541 10.146 0 15.221-10.506 15.221-31.518 0-9.244-.809-17.059-2.422-23.434-2.785-10.504-7.498-15.76-14.145-15.76-9.879 0-14.816 10.15-14.816 30.443v2.56z"
+            fill="#0D0F0F"
+          />
+        </g>
+      </symbol>
+      <symbol id="ms-1" viewBox="0 0 100 100">
+        <g transform="translate(0 -1)" fill="none">
+          <circle fill="#CAC5C0" cx="50" cy="50.998" r="50" />
+          <path
+            d="M55.685 11.001v64.108c0 7.671 3.226 11.504 9.687 11.504h1.684v4.388h-34.111v-4.388h2.141c6.247 0 9.369-3.833 9.369-11.504v-42.054c0-7.758-2.697-11.643-8.081-11.643h-3.429v-4.247h1.237c6.66 0 12.691-2.057 18.08-6.165l3.423.001z"
+            fill="#0D0F0F"
+          />
+        </g>
+      </symbol>
+      <symbol id="ms-2" viewBox="0 0 100 100">
+        <g fill="none" fill-rule="evenodd">
+          <circle fill="#CAC5C0" cx="50" cy="50" r="50" />
+          <path
+            d="m78.442 69.105-5.681 19.898H25.555v-4.254c2.293-2.652 7.318-8.001 15.076-16.053a331.261 331.261 0 0 0 13.882-15.371c2.291-2.651 4.057-4.942 5.287-6.862 2.733-4.114 4.1-8.32 4.1-12.624 0-4.204-1.254-7.912-3.766-11.112-2.512-3.204-5.752-4.808-9.722-4.808-8.548 0-15.246 5.998-20.094 17.98l-4.235-1.647c5.73-16.829 14.763-25.249 27.106-25.249 6.083 0 11.261 2.149 15.536 6.448 4.278 4.3 6.414 9.604 6.414 15.92 0 8.052-4.449 15.918-13.353 23.601l-9.254 7.956c-5.908 5.127-10.804 9.929-14.676 14.412-.27.273-.796.916-1.587 1.921h24.59c3.79 0 6.656-.776 8.594-2.335 1.672-1.372 3.309-3.98 4.895-7.821h4.094Z"
+            fill="#0D0F0F"
+          />
+        </g>
+      </symbol>
+      <symbol id="ms-3" viewBox="0 0 100 100">
+        <g transform="translate(0 -1)" fill="none">
+          <circle fill="#CAC5C0" cx="50" cy="50.998" r="50" />
+          <path
+            d="M39.561 53.562l-2.018-3.771 1.337-.807c5.174-3.145 9.903-6.33 14.189-9.563 4.284-3.232 6.427-6.915 6.427-11.048 0-2.778-1.029-5.112-3.085-6.998-2.061-1.892-4.472-2.834-7.244-2.834-6.439 0-13.234 4.001-20.392 11.991l-3.354-2.559c7.453-11.316 16.566-16.974 27.341-16.974 4.757 0 8.795 1.168 12.122 3.503 3.771 2.607 5.655 6.153 5.655 10.642 0 3.229-1.349 6.374-4.039 9.426-1.528 1.798-4.226 4.132-8.083 7.004l-1.616 1.213c.718-.089 1.572-.134 2.56-.134 4.937 0 8.998 1.887 12.188 5.657 3.188 3.771 4.783 8.17 4.783 13.196 0 8.532-3.595 15.667-10.774 21.416-6.647 5.387-14.325 8.077-23.032 8.077-7.991 0-14.276-1.748-18.858-5.249l2.429-3.371c5.387 2.608 10.279 3.907 14.681 3.907 6.373 0 12.051-2.109 17.032-6.33 4.988-4.22 7.475-9.469 7.475-15.755 0-4.132-1.255-7.655-3.77-10.576-2.516-2.915-5.793-4.374-9.832-4.374-3.684.002-7.723 1.437-12.122 4.311z"
+            fill="#0D0F0F"
+          />
+        </g>
+      </symbol>
+      <symbol id="ms-4" viewBox="0 0 100 100">
+        <g transform="translate(0 -1)" fill="none">
+          <circle fill="#CAC5C0" cx="50" cy="50.998" r="50" />
+          <path
+            d="M64.27 68.359v6.723c0 7.684 2.695 11.525 8.094 11.525h2.33v4.394h-32.658v-4.394h2.607c5.303 0 7.961-3.798 7.961-11.392v-6.856h-32.795v-6.861l34.578-50.497h9.883v51.592h.82c3.383 0 5.852-2.608 7.408-7.816h4.115l-1.92 13.583-10.423-.001zm-11.666-5.766v-41.458l-27.893 41.458h27.893z"
+            fill="#0D0F0F"
+          />
+        </g>
+      </symbol>
+      <symbol id="ms-B" viewBox="0 0 100 100">
+        <g fill="none" fill-rule="evenodd">
+          <circle fill="#CAC5C0" cx="50" cy="50" r="50" />
+          <path
+            d="M90.695 48.14c0 5.463-2.008 9.189-6.02 11.175-1.172.58-4.85 1.365-11.037 2.36-4.012.663-6.018 2.194-6.018 4.592v10.058c0 .418.125 1.698.375 3.85l.377 3.975c0 1.242-.293 3.273-.879 6.085-1.588.33-3.428.702-5.518 1.12-.67-2.486-1.004-4.182-1.004-5.095 0-.411.105-1.034.313-1.863.207-.826.316-1.447.316-1.864 0-.575-.52-2.191-1.559-4.839h-1.945c-.258.414-.344.952-.26 1.613.334 1.408.459 2.607.377 3.6a282.655 282.655 0 0 1-5.895 3.974c-.586-.164-.793-.247-.629-.247v-8.816c-.164-.412-.584-.575-1.254-.497h-1.504l-1.504 11.67c-1.174.083-2.592.083-4.264 0-.588-2.73-1.631-6.785-3.135-12.167h-1.004c-.922 2.9-1.422 4.474-1.506 4.722 0 .33.104.97.314 1.922.207.953.313 1.593.313 1.924 0 .248-.084.868-.25 1.862l-.377 2.98a.862.862 0 0 1-.627.248c-2.508 0-4.182-.62-5.016-1.86-.836-1.244-1.172-2.982-1.004-5.219l1.004-14.898c0-.25.082-.58.25-.994.164-.414.25-.704.25-.868 0-.664-.711-1.989-2.131-3.975-.248-.08-1.549-.373-3.887-.87-1.424-.33-4.225-.909-8.402-1.739-5.771-1.073-8.654-5.668-8.654-13.782 0-12.086 5.018-22.143 15.051-30.173.414 2.236 1.127 5.214 2.129 8.94.754.168 2.385.54 4.891 1.117.504.167 3.053 1.078 7.652 2.733-2.344-1.408-5.393-3.682-9.156-6.83-1.422-1.655-2.133-4.426-2.133-8.316 0-.911 1.59-1.989 4.768-3.232 2.84-1.159 4.975-1.818 6.396-1.986 4.514-.577 7.984-.87 10.41-.87 10.449 0 18.891 2.65 25.328 7.949-2.088 2.402-5.684 4.964-10.783 7.696 2.008.083 4.934-.7 8.779-2.36 3.844-1.653 5.475-2.483 4.891-2.483.668 0 2.008 1.327 4.014 3.975 1.504 1.986 2.715 3.769 3.637 5.337 2.674 4.721 4.471 9.81 5.393 15.274 0 1.906.041 3.272.125 4.098v.994h.002Zm-48.031 2.235c0-3.558-1.568-6.932-4.703-10.122-3.137-3.187-6.502-4.778-10.096-4.778-3.178 0-5.977 1.335-8.402 4-2.426 2.666-3.637 5.625-3.637 8.874 0 2.83 1.379 4.666 4.139 5.498 1.756.5 4.219.793 7.398.874h6.898c5.598.083 8.403-1.366 8.403-4.346Zm13.668 15.4v-3.851a120.953 120.953 0 0 1-1.754-3.354c-.502-1.657-1.422-3.974-2.76-6.955l-1.381 14.529c0 1.16-.25 1.738-.752 1.738-.334 0-.584-.081-.752-.245-.586-8.776-.879-12.584-.879-11.427v-4.344c-.168-.251-.375-.375-.625-.375-2.844 2.901-4.264 7.576-4.264 14.032 0 3.56.33 5.753 1.002 6.582.67-.164 1.422-.455 2.258-.868.334-.167 1.295-.25 2.887-.25 1.584 0 3.51.497 5.766 1.49.836 0 1.254-2.234 1.254-6.703Zm28.344-17.303c0-3.333-1.254-6.312-3.762-8.935-2.51-2.622-5.395-3.936-8.652-3.936-3.512 0-6.795 1.591-9.846 4.778-3.053 3.187-4.578 6.519-4.578 9.996 0 2.9 1.42 4.346 4.264 4.346h14.422c5.433-.081 8.152-2.165 8.152-6.249Z"
+            fill="#0D0F0F"
+          />
+        </g>
+      </symbol>
+      <symbol id="ms-G" viewBox="0 0 100 100">
+        <g fill="none">
+          <path
+            d="M100 49.998c0 27.615-22.385 50.002-50.002 50.002-27.613 0-49.998-22.387-49.998-50.002 0-27.613 22.385-49.998 49.998-49.998 27.617 0 50.002 22.385 50.002 49.998z"
+            fill="#A3C095"
+          />
+          <path
+            d="M93.762 56.225c0 1.668-.645 3.164-1.936 4.498-1.289 1.332-2.77 1.998-4.436 1.998-2.662 0-4.623-1.25-5.869-3.748l-5.871-.25c-1.252 0-3.709.543-7.371 1.625-3.914 1.082-6.164 1.957-6.746 2.623-.916.998-1.664 3.332-2.248 6.996-.502 2.998-.748 5.205-.748 6.621 0 2.246.352 3.893 1.061 4.934.709 1.041 2.166 1.916 4.371 2.623 2.205.707 3.561 1.104 4.061 1.187.332 0 .873-.041 1.625-.125h1.498c1.08 0 2.205.17 3.373.5 1.666.5 2.375 1.166 2.125 2-1.168-.166-3.207.084-6.121.75l3.496 1.748c0 1-1.416 1.498-4.246 1.498-.752 0-1.771-.166-3.063-.498-1.291-.336-2.145-.5-2.559-.5h-1.625c-.082.832-.334 2.08-.75 3.746-1.418-.084-3.08-.918-4.996-2.498-1.918-1.58-3.123-2.373-3.621-2.373-.502 0-1.211.793-2.125 2.373-.918 1.58-1.375 2.664-1.375 3.248-1.082-.584-1.996-1.668-2.75-3.248-.332-1.084-.707-2.166-1.121-3.248-.832.084-2.375 1.834-4.621 5.248h-.627c-.166-.252-.795-2-1.873-5.248-2.582-.832-4.996-1.248-7.246-1.248-1.082 0-2.748.25-4.996.748l-3.496-.248c.498-.5 1.955-1.457 4.371-2.873 2.83-1.666 4.996-2.5 6.496-2.5.246 0 .578.043 1 .125.414.086.75.125 1 .125.578 0 1.518-.312 2.809-.938 1.291-.623 2.039-1.186 2.246-1.684.211-.504.316-1.793.316-3.875 0-4.746-1.25-8.285-3.75-10.617-2.168-2.082-5.746-3.58-10.744-4.498-1.332 4.746-5.08 7.123-11.24 7.123-2 0-3.998-1.207-5.996-3.623-1.996-2.416-2.996-4.623-2.996-6.621 0-3.082 1.287-5.621 3.869-7.623-2.08-2.162-3.121-4.369-3.121-6.617 0-2.084.643-3.914 1.936-5.5 1.291-1.578 2.977-2.496 5.059-2.748-.166-2.662.707-4.496 2.623-5.496-.916-.914-1.373-2.537-1.373-4.869 0-2.748.916-5.039 2.748-6.871 1.83-1.832 4.121-2.75 6.869-2.75 3 0 5.457 1.045 7.371 3.125 2.416-8.244 7.621-12.367 15.613-12.367 4.164 0 7.828 1.666 10.994 4.998 1.166 1.248 1.748 1.916 1.748 1.996-1 0-.498-.188 1.5-.561 1.996-.375 3.453-.563 4.373-.563 3.246 0 6.119 1.207 8.619 3.623 2.164 2.166 3.664 4.912 4.498 8.244.58.084 1.498.332 2.748.748 1.83.92 2.748 2.498 2.748 4.748 0 .418-.336 1.209-1 2.373 5.328 2.998 7.994 7.162 7.994 12.492 0 1.498-.582 3.584-1.748 6.247 2.166 1.247 3.246 3.081 3.246 5.495zm-51.467 5.496v-1.623c0-1.914-.936-3.664-2.809-5.246-1.875-1.582-3.77-2.373-5.684-2.373-2.334 0-4.496.541-6.496 1.621 4.413-.248 9.411 2.293 14.989 7.621zm-2.246-15.489c-1.25-1.418-2.332-2.875-3.25-4.373-3.498.916-5.246 1.957-5.246 3.121 1-.08 2.457.105 4.371.564 1.914.459 3.291.688 4.125.688zm7.621-3.873v-5.496c-2-.332-3.211-.5-3.623-.5v1.873l3.623 4.123zm16.238-3.498c-1-.416-2.875-1.25-5.621-2.498v10.742c3.912-2.25 5.785-4.998 5.621-8.244zm6.867 14.741l-2.746-3.373c-1.664 1.167-3.352 2.354-5.061 3.561-1.709 1.207-3.186 2.563-4.432 4.06 3.747-2.002 7.829-3.414 12.239-4.248z"
+            fill="#0D0F0F"
+          />
+        </g>
+      </symbol>
+      <symbol id="ms-R" viewBox="0 0 100 100">
+        <g fill="none">
+          <circle fill="#E49977" cx="50" cy="50" r="50" />
+          <path
+            d="M91.965 66.617c-3.736 8.912-11.16 13.367-22.275 13.367-2.037 0-4.246.254-6.621.762-3.564.764-5.346 1.828-5.346 3.186 0 .424.295.91.891 1.463.592.553 1.104.826 1.527.826-2.123 0-.68.064 4.326.191 5.008.127 8.148.191 9.422.191-7.383 4.326-19.732 6.319-37.043 5.981-5.688-.084-10.566-2.588-14.639-7.51-3.992-4.669-5.984-9.888-5.984-15.658 0-6.108 2.057-11.308 6.176-15.595 4.113-4.282 9.229-6.427 15.338-6.427 1.357 0 3.16.297 5.41.891 2.248.594 3.756.891 4.518.891 3.139 0 7.045-1.293 11.713-3.883 4.666-2.588 6.875-3.883 6.621-3.883-.85 8.912-3.82 14.896-8.914 17.948-3.648 2.123-5.473 4.201-5.473 6.236 0 1.273.764 2.293 2.291 3.057 1.188.595 2.502.892 3.945.892 2.207 0 4.371-1.356 6.494-4.071 2.119-2.718 3.055-5.177 2.801-7.386-.254-2.545-.084-5.603.51-9.164.168-1.02.783-2.27 1.844-3.754 1.061-1.486 2.016-2.398 2.865-2.738 0 .762-.275 2.037-.828 3.818-.553 1.781-.826 3.1-.826 3.947 0 1.867.508 3.309 1.527 4.326 1.525-.592 2.883-2.502 4.074-5.729 1.016-2.459 1.609-4.836 1.781-7.127-3.566-.17-6.982-1.781-10.248-4.838-3.268-3.057-4.9-6.365-4.9-9.928 0-.594.082-1.188.256-1.783.508.764 1.271 1.953 2.289 3.564 1.443 2.121 2.547 3.182 3.313 3.182 1.016 0 1.525-1.061 1.525-3.182 0-2.715-.723-5.176-2.164-7.383-1.613-2.631-3.693-3.947-6.238-3.947-1.189 0-2.971.637-5.344 1.91-2.379 1.271-4.543 1.91-6.492 1.91-.596 0-3.229-.766-7.895-2.293 8.23-1.355 12.348-2.586 12.348-3.691 0-2.885-5.645-4.838-16.93-5.855-1.105-.084-3.141-.254-6.111-.51.338-.424 2.758-.891 7.258-1.4 3.818-.422 6.492-.637 8.018-.637 20.197 0 33.012 9.805 38.443 29.408.934-.773 1.402-2.066 1.402-3.871 0-2.324-.68-5.25-2.037-8.777-.512-1.375-1.318-3.441-2.42-6.193 6.957 8.867 10.439 17.27 10.439 25.199 0 4.178-.979 7.973-2.93 11.381-1.27 2.303-3.65 5.244-7.127 8.826-3.48 3.58-5.857 6.352-7.131 8.313 4.668-1.271 7.725-2.248 9.168-2.928 3.223-1.44 6.15-3.606 8.783-6.492 0 1.106-.467 2.762-1.4 4.967zm-55.502-50.025c0 1.525-.85 2.502-2.545 2.926l-3.311.51c-1.189.594-2.928 2.928-5.219 7-.256-1.271-.637-3.053-1.146-5.346-.764.086-2.035.764-3.818 2.037-.764.594-1.996 1.484-3.693 2.672.512-3.055 2.207-6.148 5.094-9.293 3.055-3.477 6.025-5.217 8.91-5.217 3.818 0 5.728 1.572 5.728 4.711zm22.15 11.709c0 1.443-.785 2.654-2.355 3.629-1.57.977-3.119 1.465-4.646 1.465-2.037 0-3.863-1.146-5.473-3.438-1.955-2.801-3.947-4.625-5.984-5.477.424-.422.934-.635 1.529-.635.764 0 2.055.594 3.881 1.781 1.824 1.189 2.99 1.783 3.502 1.783.424 0 1.123-.594 2.1-1.783.975-1.188 2.057-1.781 3.246-1.781 2.8.001 4.2 1.487 4.2 4.456z"
+            fill="#0D0F0F"
+          />
+        </g>
+      </symbol>
+      <symbol id="ms-U" viewBox="0 0 100 100">
+        <g fill="none">
+          <circle fill="#C1D7E9" cx="50" cy="50" r="50" />
+          <path
+            d="M67.488 83.719c-4.787 4.871-10.684 7.307-17.688 7.307-7.861 0-14.098-2.69-18.711-8.073-4.359-5.127-6.537-11.662-6.537-19.606 0-8.543 3.717-18.286 11.15-29.224 6.064-8.969 13.199-16.83 21.402-23.58-1.197 5.469-1.793 9.355-1.793 11.662 0 5.299 1.664 10.467 4.996 15.508 4.102 5.98 7.219 10.426 9.357 13.328 3.332 5.043 4.998 9.955 4.998 14.737.002 7.093-2.391 13.074-7.174 17.941zm-.129-27.362c-1.281-2.861-2.777-4.762-4.486-5.703.256.514.385 1.24.385 2.18 0 1.795-.512 4.357-1.539 7.689l-1.664 5.127c0 2.99 1.492 4.486 4.484 4.486 3.16 0 4.742-2.095 4.742-6.281 0-2.134-.64-4.632-1.922-7.498z"
+            fill="#0D0F0F"
+          />
+        </g>
+      </symbol>
+      <symbol id="ms-W" viewBox="0 0 100 100">
+        <g fill="none">
+          <circle fill="#F8F6D8" cx="50" cy="50" r="50" />
+          <path
+            d="M97.691 57.064c-6.561-3.699-10.768-5.551-12.617-5.551-1.344 0-2.395 1.032-3.154 3.092-.758 2.063-2.27 3.09-4.541 3.09-.926 0-2.818-.336-5.678-1.008-1.598 2.44-2.398 3.996-2.398 4.668 0 .926.689 2.016 2.064 3.281 1.375 1.262 2.535 1.891 3.482 1.891.602 0 1.416-.125 2.449-.379 1.031-.25 1.721-.377 2.064-.377 1.033 0 1.547 1.893 1.547 5.678 0 3.617-.84 9.168-2.523 16.654-2.188-8.58-4.5-12.871-6.938-12.871-.338 0-1.031.252-2.082.76-1.053.502-1.83.754-2.334.754-2.438 0-4.625-2.227-6.561-6.688-3.869.59-5.805 2.567-5.805 5.934 0 1.684.777 3.027 2.336 4.035 1.553 1.008 2.334 1.727 2.334 2.145 0 2.273-3.324 5.764-9.969 10.473-3.531 2.523-5.973 4.289-7.316 5.297 1.174-1.512 2.352-3.487 3.533-5.928 1.344-2.775 2.018-4.92 2.018-6.436 0-.84-.967-2.02-2.902-3.533-1.936-1.512-2.9-3.111-2.9-4.793 0-1.428.502-3.193 1.512-5.299-1.094-1.262-2.395-1.895-3.91-1.895-3.365 0-5.045 1.096-5.045 3.28v3.406c.082 2.776-2.02 4.164-6.311 4.164-3.279 0-8.791-.759-16.527-2.271 8.748-2.188 13.121-4.711 13.121-7.57 0 .336-.168-.672-.504-3.028-.338-2.604 1.514-4.961 5.551-7.063-.758-3.867-2.773-5.806-6.057-5.806-.504 0-1.432.884-2.775 2.647-1.346 1.771-2.607 2.652-3.783 2.652-2.02 0-4.629-2.186-7.822-6.563-1.516-2.184-3.83-5.424-6.941-9.715 1.934 1.012 3.869 2.02 5.805 3.031 2.523 1.176 4.541 1.766 6.057 1.766 1.178 0 2.334-1.031 3.469-3.092 1.135-2.061 2.629-3.092 4.479-3.092.254 0 1.936.504 5.047 1.516 1.596-2.439 2.398-4.248 2.398-5.426 0-1.01-.611-2.166-1.83-3.471-1.221-1.303-2.334-1.955-3.344-1.955-.422 0-1.072.125-1.957.379-.881.252-1.533.379-1.953.379-1.516 0-2.273-1.893-2.273-5.678 0-1.01.969-6.77 2.904-17.285-.086 1.26.461 3.617 1.639 7.064 1.43 4.207 3.111 6.309 5.049 6.309.334 0 1.008-.252 2.018-.758 1.008-.504 1.807-.754 2.396-.754 1.934 0 3.531 1.094 4.795 3.277l1.893 3.406c1.766 0 3.238-.629 4.414-1.891 1.178-1.262 1.768-2.777 1.768-4.543 0-1.85-.777-3.26-2.334-4.227-1.559-.967-2.336-1.703-2.336-2.207 0-1.768 2.777-4.752 8.328-8.958 4.457-3.363 7.359-5.34 8.707-5.93-3.617 4.879-5.426 8.451-5.426 10.724 0 1.178.713 2.441 2.145 3.785 1.766 1.598 2.775 2.734 3.027 3.406.84 1.938.756 4.586-.252 7.949 2.271 1.6 3.994 2.396 5.174 2.396 2.436 0 3.658-1.264 3.658-3.785 0-.252-.105-1.051-.314-2.396-.213-1.344-.273-2.102-.191-2.271.336-1.178 2.65-1.768 6.939-1.768 2.691 0 8.283.758 16.781 2.273-1.852.504-4.627 1.26-8.326 2.27-3.365 1.01-5.049 2.145-5.049 3.406 0 .59.209 1.598.631 3.027.42 1.432.633 2.48.633 3.156 0 1.176-.758 2.27-2.271 3.277l-4.291 3.031c1.01 1.852 1.682 2.945 2.02 3.279.84 1.008 1.975 1.514 3.406 1.514 1.01 0 1.934-.883 2.775-2.648.84-1.768 2.188-2.65 4.037-2.65 2.27 0 4.838 2.104 7.697 6.311 1.593 2.36 4.075 5.933 7.44 10.727zm-28.007-7.316c0-5.381-1.979-10.051-5.932-14.006-3.953-3.953-8.621-5.93-14.004-5.93-5.469 0-10.18 1.957-14.131 5.869-3.953 3.91-5.973 8.6-6.055 14.066-.086 5.383 1.912 10.03 5.992 13.938 4.08 3.912 8.811 5.869 14.193 5.869 5.719 0 10.492-1.873 14.318-5.615 3.83-3.74 5.701-8.47 5.619-14.191zm-1.893 0c0 5.131-1.725 9.381-5.174 12.74-3.451 3.367-7.74 5.049-12.869 5.049-4.963 0-9.211-1.723-12.742-5.174-3.531-3.445-5.299-7.652-5.299-12.615 0-4.877 1.785-9.064 5.359-12.553 3.578-3.49 7.803-5.238 12.682-5.238 4.877 0 9.104 1.766 12.68 5.301 3.574 3.533 5.363 7.695 5.363 12.49z"
+            fill="#0D0F0F"
+          />
+        </g>
+      </symbol>
+    </svg>
+    <header class="wrap">
+      <p class="eyebrow">Shopping list · Commander staples · <span class="nowrap">6 Nov 2026</span></p>
+      <div class="titlebar frame">
+        <div class="plaque">
+          <h1>Staples to Buy</h1>
+          <span class="count" title="Cards on the list">50</span>
+        </div>
+      </div>
+      <p class="lede">
+        Fifty of Commander's most-played commons and uncommons with no copy anywhere in the collection, binders and
+        built decks included. Tick each one off as you find it.
+      </p>
+      <ul class="readout">
+        <li><b>20 C · 30 U</b>rarity shown</li>
+        <li><b>~$51</b>est. total</li>
+      </ul>
+      <ul class="roles" aria-label="Cards by role">
+        <li><b>23</b> Ramp</li>
+        <li><b>7</b> Land</li>
+        <li><b>6</b> Removal</li>
+        <li><b>5</b> Draw</li>
+        <li><b>3</b> Synergy</li>
+        <li><b>2</b> Counter</li>
+        <li><b>2</b> Interaction</li>
+        <li><b>1</b> Protection</li>
+        <li><b>1</b> Recursion</li>
+      </ul>
+    </header>
+    <nav class="bar" aria-label="Jump to letter">
+      <div class="wrap">
+        <div class="jumps">
+          <a class="top" href="#" aria-label="Back to top"
+            ><svg viewBox="0 0 12 12" aria-hidden="true">
+              <path
+                d="M6 10.5V2M2.2 5.6 6 1.8l3.8 3.8"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              /></svg
+            >Top</a
+          ><a href="#l-A">A</a><a href="#l-B">B</a><a href="#l-D">D</a><a href="#l-E">E</a><a href="#l-F">F</a
+          ><a href="#l-G">G</a><a href="#l-H">H</a><a href="#l-I">I</a><a href="#l-K">K</a><a href="#l-L">L</a
+          ><a href="#l-M">M</a><a href="#l-O">O</a><a href="#l-P">P</a><a href="#l-R">R</a><a href="#l-S">S</a
+          ><a href="#l-T">T</a><a href="#l-U">U</a><a href="#l-W">W</a>
+        </div>
+        <div class="progress">
+          <span><output id="got">0</output>/50 <span class="label">found</span></span>
+          <button type="button" id="hide" aria-pressed="false">Hide found</button>
+        </div>
+      </div>
+    </nav>
+    <main class="wrap">
+      <ol class="list">
+        <li class="letter" id="l-A" aria-hidden="true">A</li>
+        <li class="card" data-id="aetherize">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Aetherize" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/fdn/151">Aetherize</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="3 generic">
+                    <title>3 generic</title>
+                    <use href="#ms-3" /></svg
+                  ><svg class="ms" role="img" aria-label="blue">
+                    <title>blue</title>
+                    <use href="#ms-U" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Instant</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">FDN 151</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Interaction</b> Instant: return every attacking creature to its owner's hand.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.35</span
+              ><span title="EDHREC popularity rank">EDHREC #286</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/fdn/151" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/1/e/1e5530fc-0291-4a17-b048-c5d24e6f51d8.jpg?1783909087"
+              srcset="
+                https://cards.scryfall.io/small/front/1/e/1e5530fc-0291-4a17-b048-c5d24e6f51d8.jpg?1783909087  146w,
+                https://cards.scryfall.io/normal/front/1/e/1e5530fc-0291-4a17-b048-c5d24e6f51d8.jpg?1783909087 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="an-offer-you-can-t-refuse">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got An Offer You Can't Refuse" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/fdn/160">An Offer You Can't Refuse</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="blue">
+                    <title>blue</title>
+                    <use href="#ms-U" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Instant</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">FDN 160</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Counter</b> Counter a noncreature spell for one mana; its caster gets two Treasures.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$3.10</span
+              ><span title="EDHREC popularity rank">EDHREC #33</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/fdn/160" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/a/8/a829747f-cf9b-4d81-ba66-9f0630ed4565.jpg?1783909078"
+              srcset="
+                https://cards.scryfall.io/small/front/a/8/a829747f-cf9b-4d81-ba66-9f0630ed4565.jpg?1783909078  146w,
+                https://cards.scryfall.io/normal/front/a/8/a829747f-cf9b-4d81-ba66-9f0630ed4565.jpg?1783909078 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="letter" id="l-B" aria-hidden="true">B</li>
+        <li class="card" data-id="beast-within">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Beast Within" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/trc/459">Beast Within</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="2 generic">
+                    <title>2 generic</title>
+                    <use href="#ms-2" /></svg
+                  ><svg class="ms" role="img" aria-label="green">
+                    <title>green</title>
+                    <use href="#ms-G" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Instant</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">TRC 459</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Removal</b> Instant: destroy any permanent; its controller gets a 3/3.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.67</span
+              ><span title="EDHREC popularity rank">EDHREC #25</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/trc/459" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/1/9/1929cf4b-0d18-4f7d-a631-621a378ff015.jpg?1793281367"
+              srcset="
+                https://cards.scryfall.io/small/front/1/9/1929cf4b-0d18-4f7d-a631-621a378ff015.jpg?1793281367  146w,
+                https://cards.scryfall.io/normal/front/1/9/1929cf4b-0d18-4f7d-a631-621a378ff015.jpg?1793281367 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="boros-charm">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Boros Charm" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/fdn/721">Boros Charm</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="red">
+                    <title>red</title>
+                    <use href="#ms-R" /></svg
+                  ><svg class="ms" role="img" aria-label="white">
+                    <title>white</title>
+                    <use href="#ms-W" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Instant</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">FDN 721</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Protection</b> Pick one: 4 damage to a player, your permanents gain indestructible, or
+              double strike.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$4.66</span
+              ><span title="EDHREC popularity rank">EDHREC #182</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/fdn/721" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/e/0/e0d8c9f6-cbbd-4694-b100-01cfb81036cc.jpg?1783908890"
+              srcset="
+                https://cards.scryfall.io/small/front/e/0/e0d8c9f6-cbbd-4694-b100-01cfb81036cc.jpg?1783908890  146w,
+                https://cards.scryfall.io/normal/front/e/0/e0d8c9f6-cbbd-4694-b100-01cfb81036cc.jpg?1783908890 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="buried-ruin">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Buried Ruin" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/eoc/150">Buried Ruin</a
+                ><span class="cost"><span class="noc">no cost</span></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Land</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">EOC 150</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Land</b> Colorless land; sacrifice it to return an artifact card from your graveyard.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.28</span
+              ><span title="EDHREC popularity rank">EDHREC #193</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/eoc/150" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/7/a/7ab1a074-9d92-4125-9200-84cd035f8f53.jpg?1783906016"
+              srcset="
+                https://cards.scryfall.io/small/front/7/a/7ab1a074-9d92-4125-9200-84cd035f8f53.jpg?1783906016  146w,
+                https://cards.scryfall.io/normal/front/7/a/7ab1a074-9d92-4125-9200-84cd035f8f53.jpg?1783906016 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="letter" id="l-D" aria-hidden="true">D</li>
+        <li class="card" data-id="darksteel-citadel">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Darksteel Citadel" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/c21/285">Darksteel Citadel</a
+                ><span class="cost"><span class="noc">no cost</span></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Artifact Land</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">C21 285</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Land</b> Indestructible artifact land that taps for colorless.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.51</span
+              ><span title="EDHREC popularity rank">EDHREC #283</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/c21/285" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/2/b/2ba7597d-6d76-45b8-b172-342999e401bd.jpg?1783927495"
+              srcset="
+                https://cards.scryfall.io/small/front/2/b/2ba7597d-6d76-45b8-b172-342999e401bd.jpg?1783927495  146w,
+                https://cards.scryfall.io/normal/front/2/b/2ba7597d-6d76-45b8-b172-342999e401bd.jpg?1783927495 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="dimir-signet">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Dimir Signet" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/frc/56">Dimir Signet</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="2 generic">
+                    <title>2 generic</title>
+                    <use href="#ms-2" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Artifact</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">FRC 56</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Ramp</b> Two-mana rock: pay
+              <svg class="ms" role="img" aria-label="1 generic">
+                <title>1 generic</title>
+                <use href="#ms-1" /></svg
+              >, tap for blue and black.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.31</span
+              ><span title="EDHREC popularity rank">EDHREC #157</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/frc/56" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/0/8/0862060d-3198-4eeb-af8c-efeb27f42a99.jpg?1789599833"
+              srcset="
+                https://cards.scryfall.io/small/front/0/8/0862060d-3198-4eeb-af8c-efeb27f42a99.jpg?1789599833  146w,
+                https://cards.scryfall.io/normal/front/0/8/0862060d-3198-4eeb-af8c-efeb27f42a99.jpg?1789599833 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="dovin-s-veto">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Dovin's Veto" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/war/193">Dovin's Veto</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="white">
+                    <title>white</title>
+                    <use href="#ms-W" /></svg
+                  ><svg class="ms" role="img" aria-label="blue">
+                    <title>blue</title>
+                    <use href="#ms-U" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Instant</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">WAR 193</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Counter</b> Counter a noncreature spell; Veto itself can't be countered.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$2.43</span
+              ><span title="EDHREC popularity rank">EDHREC #227</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/war/193" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/5/d/5d6b5054-2224-4f68-9d82-3ed17c5dacc4.jpg?1783933400"
+              srcset="
+                https://cards.scryfall.io/small/front/5/d/5d6b5054-2224-4f68-9d82-3ed17c5dacc4.jpg?1783933400  146w,
+                https://cards.scryfall.io/normal/front/5/d/5d6b5054-2224-4f68-9d82-3ed17c5dacc4.jpg?1783933400 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="letter" id="l-E" aria-hidden="true">E</li>
+        <li class="card" data-id="eternal-witness">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Eternal Witness" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/cmm/286">Eternal Witness</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="1 generic">
+                    <title>1 generic</title>
+                    <use href="#ms-1" /></svg
+                  ><svg class="ms" role="img" aria-label="green">
+                    <title>green</title>
+                    <use href="#ms-G" /></svg
+                  ><svg class="ms" role="img" aria-label="green">
+                    <title>green</title>
+                    <use href="#ms-G" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Creature — Human Shaman</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">CMM 286</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Recursion</b> On entering, return any card from your graveyard to your hand.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$1.53</span
+              ><span title="EDHREC popularity rank">EDHREC #121</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/cmm/286" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/3/9/39704000-65d3-4d39-849e-a3b617376bbc.jpg?1783915632"
+              srcset="
+                https://cards.scryfall.io/small/front/3/9/39704000-65d3-4d39-849e-a3b617376bbc.jpg?1783915632  146w,
+                https://cards.scryfall.io/normal/front/3/9/39704000-65d3-4d39-849e-a3b617376bbc.jpg?1783915632 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="everflowing-chalice">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Everflowing Chalice" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/trc/490">Everflowing Chalice</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="0 generic">
+                    <title>0 generic</title>
+                    <use href="#ms-0" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Artifact</span
+              ><span class="set"
+                ><span class="rar rC" title="common">C</span
+                ><span class="cn" title="Set and collector number">TRC 490</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Ramp</b> Rock that taps for one colorless per
+              <svg class="ms" role="img" aria-label="2 generic">
+                <title>2 generic</title>
+                <use href="#ms-2" />
+              </svg>
+              paid when cast.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.28</span
+              ><span title="EDHREC popularity rank">EDHREC #251</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/trc/490" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/f/a/fa293bcc-39aa-4642-8e34-6e4fbb30f962.jpg?1793021160"
+              srcset="
+                https://cards.scryfall.io/small/front/f/a/fa293bcc-39aa-4642-8e34-6e4fbb30f962.jpg?1793021160  146w,
+                https://cards.scryfall.io/normal/front/f/a/fa293bcc-39aa-4642-8e34-6e4fbb30f962.jpg?1793021160 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="explore">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Explore" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/tle/259">Explore</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="1 generic">
+                    <title>1 generic</title>
+                    <use href="#ms-1" /></svg
+                  ><svg class="ms" role="img" aria-label="green">
+                    <title>green</title>
+                    <use href="#ms-G" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Sorcery</span
+              ><span class="set"
+                ><span class="rar rC" title="common">C</span
+                ><span class="cn" title="Set and collector number">TLE 259</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Ramp</b> Play an extra land this turn and draw a card.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.20</span
+              ><span title="EDHREC popularity rank">EDHREC #238</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/tle/259" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/a/b/ab9dbf0b-2c1d-463c-b675-ff711c282e56.jpg?1783904770"
+              srcset="
+                https://cards.scryfall.io/small/front/a/b/ab9dbf0b-2c1d-463c-b675-ff711c282e56.jpg?1783904770  146w,
+                https://cards.scryfall.io/normal/front/a/b/ab9dbf0b-2c1d-463c-b675-ff711c282e56.jpg?1783904770 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="letter" id="l-F" aria-hidden="true">F</li>
+        <li class="card" data-id="faithless-looting">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Faithless Looting" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/soc/244">Faithless Looting</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="red">
+                    <title>red</title>
+                    <use href="#ms-R" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Sorcery</span
+              ><span class="set"
+                ><span class="rar rC" title="common">C</span
+                ><span class="cn" title="Set and collector number">SOC 244</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Draw</b> Draw two, discard two; flashback
+              <svg class="ms" role="img" aria-label="2 generic">
+                <title>2 generic</title>
+                <use href="#ms-2" /></svg
+              ><svg class="ms" role="img" aria-label="red">
+                <title>red</title>
+                <use href="#ms-R" /></svg
+              >. Filters more than it draws.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.38</span
+              ><span title="EDHREC popularity rank">EDHREC #99</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/soc/244" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/f/c/fc019ffa-4461-4f3d-ab8d-e4d20e77ca0c.jpg?1783903774"
+              srcset="
+                https://cards.scryfall.io/small/front/f/c/fc019ffa-4461-4f3d-ab8d-e4d20e77ca0c.jpg?1783903774  146w,
+                https://cards.scryfall.io/normal/front/f/c/fc019ffa-4461-4f3d-ab8d-e4d20e77ca0c.jpg?1783903774 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="farseek">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Farseek" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/trc/462">Farseek</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="1 generic">
+                    <title>1 generic</title>
+                    <use href="#ms-1" /></svg
+                  ><svg class="ms" role="img" aria-label="green">
+                    <title>green</title>
+                    <use href="#ms-G" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Sorcery</span
+              ><span class="set"
+                ><span class="rar rC" title="common">C</span
+                ><span class="cn" title="Set and collector number">TRC 462</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Ramp</b> Fetch a Plains, Island, Swamp or Mountain card tapped, duals included.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.46</span
+              ><span title="EDHREC popularity rank">EDHREC #23</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/trc/462" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/d/d/dde15e36-ad2d-4438-9b51-78a04bc80779.jpg?1793281387"
+              srcset="
+                https://cards.scryfall.io/small/front/d/d/dde15e36-ad2d-4438-9b51-78a04bc80779.jpg?1793281387  146w,
+                https://cards.scryfall.io/normal/front/d/d/dde15e36-ad2d-4438-9b51-78a04bc80779.jpg?1793281387 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="feed-the-swarm">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Feed the Swarm" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/tle/257">Feed the Swarm</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="1 generic">
+                    <title>1 generic</title>
+                    <use href="#ms-1" /></svg
+                  ><svg class="ms" role="img" aria-label="black">
+                    <title>black</title>
+                    <use href="#ms-B" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Sorcery</span
+              ><span class="set"
+                ><span class="rar rC" title="common">C</span
+                ><span class="cn" title="Set and collector number">TLE 257</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Removal</b> Destroy an opponent's creature or enchantment; lose life equal to its mana
+              value.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.22</span
+              ><span title="EDHREC popularity rank">EDHREC #93</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/tle/257" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/2/2/2246c098-1071-4cc3-a60a-802406e2827b.jpg?1783904770"
+              srcset="
+                https://cards.scryfall.io/small/front/2/2/2246c098-1071-4cc3-a60a-802406e2827b.jpg?1783904770  146w,
+                https://cards.scryfall.io/normal/front/2/2/2246c098-1071-4cc3-a60a-802406e2827b.jpg?1783904770 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="foundry-inspector">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Foundry Inspector" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/cmm/385">Foundry Inspector</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="3 generic">
+                    <title>3 generic</title>
+                    <use href="#ms-3" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Artifact Creature — Construct</span
+              ><span class="set"
+                ><span class="rar rC" title="common">C</span
+                ><span class="cn" title="Set and collector number">CMM 385</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Synergy</b> Your artifact spells cost one less.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.31</span
+              ><span title="EDHREC popularity rank">EDHREC #249</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/cmm/385" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/1/6/16debeb1-fb2b-4172-b6da-726416d4fb38.jpg?1783915599"
+              srcset="
+                https://cards.scryfall.io/small/front/1/6/16debeb1-fb2b-4172-b6da-726416d4fb38.jpg?1783915599  146w,
+                https://cards.scryfall.io/normal/front/1/6/16debeb1-fb2b-4172-b6da-726416d4fb38.jpg?1783915599 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="frantic-search">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Frantic Search" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/trc/438">Frantic Search</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="2 generic">
+                    <title>2 generic</title>
+                    <use href="#ms-2" /></svg
+                  ><svg class="ms" role="img" aria-label="blue">
+                    <title>blue</title>
+                    <use href="#ms-U" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Instant</span
+              ><span class="set"
+                ><span class="rar rC" title="common">C</span
+                ><span class="cn" title="Set and collector number">TRC 438</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Draw</b> Draw two, discard two, untap up to three lands, so it can be free.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.73</span
+              ><span title="EDHREC popularity rank">EDHREC #97</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/trc/438" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/4/5/4547db5f-f031-4dc1-8a61-532c9be4533a.jpg?1793111872"
+              srcset="
+                https://cards.scryfall.io/small/front/4/5/4547db5f-f031-4dc1-8a61-532c9be4533a.jpg?1793111872  146w,
+                https://cards.scryfall.io/normal/front/4/5/4547db5f-f031-4dc1-8a61-532c9be4533a.jpg?1793111872 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="fyndhorn-elves">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Fyndhorn Elves" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/cmr/228">Fyndhorn Elves</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="green">
+                    <title>green</title>
+                    <use href="#ms-G" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Creature — Elf Druid</span
+              ><span class="set"
+                ><span class="rar rC" title="common">C</span
+                ><span class="cn" title="Set and collector number">CMR 228</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Ramp</b> One-mana elf that taps for green.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$1.13</span
+              ><span title="EDHREC popularity rank">EDHREC #215</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/cmr/228" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/4/5/450744cf-7eba-491b-97b0-ca80c6368bbb.jpg?1783928794"
+              srcset="
+                https://cards.scryfall.io/small/front/4/5/450744cf-7eba-491b-97b0-ca80c6368bbb.jpg?1783928794  146w,
+                https://cards.scryfall.io/normal/front/4/5/450744cf-7eba-491b-97b0-ca80c6368bbb.jpg?1783928794 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="letter" id="l-G" aria-hidden="true">G</li>
+        <li class="card" data-id="garruk-s-uprising">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Garruk's Uprising" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/ecc/109">Garruk's Uprising</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="2 generic">
+                    <title>2 generic</title>
+                    <use href="#ms-2" /></svg
+                  ><svg class="ms" role="img" aria-label="green">
+                    <title>green</title>
+                    <use href="#ms-G" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Enchantment</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">ECC 109</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Draw</b> Your creatures get trample; draw whenever one with power 4+ enters.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.46</span
+              ><span title="EDHREC popularity rank">EDHREC #92</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/ecc/109" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/b/5/b58c4033-f764-42f6-966f-b7202a2babbf.jpg?1783904546"
+              srcset="
+                https://cards.scryfall.io/small/front/b/5/b58c4033-f764-42f6-966f-b7202a2babbf.jpg?1783904546  146w,
+                https://cards.scryfall.io/normal/front/b/5/b58c4033-f764-42f6-966f-b7202a2babbf.jpg?1783904546 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="growth-spiral">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Growth Spiral" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/trc/476">Growth Spiral</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="green">
+                    <title>green</title>
+                    <use href="#ms-G" /></svg
+                  ><svg class="ms" role="img" aria-label="blue">
+                    <title>blue</title>
+                    <use href="#ms-U" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Instant</span
+              ><span class="set"
+                ><span class="rar rC" title="common">C</span
+                ><span class="cn" title="Set and collector number">TRC 476</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Ramp</b> Instant: draw a card and put a land from your hand onto the battlefield.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.30</span
+              ><span title="EDHREC popularity rank">EDHREC #239</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/trc/476" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/4/e/4e518ba7-371d-4996-bebb-9f618e02db63.jpg?1793281444"
+              srcset="
+                https://cards.scryfall.io/small/front/4/e/4e518ba7-371d-4996-bebb-9f618e02db63.jpg?1793281444  146w,
+                https://cards.scryfall.io/normal/front/4/e/4e518ba7-371d-4996-bebb-9f618e02db63.jpg?1793281444 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="letter" id="l-H" aria-hidden="true">H</li>
+        <li class="card" data-id="harrow">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Harrow" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/eoc/98">Harrow</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="2 generic">
+                    <title>2 generic</title>
+                    <use href="#ms-2" /></svg
+                  ><svg class="ms" role="img" aria-label="green">
+                    <title>green</title>
+                    <use href="#ms-G" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Instant</span
+              ><span class="set"
+                ><span class="rar rC" title="common">C</span
+                ><span class="cn" title="Set and collector number">EOC 98</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Ramp</b> Instant: sacrifice a land to put two basics onto the battlefield untapped.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.32</span
+              ><span title="EDHREC popularity rank">EDHREC #253</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/eoc/98" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/3/e/3e76be46-cf81-4fef-bc5b-f87666cb0413.jpg?1783906034"
+              srcset="
+                https://cards.scryfall.io/small/front/3/e/3e76be46-cf81-4fef-bc5b-f87666cb0413.jpg?1783906034  146w,
+                https://cards.scryfall.io/normal/front/3/e/3e76be46-cf81-4fef-bc5b-f87666cb0413.jpg?1783906034 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="herald-s-horn">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Herald's Horn" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/trc/493">Herald's Horn</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="3 generic">
+                    <title>3 generic</title>
+                    <use href="#ms-3" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Artifact</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">TRC 493</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Synergy</b> Creatures of a chosen type cost one less; may pull one off the top each
+              upkeep.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$3.02</span
+              ><span title="EDHREC popularity rank">EDHREC #152</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/trc/493" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/e/8/e8fcf84c-0c2e-42c4-b860-622227e3cde3.jpg?1793197563"
+              srcset="
+                https://cards.scryfall.io/small/front/e/8/e8fcf84c-0c2e-42c4-b860-622227e3cde3.jpg?1793197563  146w,
+                https://cards.scryfall.io/normal/front/e/8/e8fcf84c-0c2e-42c4-b860-622227e3cde3.jpg?1793197563 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="letter" id="l-I" aria-hidden="true">I</li>
+        <li class="card" data-id="inspiring-call">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Inspiring Call" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/tle/168">Inspiring Call</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="2 generic">
+                    <title>2 generic</title>
+                    <use href="#ms-2" /></svg
+                  ><svg class="ms" role="img" aria-label="green">
+                    <title>green</title>
+                    <use href="#ms-G" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Instant</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">TLE 168</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Draw</b> Instant: draw per creature with a +1/+1 counter; they gain indestructible.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.35</span
+              ><span title="EDHREC popularity rank">EDHREC #281</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/tle/168" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/2/5/2555ec7b-5cc2-4ffd-9344-6368019feff9.jpg?1783904804"
+              srcset="
+                https://cards.scryfall.io/small/front/2/5/2555ec7b-5cc2-4ffd-9344-6368019feff9.jpg?1783904804  146w,
+                https://cards.scryfall.io/normal/front/2/5/2555ec7b-5cc2-4ffd-9344-6368019feff9.jpg?1783904804 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="letter" id="l-K" aria-hidden="true">K</li>
+        <li class="card" data-id="kodama-s-reach">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Kodama's Reach" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/ecc/113">Kodama's Reach</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="2 generic">
+                    <title>2 generic</title>
+                    <use href="#ms-2" /></svg
+                  ><svg class="ms" role="img" aria-label="green">
+                    <title>green</title>
+                    <use href="#ms-G" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Sorcery — Arcane</span
+              ><span class="set"
+                ><span class="rar rC" title="common">C</span
+                ><span class="cn" title="Set and collector number">ECC 113</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Ramp</b> Fetch two basics: one onto the battlefield tapped, one to hand.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$1.55</span
+              ><span title="EDHREC popularity rank">EDHREC #39</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/ecc/113" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/9/0/90c423cc-1264-4067-9c50-e7c88c68ef2d.jpg?1783904544"
+              srcset="
+                https://cards.scryfall.io/small/front/9/0/90c423cc-1264-4067-9c50-e7c88c68ef2d.jpg?1783904544  146w,
+                https://cards.scryfall.io/normal/front/9/0/90c423cc-1264-4067-9c50-e7c88c68ef2d.jpg?1783904544 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="letter" id="l-L" aria-hidden="true">L</li>
+        <li class="card" data-id="llanowar-elves">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Llanowar Elves" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/fdn/227">Llanowar Elves</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="green">
+                    <title>green</title>
+                    <use href="#ms-G" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Creature — Elf Druid</span
+              ><span class="set"
+                ><span class="rar rC" title="common">C</span
+                ><span class="cn" title="Set and collector number">FDN 227</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Ramp</b> One-mana elf that taps for green.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.29</span
+              ><span title="EDHREC popularity rank">EDHREC #54</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/fdn/227" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/6/a/6a0b230b-d391-4998-a3f7-7b158a0ec2cd.jpg?1783909057"
+              srcset="
+                https://cards.scryfall.io/small/front/6/a/6a0b230b-d391-4998-a3f7-7b158a0ec2cd.jpg?1783909057  146w,
+                https://cards.scryfall.io/normal/front/6/a/6a0b230b-d391-4998-a3f7-7b158a0ec2cd.jpg?1783909057 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="letter" id="l-M" aria-hidden="true">M</li>
+        <li class="card" data-id="mystic-sanctuary">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Mystic Sanctuary" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/soc/388">Mystic Sanctuary</a
+                ><span class="cost"><span class="noc">no cost</span></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Land — Island</span
+              ><span class="set"
+                ><span class="rar rC" title="common">C</span
+                ><span class="cn" title="Set and collector number">SOC 388</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Land</b> Island; with three other Islands it enters untapped and puts an instant or
+              sorcery back on top.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$1.09</span
+              ><span title="EDHREC popularity rank">EDHREC #175</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/soc/388" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/4/c/4cd86997-d7b9-4b5b-9488-11f5c679e4d3.jpg?1783903726"
+              srcset="
+                https://cards.scryfall.io/small/front/4/c/4cd86997-d7b9-4b5b-9488-11f5c679e4d3.jpg?1783903726  146w,
+                https://cards.scryfall.io/normal/front/4/c/4cd86997-d7b9-4b5b-9488-11f5c679e4d3.jpg?1783903726 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="letter" id="l-O" aria-hidden="true">O</li>
+        <li class="card" data-id="ornithopter-of-paradise">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Ornithopter of Paradise" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/j25/153">Ornithopter of Paradise</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="2 generic">
+                    <title>2 generic</title>
+                    <use href="#ms-2" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Artifact Creature — Thopter</span
+              ><span class="set"
+                ><span class="rar rC" title="common">C</span
+                ><span class="cn" title="Set and collector number">J25 153</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Ramp</b> Colorless flier that taps for any color.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.39</span
+              ><span title="EDHREC popularity rank">EDHREC #219</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/j25/153" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/3/5/35e7c881-23a9-4703-b29f-a9e7a600e9e4.jpg?1783908822"
+              srcset="
+                https://cards.scryfall.io/small/front/3/5/35e7c881-23a9-4703-b29f-a9e7a600e9e4.jpg?1783908822  146w,
+                https://cards.scryfall.io/normal/front/3/5/35e7c881-23a9-4703-b29f-a9e7a600e9e4.jpg?1783908822 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="orzhov-signet">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Orzhov Signet" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/tdc/323">Orzhov Signet</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="2 generic">
+                    <title>2 generic</title>
+                    <use href="#ms-2" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Artifact</span
+              ><span class="set"
+                ><span class="rar rC" title="common">C</span
+                ><span class="cn" title="Set and collector number">TDC 323</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Ramp</b> Two-mana rock: pay
+              <svg class="ms" role="img" aria-label="1 generic">
+                <title>1 generic</title>
+                <use href="#ms-1" /></svg
+              >, tap for white and black.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.33</span
+              ><span title="EDHREC popularity rank">EDHREC #190</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/tdc/323" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/9/0/90894726-1940-4291-a05c-b85cefbfa344.jpg?1783907008"
+              srcset="
+                https://cards.scryfall.io/small/front/9/0/90894726-1940-4291-a05c-b85cefbfa344.jpg?1783907008  146w,
+                https://cards.scryfall.io/normal/front/9/0/90894726-1940-4291-a05c-b85cefbfa344.jpg?1783907008 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="letter" id="l-P" aria-hidden="true">P</li>
+        <li class="card" data-id="patchwork-banner">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Patchwork Banner" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/msc/207">Patchwork Banner</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="3 generic">
+                    <title>3 generic</title>
+                    <use href="#ms-3" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Artifact</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">MSC 207</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Ramp</b> Taps for any color and gives a creature type +1/+1.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$1.77</span
+              ><span title="EDHREC popularity rank">EDHREC #201</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/msc/207" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/5/3/537ea7e7-e8e8-4736-bdd9-1085f1a7c259.jpg?1783903215"
+              srcset="
+                https://cards.scryfall.io/small/front/5/3/537ea7e7-e8e8-4736-bdd9-1085f1a7c259.jpg?1783903215  146w,
+                https://cards.scryfall.io/normal/front/5/3/537ea7e7-e8e8-4736-bdd9-1085f1a7c259.jpg?1783903215 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="path-to-exile">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Path to Exile" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/trc/425">Path to Exile</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="white">
+                    <title>white</title>
+                    <use href="#ms-W" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Instant</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">TRC 425</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Removal</b> Instant: exile a creature for one mana; its controller may fetch a basic.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$1.14</span
+              ><span title="EDHREC popularity rank">EDHREC #15</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/trc/425" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/c/b/cba7cf86-a9e7-4022-bb46-d9b0f136f3ca.jpg?1793197463"
+              srcset="
+                https://cards.scryfall.io/small/front/c/b/cba7cf86-a9e7-4022-bb46-d9b0f136f3ca.jpg?1793197463  146w,
+                https://cards.scryfall.io/normal/front/c/b/cba7cf86-a9e7-4022-bb46-d9b0f136f3ca.jpg?1793197463 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="pitiless-plunderer">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Pitiless Plunderer" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/j25/476">Pitiless Plunderer</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="3 generic">
+                    <title>3 generic</title>
+                    <use href="#ms-3" /></svg
+                  ><svg class="ms" role="img" aria-label="black">
+                    <title>black</title>
+                    <use href="#ms-B" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Creature — Human Pirate</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">J25 476</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Ramp</b> A Treasure whenever another creature you control dies.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$3.20</span
+              ><span title="EDHREC popularity rank">EDHREC #225</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/j25/476" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/1/a/1ac61e84-94d6-4ff7-a00f-29de93f09a38.jpg?1783908715"
+              srcset="
+                https://cards.scryfall.io/small/front/1/a/1ac61e84-94d6-4ff7-a00f-29de93f09a38.jpg?1783908715  146w,
+                https://cards.scryfall.io/normal/front/1/a/1ac61e84-94d6-4ff7-a00f-29de93f09a38.jpg?1783908715 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="pongify">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Pongify" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/trc/441">Pongify</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="blue">
+                    <title>blue</title>
+                    <use href="#ms-U" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Instant</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">TRC 441</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Removal</b> Instant: destroy a creature for one mana; it leaves a 3/3.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$1.91</span
+              ><span title="EDHREC popularity rank">EDHREC #154</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/trc/441" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/2/9/299aa687-97a4-4fdd-8e73-2069e20fae43.jpg?1793111884"
+              srcset="
+                https://cards.scryfall.io/small/front/2/9/299aa687-97a4-4fdd-8e73-2069e20fae43.jpg?1793111884  146w,
+                https://cards.scryfall.io/normal/front/2/9/299aa687-97a4-4fdd-8e73-2069e20fae43.jpg?1793111884 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="letter" id="l-R" aria-hidden="true">R</li>
+        <li class="card" data-id="rakdos-signet">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Rakdos Signet" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/frc/60">Rakdos Signet</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="2 generic">
+                    <title>2 generic</title>
+                    <use href="#ms-2" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Artifact</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">FRC 60</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Ramp</b> Two-mana rock: pay
+              <svg class="ms" role="img" aria-label="1 generic">
+                <title>1 generic</title>
+                <use href="#ms-1" /></svg
+              >, tap for black and red.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.39</span
+              ><span title="EDHREC popularity rank">EDHREC #169</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/frc/60" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/a/2/a263e71d-953f-4648-b326-33133cfa7e00.jpg?1789599847"
+              srcset="
+                https://cards.scryfall.io/small/front/a/2/a263e71d-953f-4648-b326-33133cfa7e00.jpg?1789599847  146w,
+                https://cards.scryfall.io/normal/front/a/2/a263e71d-953f-4648-b326-33133cfa7e00.jpg?1789599847 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="rampant-growth">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Rampant Growth" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/trc/468">Rampant Growth</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="1 generic">
+                    <title>1 generic</title>
+                    <use href="#ms-1" /></svg
+                  ><svg class="ms" role="img" aria-label="green">
+                    <title>green</title>
+                    <use href="#ms-G" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Sorcery</span
+              ><span class="set"
+                ><span class="rar rC" title="common">C</span
+                ><span class="cn" title="Set and collector number">TRC 468</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Ramp</b> Fetch a basic land onto the battlefield tapped.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.38</span
+              ><span title="EDHREC popularity rank">EDHREC #27</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/trc/468" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/0/9/099c081d-06ae-4ca5-ab3b-f70d01509258.jpg?1793281421"
+              srcset="
+                https://cards.scryfall.io/small/front/0/9/099c081d-06ae-4ca5-ab3b-f70d01509258.jpg?1793281421  146w,
+                https://cards.scryfall.io/normal/front/0/9/099c081d-06ae-4ca5-ab3b-f70d01509258.jpg?1793281421 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="rapid-hybridization">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Rapid Hybridization" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/soc/198">Rapid Hybridization</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="blue">
+                    <title>blue</title>
+                    <use href="#ms-U" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Instant</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">SOC 198</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Removal</b> Instant: destroy a creature for one mana; it leaves a 3/3.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.22</span
+              ><span title="EDHREC popularity rank">EDHREC #209</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/soc/198" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/c/c/ccda5bda-5afd-4548-bd48-12c780bfa68b.jpg?1783903791"
+              srcset="
+                https://cards.scryfall.io/small/front/c/c/ccda5bda-5afd-4548-bd48-12c780bfa68b.jpg?1783903791  146w,
+                https://cards.scryfall.io/normal/front/c/c/ccda5bda-5afd-4548-bd48-12c780bfa68b.jpg?1783903791 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="rhythm-of-the-wild">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Rhythm of the Wild" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/rvr/217">Rhythm of the Wild</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="1 generic">
+                    <title>1 generic</title>
+                    <use href="#ms-1" /></svg
+                  ><svg class="ms" role="img" aria-label="red">
+                    <title>red</title>
+                    <use href="#ms-R" /></svg
+                  ><svg class="ms" role="img" aria-label="green">
+                    <title>green</title>
+                    <use href="#ms-G" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Enchantment</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">RVR 217</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Synergy</b> Your creature spells can't be countered; nontoken creatures get haste or a
+              +1/+1 counter.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$4.41</span
+              ><span title="EDHREC popularity rank">EDHREC #226</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/rvr/217" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/c/2/c2a6453e-a373-44ec-807a-15c0c8b1af57.jpg?1783913277"
+              srcset="
+                https://cards.scryfall.io/small/front/c/2/c2a6453e-a373-44ec-807a-15c0c8b1af57.jpg?1783913277  146w,
+                https://cards.scryfall.io/normal/front/c/2/c2a6453e-a373-44ec-807a-15c0c8b1af57.jpg?1783913277 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="rogue-s-passage">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Rogue's Passage" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/trc/552">Rogue's Passage</a
+                ><span class="cost"><span class="noc">no cost</span></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Land</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">TRC 552</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Land</b> Colorless land;
+              <svg class="ms" role="img" aria-label="4 generic">
+                <title>4 generic</title>
+                <use href="#ms-4" /></svg
+              >, tap: a creature can't be blocked this turn.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.38</span
+              ><span title="EDHREC popularity rank">EDHREC #18</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/trc/552" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/c/8/c84f49bb-3780-4f92-8db2-b27605ceefed.jpg?1793021355"
+              srcset="
+                https://cards.scryfall.io/small/front/c/8/c84f49bb-3780-4f92-8db2-b27605ceefed.jpg?1793021355  146w,
+                https://cards.scryfall.io/normal/front/c/8/c84f49bb-3780-4f92-8db2-b27605ceefed.jpg?1793021355 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="letter" id="l-S" aria-hidden="true">S</li>
+        <li class="card" data-id="sakura-tribe-elder">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Sakura-Tribe Elder" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/soc/285">Sakura-Tribe Elder</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="1 generic">
+                    <title>1 generic</title>
+                    <use href="#ms-1" /></svg
+                  ><svg class="ms" role="img" aria-label="green">
+                    <title>green</title>
+                    <use href="#ms-G" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Creature — Snake Shaman</span
+              ><span class="set"
+                ><span class="rar rC" title="common">C</span
+                ><span class="cn" title="Set and collector number">SOC 285</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Ramp</b> Chump block, then sacrifice it for a basic land, tapped.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.31</span
+              ><span title="EDHREC popularity rank">EDHREC #118</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/soc/285" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/7/a/7a8b1c49-8594-426d-b585-41140235bb0e.jpg?1783903761"
+              srcset="
+                https://cards.scryfall.io/small/front/7/a/7a8b1c49-8594-426d-b585-41140235bb0e.jpg?1783903761  146w,
+                https://cards.scryfall.io/normal/front/7/a/7a8b1c49-8594-426d-b585-41140235bb0e.jpg?1783903761 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="secluded-courtyard">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Secluded Courtyard" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/msc/265">Secluded Courtyard</a
+                ><span class="cost"><span class="noc">no cost</span></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Land</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">MSC 265</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Land</b> Any color for creature spells and abilities of a type you name.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.26</span
+              ><span title="EDHREC popularity rank">EDHREC #221</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/msc/265" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/c/0/c0d17d04-cf0b-4918-bfec-b34b0d98a602.jpg?1783903197"
+              srcset="
+                https://cards.scryfall.io/small/front/c/0/c0d17d04-cf0b-4918-bfec-b34b0d98a602.jpg?1783903197  146w,
+                https://cards.scryfall.io/normal/front/c/0/c0d17d04-cf0b-4918-bfec-b34b0d98a602.jpg?1783903197 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="snap">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Snap" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/dmr/66">Snap</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="1 generic">
+                    <title>1 generic</title>
+                    <use href="#ms-1" /></svg
+                  ><svg class="ms" role="img" aria-label="blue">
+                    <title>blue</title>
+                    <use href="#ms-U" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Instant</span
+              ><span class="set"
+                ><span class="rar rC" title="common">C</span
+                ><span class="cn" title="Set and collector number">DMR 66</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Interaction</b> Bounce a creature and untap two lands, so it can be free.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$2.86</span
+              ><span title="EDHREC popularity rank">EDHREC #277</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/dmr/66" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/f/1/f13406c6-f208-402a-94d3-a94a24f03563.jpg?1783918488"
+              srcset="
+                https://cards.scryfall.io/small/front/f/1/f13406c6-f208-402a-94d3-a94a24f03563.jpg?1783918488  146w,
+                https://cards.scryfall.io/normal/front/f/1/f13406c6-f208-402a-94d3-a94a24f03563.jpg?1783918488 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="letter" id="l-T" aria-hidden="true">T</li>
+        <li class="card" data-id="talisman-of-creativity">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Talisman of Creativity" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/trc/504">Talisman of Creativity</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="2 generic">
+                    <title>2 generic</title>
+                    <use href="#ms-2" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Artifact</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">TRC 504</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Ramp</b> Two-mana rock: colorless, or blue or red for 1 damage.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.59</span
+              ><span title="EDHREC popularity rank">EDHREC #124</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/trc/504" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/2/0/201a1c88-4faa-4fb2-86e8-706c2745b942.jpg?1793111961"
+              srcset="
+                https://cards.scryfall.io/small/front/2/0/201a1c88-4faa-4fb2-86e8-706c2745b942.jpg?1793111961  146w,
+                https://cards.scryfall.io/normal/front/2/0/201a1c88-4faa-4fb2-86e8-706c2745b942.jpg?1793111961 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="talisman-of-dominance">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Talisman of Dominance" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/trc/505">Talisman of Dominance</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="2 generic">
+                    <title>2 generic</title>
+                    <use href="#ms-2" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Artifact</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">TRC 505</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Ramp</b> Two-mana rock: colorless, or blue or black for 1 damage.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.46</span
+              ><span title="EDHREC popularity rank">EDHREC #91</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/trc/505" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/4/c/4cfcaacc-216d-4872-8a7a-27eace8039ed.jpg?1793021208"
+              srcset="
+                https://cards.scryfall.io/small/front/4/c/4cfcaacc-216d-4872-8a7a-27eace8039ed.jpg?1793021208  146w,
+                https://cards.scryfall.io/normal/front/4/c/4cfcaacc-216d-4872-8a7a-27eace8039ed.jpg?1793021208 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="talisman-of-indulgence">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Talisman of Indulgence" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/trc/507">Talisman of Indulgence</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="2 generic">
+                    <title>2 generic</title>
+                    <use href="#ms-2" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Artifact</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">TRC 507</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Ramp</b> Two-mana rock: colorless, or black or red for 1 damage.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.56</span
+              ><span title="EDHREC popularity rank">EDHREC #127</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/trc/507" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/7/e/7e8c867f-172f-4c17-9ca6-6b4aa853f525.jpg?1793197578"
+              srcset="
+                https://cards.scryfall.io/small/front/7/e/7e8c867f-172f-4c17-9ca6-6b4aa853f525.jpg?1793197578  146w,
+                https://cards.scryfall.io/normal/front/7/e/7e8c867f-172f-4c17-9ca6-6b4aa853f525.jpg?1793197578 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="talisman-of-progress">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Talisman of Progress" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/trc/508">Talisman of Progress</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="2 generic">
+                    <title>2 generic</title>
+                    <use href="#ms-2" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Artifact</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">TRC 508</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Ramp</b> Two-mana rock: colorless, or white or blue for 1 damage.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.21</span
+              ><span title="EDHREC popularity rank">EDHREC #136</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/trc/508" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/5/f/5fd601c4-44a9-45d0-a2a4-03a2eca700c7.jpg?1793021219"
+              srcset="
+                https://cards.scryfall.io/small/front/5/f/5fd601c4-44a9-45d0-a2a4-03a2eca700c7.jpg?1793021219  146w,
+                https://cards.scryfall.io/normal/front/5/f/5fd601c4-44a9-45d0-a2a4-03a2eca700c7.jpg?1793021219 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="temple-of-the-false-god">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Temple of the False God" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/trc/570">Temple of the False God</a
+                ><span class="cost"><span class="noc">no cost</span></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Land</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">TRC 570</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Land</b> Taps for two colorless once you control five or more lands.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.19</span
+              ><span title="EDHREC popularity rank">EDHREC #84</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/trc/570" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/c/d/cd5e9799-00e1-41a9-b5b9-5d5164c71561.jpg?1793281644"
+              srcset="
+                https://cards.scryfall.io/small/front/c/d/cd5e9799-00e1-41a9-b5b9-5d5164c71561.jpg?1793281644  146w,
+                https://cards.scryfall.io/normal/front/c/d/cd5e9799-00e1-41a9-b5b9-5d5164c71561.jpg?1793281644 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="terminate">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Terminate" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/trc/481">Terminate</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="black">
+                    <title>black</title>
+                    <use href="#ms-B" /></svg
+                  ><svg class="ms" role="img" aria-label="red">
+                    <title>red</title>
+                    <use href="#ms-R" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Instant</span
+              ><span class="set"
+                ><span class="rar rC" title="common">C</span
+                ><span class="cn" title="Set and collector number">TRC 481</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Removal</b> Instant: destroy a creature, no regeneration.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.30</span
+              ><span title="EDHREC popularity rank">EDHREC #228</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/trc/481" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/a/3/a3666439-e859-417b-b39e-5f14dbef81d8.jpg?1793197541"
+              srcset="
+                https://cards.scryfall.io/small/front/a/3/a3666439-e859-417b-b39e-5f14dbef81d8.jpg?1793197541  146w,
+                https://cards.scryfall.io/normal/front/a/3/a3666439-e859-417b-b39e-5f14dbef81d8.jpg?1793197541 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="thran-dynamo">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Thran Dynamo" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/cmm/415">Thran Dynamo</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="4 generic">
+                    <title>4 generic</title>
+                    <use href="#ms-4" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Artifact</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">CMM 415</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Ramp</b> Four-mana rock that taps for three colorless.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$2.33</span
+              ><span title="EDHREC popularity rank">EDHREC #194</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/cmm/415" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/7/c/7ce5f12e-fc02-42f8-a5ca-b523050d4650.jpg?1783915588"
+              srcset="
+                https://cards.scryfall.io/small/front/7/c/7ce5f12e-fc02-42f8-a5ca-b523050d4650.jpg?1783915588  146w,
+                https://cards.scryfall.io/normal/front/7/c/7ce5f12e-fc02-42f8-a5ca-b523050d4650.jpg?1783915588 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="tireless-provisioner">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Tireless Provisioner" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/j25/728">Tireless Provisioner</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="2 generic">
+                    <title>2 generic</title>
+                    <use href="#ms-2" /></svg
+                  ><svg class="ms" role="img" aria-label="green">
+                    <title>green</title>
+                    <use href="#ms-G" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Creature — Elf Scout</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">J25 728</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Ramp</b> Landfall: make a Treasure or a Food each time a land enters.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$2.36</span
+              ><span title="EDHREC popularity rank">EDHREC #189</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/j25/728" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/5/d/5dbc2162-238d-492b-b629-94f771230d92.jpg?1783908616"
+              srcset="
+                https://cards.scryfall.io/small/front/5/d/5dbc2162-238d-492b-b629-94f771230d92.jpg?1783908616  146w,
+                https://cards.scryfall.io/normal/front/5/d/5dbc2162-238d-492b-b629-94f771230d92.jpg?1783908616 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="letter" id="l-U" aria-hidden="true">U</li>
+        <li class="card" data-id="unclaimed-territory">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Unclaimed Territory" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/msc/275">Unclaimed Territory</a
+                ><span class="cost"><span class="noc">no cost</span></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Land</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">MSC 275</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Land</b> Any color for creature spells of a type you name.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.32</span
+              ><span title="EDHREC popularity rank">EDHREC #250</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/msc/275" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/d/3/d3782952-3839-4a94-95bc-716611d3ece6.jpg?1783903190"
+              srcset="
+                https://cards.scryfall.io/small/front/d/3/d3782952-3839-4a94-95bc-716611d3ece6.jpg?1783903190  146w,
+                https://cards.scryfall.io/normal/front/d/3/d3782952-3839-4a94-95bc-716611d3ece6.jpg?1783903190 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="letter" id="l-W" aria-hidden="true">W</li>
+        <li class="card" data-id="wild-growth">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Wild Growth" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/mkc/195">Wild Growth</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="green">
+                    <title>green</title>
+                    <use href="#ms-G" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Enchantment — Aura</span
+              ><span class="set"
+                ><span class="rar rC" title="common">C</span
+                ><span class="cn" title="Set and collector number">MKC 195</span></span
+              >
+            </div>
+            <p class="note"><b class="role">Ramp</b> One-mana aura: the enchanted land makes an extra green.</p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.40</span
+              ><span title="EDHREC popularity rank">EDHREC #218</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/mkc/195" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/4/7/47260e7c-29bf-46f1-a029-9da7bbb418b5.jpg?1783912983"
+              srcset="
+                https://cards.scryfall.io/small/front/4/7/47260e7c-29bf-46f1-a029-9da7bbb418b5.jpg?1783912983  146w,
+                https://cards.scryfall.io/normal/front/4/7/47260e7c-29bf-46f1-a029-9da7bbb418b5.jpg?1783912983 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+        <li class="card" data-id="windfall">
+          <div class="content">
+            <div class="namebar frame">
+              <div class="plaque">
+                <label class="tick"
+                  ><input type="checkbox" aria-label="Got Windfall" /><span aria-hidden="true"></span
+                ></label>
+                <a class="nm" href="https://scryfall.com/card/otc/123">Windfall</a
+                ><span class="cost"
+                  ><svg class="ms" role="img" aria-label="2 generic">
+                    <title>2 generic</title>
+                    <use href="#ms-2" /></svg
+                  ><svg class="ms" role="img" aria-label="blue">
+                    <title>blue</title>
+                    <use href="#ms-U" /></svg
+                ></span>
+              </div>
+            </div>
+            <div class="typebar">
+              <span class="type">Sorcery</span
+              ><span class="set"
+                ><span class="rar rU" title="uncommon">U</span
+                ><span class="cn" title="Set and collector number">OTC 123</span></span
+              >
+            </div>
+            <p class="note">
+              <b class="role">Draw</b> Everyone discards their hand and draws as many as the biggest hand discarded.
+            </p>
+            <div class="meta">
+              <span title="Cheapest printing, Scryfall USD">$0.25</span
+              ><span title="EDHREC popularity rank">EDHREC #162</span>
+            </div>
+          </div>
+          <a class="thumb" href="https://scryfall.com/card/otc/123" tabindex="-1" aria-hidden="true"
+            ><img
+              src="https://cards.scryfall.io/small/front/9/c/9ce7113b-08f7-4584-b65f-a7b5caa90c2f.jpg?1783911933"
+              srcset="
+                https://cards.scryfall.io/small/front/9/c/9ce7113b-08f7-4584-b65f-a7b5caa90c2f.jpg?1783911933  146w,
+                https://cards.scryfall.io/normal/front/9/c/9ce7113b-08f7-4584-b65f-a7b5caa90c2f.jpg?1783911933 488w
+              "
+              sizes="(min-width: 600px) 104px, 76px"
+              alt=""
+              loading="lazy"
+              decoding="async"
+          /></a>
+        </li>
+      </ol>
+
+      <section class="about">
+        <h2>How this list was made</h2>
+        <p>
+          Every Commander-legal card with a common or uncommon printing that has no copy in
+          <code>collections/brad</code>, deck rows included, ranked by EDHREC popularity. Game Changers are left out,
+          and so are cards whose cheapest printing costs over $5, which drops old "uncommons" priced like rares (Mana
+          Drain, Lotus Petal, City of Brass) and Three Visits, just over at $5.07. Command Beacon is left out too, since
+          its only uncommon printing is a promo, and so is Anguished Unmaking, whose only uncommon printing is in SIR,
+          which has no paper price; every other printing is rare.
+        </p>
+        <ul>
+          <li>
+            <span class="rar rC">C</span> common, <span class="rar rU">U</span> uncommon: the rarity of the printing
+            linked, shown with its set code and collector number. Other printings of the same card may differ.
+          </li>
+          <li>
+            Prices are each card's cheapest printing in Scryfall's USD data, from the card cache refreshed 6 Nov 2026.
+            Store prices will vary.
+          </li>
+          <li>Card names link to Scryfall. Ticks are saved in this browser only.</li>
+        </ul>
+      </section>
+
+      <footer class="credit">
+        <p>
+          <b>Made by Daniel Conrad</b><span class="sep"> · </span
+          ><a href="https://github.com/danielmconrad">github.com/danielmconrad</a>
+        </p>
+      </footer>
+    </main>
+    <script>
+      (function () {
+        var KEY = 'staples-to-buy:brad:got';
+        var got = {};
+        try {
+          got = JSON.parse(localStorage.getItem(KEY) || '{}') || {};
+        } catch (e) {
+          got = {};
+        }
+        var out = document.getElementById('got');
+        var cards = document.querySelectorAll('li.card');
+        function save() {
+          try {
+            localStorage.setItem(KEY, JSON.stringify(got));
+          } catch (e) {}
+        }
+        function count() {
+          var n = 0;
+          cards.forEach(function (li) {
+            if (li.classList.contains('got')) n++;
+          });
+          out.textContent = String(n);
+        }
+        cards.forEach(function (li) {
+          var box = li.querySelector('input');
+          var id = li.getAttribute('data-id');
+          box.checked = !!got[id];
+          li.classList.toggle('got', box.checked);
+          box.addEventListener('change', function () {
+            li.classList.toggle('got', box.checked);
+            if (box.checked) got[id] = 1;
+            else delete got[id];
+            save();
+            count();
+          });
+        });
+        count();
+        var hide = document.getElementById('hide');
+        hide.addEventListener('click', function () {
+          var on = hide.getAttribute('aria-pressed') !== 'true';
+          hide.setAttribute('aria-pressed', String(on));
+          document.body.classList.toggle('hide-got', on);
+        });
+      })();
+    </script>
+  </body>
+</html>
