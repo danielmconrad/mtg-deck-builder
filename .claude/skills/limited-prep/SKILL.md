@@ -79,26 +79,40 @@ mise run card:show -- "He's Dead, Jim" "Kirk, Commanding Officer" "Eject the War
 
 ## 6. Build the cheat sheet
 
-Load `artifact-design`, write the page in the scratchpad and publish it as an Artifact. The user reads it on a phone at the table, so put each section on one screen and keep it skimmable, scannable and offline-safe (no live data needed). Sections, in this order:
+Load `artifact-design`, write the page in the scratchpad and publish it as an Artifact. People read it on a phone at the table, so keep it skimmable and offline-safe (no live data needed).
 
-1. **Tonight at a glance:** format, what's in the pack, the deck rules (40+ cards, any number of basics, the rest is sideboard) and the "Ask at check-in" box.
-2. **Build checklist:** the steps from [limited-basics.md](limited-basics.md) "Building in Sealed" (or "Building after a Draft"), with the set's own numbers where the guides give them.
-3. **Mechanics:** one line each, in plain words, with any timing gotcha.
-4. **Archetypes:** a table of the ten pairs: colors, plan, signposts and a "good if your pool has" hint. Mark the ones sources rate highest.
-5. **Removal by color:** name, cost and what it hits. This is the first thing to pull from a Sealed pool.
-6. **Top commons and uncommons by color:** a short list each, so the user knows what's strong when they see it.
-7. **Play around these:** tricks and instant-speed effects by color and mana value, so open mana means something.
-8. **Draft only:** the pick order, signals and pack-direction reminder from [limited-basics.md](limited-basics.md).
-9. **Sources:** links, with dates.
+**Follow the structure of the reference sheet, [docs/prereleases/star-trek/index.html](../../../docs/prereleases/star-trek/index.html).** Read it before building a new one. Each set gets its own look; the structure stays the same:
 
-Mark every rating as the source's and every unknown as unknown. Don't fill gaps from memory.
+- **Header:** an eyebrow line (`Cheat sheet · Sealed · Prerelease <dates>`, with the date range kept on one line), the title `<Set> Prerelease`, a one-sentence lede on how the night runs, and a readout of the set's distinct cards per rarity from `--group-by rarity`, captioned with the set code and total.
+- **Sticky section nav:** one short label per section, fitting one row on desktop (Tonight, Build, Mechanics, Archetypes, Removal, Top picks, Tricks, Rares, Draft, Sources) and scrolling sideways on phones.
+- **Numbered sections, in this order:**
+  1. **Tonight at a glance:** label/value facts (Format, The pack, Your deck, Bring, Vibe), then an "Ask at check-in" box listing what the store decides (rounds, best-of-one or three, sideboarding between games, basics, prizes).
+  2. **Build checklist:** the steps from [limited-basics.md](limited-basics.md) "Building in Sealed" (or "Building after a Draft"), quoting the set guide's own numbers. Then a "Mana curve target" bar chart, drawn to scale with its scale stated, and "Lands and splashing": the set's dual lands, its other land cycles, its fixing and its landcyclers.
+  3. **Mechanics:** a term and a plain-words definition each, with a gotcha line for timing or rules people get wrong. End with "Also seen" for returning keywords and "Not in your packs" for Commander-deck-only mechanics.
+  4. **Archetypes:** one block per color pair. Each block has the pair's symbols and name, the two signposts as linked chips with their costs, a line on the cards that support it, and the source's rating where one exists.
+  5. **Removal by color:** grouped by color with a count per group, each card with its type and what it hits.
+  6. **Top commons and uncommons:** the Sealed guide's picks per color, in its order, plus colorless, with a short note from the card text.
+  7. **Play around these:** instants and flash cards at common and uncommon, by color, with what each does to combat.
+  8. **Rares to know:** "Build around or answer" and "Think twice" (traps and cards the reviews warn about).
+  9. **If it's a draft:** pack directions, pick order, signals and the playables target.
+  10. **Sources:** links with dates, the date of the card data, what's still unknown, and a legend for the rarity tags and the collector-number readout.
+- **Card rows:** the name linked to Scryfall, the cost in mana symbols, a rarity tag with its letter (C, U, R, M), the set code and collector number, and a one-line note underneath.
+
+Mark every rating as the source's and every unknown as unknown. Don't fill gaps from memory. Before publishing, check the spacing at phone width (390px) and desktop width. Desktop Chrome won't make a window narrower than about 500px, so render the page inside a 390px-wide iframe and screenshot that.
 
 On every card:
 
 - **Link the name to Scryfall** by set and collector number: `https://scryfall.com/card/<set>/<collector_number>`. The `--json` output's `printing` field has both.
 - **Draw mana costs with Scryfall's symbol images, not colored dots.** The user is colorblind, and the symbols carry the color in their shape. The page can't load images from another site, so download the symbols the page uses. `https://api.scryfall.com/symbology` gives each symbol's `svg_uri`; save the files to their own folder in the scratchpad. Embed each one once as a `<symbol id="ms-W">` in a hidden `<svg>` sprite at the top of the page, then reference it with `<svg class="ms" role="img" aria-label="white"><title>white</title><use href="#ms-W"/></svg>`. Strip the `id` attributes inside the files, since they all reuse the same ones, and refuse any file containing a script, an event handler or an `href`.
 
-Give the sheet a look from the set's own world, as the Star Trek sheet does with LCARS.
+**Style every sheet after its set's world.** The structure above stays fixed; the look changes with each set. Take the palette, typefaces and framing devices from the set's setting, the way the Star Trek sheet borrows LCARS consoles: a gothic horror set might use aged paper, blackletter headings and wax-seal tabs, and a heist set might use blueprint grids and case-file labels. Decide the look from the set's art and story, which the Wizards guide and card names show. Don't reuse the LCARS styling for another set. The theme never overrides these:
+
+- Body text stays easy to read at a game table.
+- Mana costs use the real symbol images, and rarity tags keep their letters (the user is colorblind).
+- The phone layout and spacing checks above still apply.
+- Borrow the setting's look, never its owner's logos or trademarks.
+
+The user shares these sheets with other players, so write for anyone going to the event. Leave out anything about the user's own experience level or plans.
 
 Generate the page with a throwaway script in the scratchpad that reads `collection:search -- --all-cards --set CODE --json` and fails on any card name the set doesn't have. That way every cost and rarity on the sheet comes from the cache.
 
