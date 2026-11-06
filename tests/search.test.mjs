@@ -168,7 +168,7 @@ test('grouping by creature type counts each card once per type, including Kindre
 });
 
 test('unknown --group-by keys are rejected with the valid choices', () => {
-  assert.throws(() => groupResults([], 'rarity'), /identity, creature-type/);
+  assert.throws(() => groupResults([], 'artist'), /identity, creature-type/);
 });
 
 test('--nonland drops lands', () => {
@@ -410,4 +410,52 @@ test('a name the cache lacks gets close suggestions, and refresh advice only wit
     lookupProblem([{ ...sol, defaultPrinting: true }], 'Qwxzv'),
     'Qwxzv: not in card cache; check the spelling',
   );
+});
+
+test('--set and --rarity match a printing, and --all-cards searches every card owned or not', () => {
+  const common = card('Set Common', { set: 'trk', rarity: 'common', collectorNumber: '10', manaValue: 1 });
+  const rarePrint = card('Set Rare', { set: 'trk', rarity: 'rare', collectorNumber: '20', manaValue: 2 });
+  const reprint = card('Llanowar Elves', {
+    ...elf,
+    id: 'llanowar-elves-trk',
+    set: 'trk',
+    collectorNumber: '30',
+    rarity: 'uncommon',
+  });
+  const elsewhere = card('Other Set Card', { set: 'abc', rarity: 'common' });
+  const setIndex = indexOf(
+    forest,
+    leader,
+    spell,
+    { ...elf, rarity: 'common' },
+    ghoul,
+    common,
+    rarePrint,
+    reprint,
+    elsewhere,
+  );
+  const search = (options) => searchCollection(collections, setIndex, searchFilters(options, setIndex)).results;
+  const names = (options) => search(options).map((result) => result.card.name);
+
+  assert.deepEqual(names({ set: ['TRK'] }), ['Llanowar Elves'], 'owned cards printed in the set');
+  assert.deepEqual(names({ 'all-cards': true, set: ['trk'] }), ['Llanowar Elves', 'Set Common', 'Set Rare']);
+  assert.deepEqual(names({ 'all-cards': true, set: ['trk,abc'], rarity: ['common'] }), [
+    'Other Set Card',
+    'Set Common',
+  ]);
+  assert.deepEqual(names({ 'all-cards': true, set: ['trk'], rarity: ['uncommon', 'rare'] }), [
+    'Llanowar Elves',
+    'Set Rare',
+  ]);
+  // The rarity is the printing's in the set, not another printing's.
+  const elves = search({ 'all-cards': true, set: ['trk'], name: 'Elves' })[0];
+  assert.equal(elves.printing.rarity, 'uncommon');
+  assert.equal(elves.available, 2);
+  assert.deepEqual(groupResults(search({ 'all-cards': true, set: ['trk'] }), 'rarity'), [
+    { key: 'common', cards: 1, copies: 0 },
+    { key: 'rare', cards: 1, copies: 0 },
+    { key: 'uncommon', cards: 1, copies: 2 },
+  ]);
+  assert.throws(() => searchFilters({ rarity: ['legendary'] }, setIndex), /--rarity must be one of/);
+  assert.throws(() => searchFilters({ unowned: true, 'all-cards': true }, setIndex), /not both/);
 });

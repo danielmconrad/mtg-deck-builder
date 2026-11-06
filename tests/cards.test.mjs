@@ -154,6 +154,23 @@ test('toCard records flavor names, which some printings give a card', () => {
   assert.equal(named({}), null);
 });
 
+test('toCard records each printing rarity, which the cache keeps per printing', async () => {
+  const rarity = (fields) => toCard({ id: 'r', oracle_id: 'o', name: 'Rare Thing', ...fields }, 'fetched').rarity;
+  assert.equal(rarity({ rarity: 'mythic' }), 'mythic');
+  assert.equal(rarity({}), null);
+  const common = card('Reprinted', { rarity: 'common' });
+  const uncommon = card('Reprinted', { id: 'reprinted-other', set: 'abc', rarity: 'uncommon' });
+  const directory = await mkdtemp(join(tmpdir(), 'rarity-'));
+  try {
+    const path = join(directory, 'cards.json');
+    await writeCache(path, cacheOf(common, uncommon));
+    const read = await readCache(path);
+    assert.deepEqual([read.cards[common.id].rarity, read.cards[uncommon.id].rarity], ['common', 'uncommon']);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
 test('toCard records Game Changer status, defaulting to false', () => {
   assert.equal(toCard({ id: 'gc', oracle_id: 'o', name: 'GC', game_changer: true }, 'fetched').gameChanger, true);
   assert.equal(toCard({ id: 'plain', oracle_id: 'o', name: 'Plain' }, 'fetched').gameChanger, false);

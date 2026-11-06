@@ -1,7 +1,7 @@
 // Option specs shared by several commands, and the collection scope every command reads through.
 import { COMMANDER_SORT_CHOICES, DEFAULT_MIN_CARDS } from './commanders.mjs';
 import { EXPORT_FORMAT_NAMES } from './export.mjs';
-import { GROUP_BY_CHOICES, ROLE_CHOICES, SORT_CHOICES } from './search.mjs';
+import { GROUP_BY_CHOICES, RARITY_CHOICES, ROLE_CHOICES, SORT_CHOICES } from './search.mjs';
 import { pathMatches } from './workspace.mjs';
 
 // Option values arrive as strings; a spec's kind turns them into numbers and its choices limit them:
@@ -93,6 +93,24 @@ export const SEARCH_OPTIONS = {
     type: 'boolean',
     description:
       'Search every card in the cache that has no available copy, e.g. for upgrades; needs scryfall:refresh -- --bulk',
+  },
+  'all-cards': {
+    type: 'boolean',
+    description:
+      'Search every card in the cache, owned or not, e.g. a whole set with --set; needs scryfall:refresh -- --bulk',
+  },
+  set: {
+    type: 'string',
+    multiple: true,
+    placeholder: 'CODE',
+    description: 'Only cards with a printing in this set (Scryfall code such as trk; repeatable or comma-separated)',
+  },
+  rarity: {
+    type: 'string',
+    multiple: true,
+    placeholder: 'RARITY',
+    choices: RARITY_CHOICES,
+    description: 'Only cards with a printing of this rarity, in --set if given (repeatable)',
   },
   'include-protected': { type: 'boolean', description: 'Also list cards that exist only in protected collections' },
   proxies: { type: 'boolean', description: 'Count proxy rows as owned copies' },

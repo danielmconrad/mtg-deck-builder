@@ -45,9 +45,10 @@ export async function collectionSearch({ workspace, options, write, warn, emit }
   if (options.count && options['group-by']) throw new Error('Use --count or --group-by, not both');
   const [collections, index] = await Promise.all([workspace.loadCollections(), workspace.loadCardIndex()]);
   const { results, unresolvedRows } = searchCollection(collections, index, searchFilters(options, index));
-  if (options.unowned && !index.isFromBulk()) {
+  if ((options.unowned || options['all-cards']) && !index.isFromBulk()) {
+    const flag = options.unowned ? '--unowned' : '--all-cards';
     warn(
-      'The card cache holds only collection and deck cards, so --unowned finds few; scryfall:refresh -- --bulk caches every card',
+      `The card cache holds only collection and deck cards, so ${flag} finds few; scryfall:refresh -- --bulk caches every card`,
     );
   }
   if (unresolvedRows) {
@@ -64,7 +65,8 @@ function searchOutput(results, options, availableNames) {
   if (options['group-by']) return groupLines(groupResults(results, options['group-by']));
   if (options.count) return [countLine(countResults(results), availableNames)];
   const withValues = options.sort === 'edhrec' || options.sort === 'price';
-  return searchLines(results, { withOracleText: options.oracle, withValues });
+  const withPrinting = Boolean(options.set || options.rarity);
+  return searchLines(results, { withOracleText: options.oracle, withValues, withPrinting });
 }
 
 function searchData(results, options) {

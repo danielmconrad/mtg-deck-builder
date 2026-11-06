@@ -24,8 +24,12 @@ export const searchResultJson = ({
   protectedIn,
   priceUsd,
   edhrecRank,
+  printing,
 }) => ({
   ...cardJson(card),
+  printing: printing
+    ? { set: printing.set, collector_number: printing.collectorNumber, rarity: printing.rarity ?? null }
+    : null,
   available,
   protected: protectedCopies,
   protected_in: protectedIn.map(({ name, copies }) => ({ collection: name, copies })),

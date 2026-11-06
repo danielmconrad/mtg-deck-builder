@@ -6,8 +6,9 @@ import { dirname } from 'node:path';
 // printing of a card shares are stored once per card (oracle ID), and legalities keep only the formats
 // a card isn't not_legal in, which takes a bulk cache from about 144 MB to 57 MB and makes it several
 // times faster to read. Bump CACHE_VERSION whenever the card model changes shape, so stale caches are
-// rejected. edhrecRank, borderColor and setType were added without a bump: caches written before them
-// lack the fields, which read as an unknown rank and a playable printing until the next refresh.
+// rejected. edhrecRank, borderColor, setType and rarity were added without a bump: caches written before
+// them lack the fields, which read as an unknown rank, a playable printing and an unknown rarity until
+// the next refresh.
 export const CACHE_VERSION = 7;
 // The previous on-disk layout, one full record per printing. It's still read, and the next save
 // writes the current layout.
@@ -22,6 +23,7 @@ const PRINTING_FIELDS = [
   'flavorName',
   'borderColor',
   'setType',
+  'rarity',
   'prices',
   'defaultPrinting',
   'fetchedAt',

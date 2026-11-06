@@ -48,6 +48,8 @@ export function toCard(scryfallCard, fetchedAt, { defaultPrinting = false } = {}
     // Gold borders and memorabilia sets mark printings that aren't legal to play; see isPlayablePrinting.
     borderColor: scryfallCard.border_color ?? null,
     setType: scryfallCard.set_type ?? null,
+    // The printing's rarity (common, uncommon, rare, mythic, special or bonus); null in caches from before it.
+    rarity: scryfallCard.rarity ?? null,
     // Popularity on EDHREC (1 is the most played card), the same for every printing; null when unranked.
     edhrecRank: scryfallCard.edhrec_rank ?? null,
     prices: { usd: scryfallCard.prices?.usd ?? null, eur: scryfallCard.prices?.eur ?? null },

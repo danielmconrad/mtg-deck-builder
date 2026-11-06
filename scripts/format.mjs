@@ -34,12 +34,17 @@ const gameChangerNote = (card) => (card.gameChanger ? ' [Game Changer]' : '');
 
 const oracleLines = (card) => (card.oracleText ? card.oracleText.split('\n').map((line) => `    ${line}`) : []);
 
-export function searchLines(results, { withOracleText = false, withValues = false } = {}) {
+// The matched printing, e.g. " {trk 158, uncommon}".
+const printingNote = ({ printing }) =>
+  printing ? ` {${printing.set} ${printing.collectorNumber}, ${printing.rarity ?? 'rarity unknown'}}` : '';
+
+export function searchLines(results, { withOracleText = false, withValues = false, withPrinting = false } = {}) {
   const lines = results.flatMap((result) => {
     const { card, available, protectedIn } = result;
     const protectedNote = protectedIn.length ? ` (+${holdingsNote(protectedIn)}, protected)` : '';
     const values = withValues ? ` (${valueNote(result)})` : '';
-    const summary = `${available}x ${card.name} ${card.manaCost} — ${card.typeLine} [${identityLabel(card)}]${gameChangerNote(card)}${values}${protectedNote}`;
+    const printing = withPrinting ? printingNote(result) : '';
+    const summary = `${available}x ${card.name} ${card.manaCost} — ${card.typeLine} [${identityLabel(card)}]${gameChangerNote(card)}${printing}${values}${protectedNote}`;
     return [summary, ...(withOracleText ? oracleLines(card) : [])];
   });
   return [...lines, `${results.length} cards`];

@@ -1,0 +1,1996 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <style>
+      /* The reset the Artifact viewer adds around a published page. */
+      :root {
+        color-scheme: light;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      body {
+        margin: 0;
+      }
+      img {
+        max-width: 100%;
+      }
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+    <title>Star Trek Prerelease Sheet</title>
+    <meta name="claude:viewport-fit-sides" content="cover" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Antonio:wght@500;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap"
+    />
+    <style>
+      /* Layout: one phone-width column under a sticky console strip of section jumps; colour is carried by Magic's five mana pips. */
+      :root {
+        --bg: #edf0f4;
+        --panel: #ffffff;
+        --fg: #151b26;
+        --muted: #566176;
+        --line: #d3d9e3;
+        --accent: #c2621a;
+        --accent-soft: #f6e3d2;
+        --pW: #efe6c4;
+        --pW-fg: #4a3f17;
+        --pU: #2f6fc0;
+        --pU-fg: #ffffff;
+        --pB: #3b3540;
+        --pB-fg: #ffffff;
+        --pR: #c9452f;
+        --pR-fg: #ffffff;
+        --pG: #2f8150;
+        --pG-fg: #ffffff;
+        --pN: #c9ced8;
+        --pN-fg: #1f2633;
+        --rC: #6c7486;
+        --rU: #8a9bb4;
+        --rR: #b8892a;
+        --rM: #d4581f;
+        --display: 'Antonio', 'Arial Narrow', 'Roboto Condensed', sans-serif;
+        --body: 'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) {
+          --bg: #0c111c;
+          --panel: #141b2a;
+          --fg: #e3e8f1;
+          --muted: #98a3b8;
+          --line: #263147;
+          --accent: #f0a050;
+          --accent-soft: #3a2614;
+          --pW: #e6dcb4;
+          --pU: #4a8be0;
+          --pB: #6c6275;
+          --pR: #e0604a;
+          --pG: #48a56c;
+          --pN: #59637a;
+          --pN-fg: #eef1f6;
+          --rC: #8e97aa;
+          --rU: #a9b9d1;
+          --rR: #d9a940;
+          --rM: #f07a3f;
+          color-scheme: dark;
+        }
+      }
+      :root[data-theme='dark'] {
+        --bg: #0c111c;
+        --panel: #141b2a;
+        --fg: #e3e8f1;
+        --muted: #98a3b8;
+        --line: #263147;
+        --accent: #f0a050;
+        --accent-soft: #3a2614;
+        --pW: #e6dcb4;
+        --pU: #4a8be0;
+        --pB: #6c6275;
+        --pR: #e0604a;
+        --pG: #48a56c;
+        --pN: #59637a;
+        --pN-fg: #eef1f6;
+        --rC: #8e97aa;
+        --rU: #a9b9d1;
+        --rR: #d9a940;
+        --rM: #f07a3f;
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        font-family: var(--body);
+        font-size: 16px;
+        line-height: 1.5;
+      }
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0 0 auto;
+        height: env(safe-area-inset-top, 0px);
+        z-index: 10;
+        background: var(--panel);
+      }
+      .wrap {
+        max-width: 760px;
+        margin: 0 auto;
+        padding-left: max(16px, env(safe-area-inset-left, 0px));
+        padding-right: max(16px, env(safe-area-inset-right, 0px));
+      }
+      header.top {
+        padding-block: 28px 18px;
+      }
+      .eyebrow {
+        font-family: var(--display);
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        font-size: 0.8rem;
+        color: var(--accent);
+        margin: 0;
+      }
+      h1 {
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: clamp(2.2rem, 9vw, 3.4rem);
+        line-height: 1;
+        margin: 6px 0 10px;
+        text-wrap: balance;
+        letter-spacing: 0.01em;
+      }
+      .lede {
+        margin: 0;
+        color: var(--muted);
+        max-width: 60ch;
+      }
+      nav.jump {
+        position: sticky;
+        top: env(safe-area-inset-top, 0px);
+        z-index: 5;
+        background: var(--panel);
+        border-block: 1px solid var(--line);
+      }
+      nav.jump ul {
+        list-style: none;
+        margin: 0 auto;
+        max-width: 760px;
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding-block: 8px;
+        padding-left: max(16px, env(safe-area-inset-left, 0px));
+        padding-right: max(16px, env(safe-area-inset-right, 0px));
+        scrollbar-width: none;
+      }
+      nav.jump a {
+        display: block;
+        white-space: nowrap;
+        font-family: var(--display);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.85rem;
+        text-decoration: none;
+        color: var(--fg);
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: var(--bg);
+      }
+      nav.jump a:hover,
+      nav.jump a:focus-visible {
+        background: var(--accent);
+        color: var(--panel);
+        outline: none;
+      }
+      main {
+        display: grid;
+        gap: 36px;
+        padding-block: 24px 48px;
+      }
+      section {
+        scroll-margin-top: 64px;
+        display: grid;
+        gap: 14px;
+        min-width: 0;
+      }
+      h2 {
+        font-family: var(--display);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-size: 1.5rem;
+        margin: 0;
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        text-wrap: balance;
+      }
+      h2 .n {
+        font-size: 0.9rem;
+        color: var(--accent);
+        letter-spacing: 0.1em;
+      }
+      h3 {
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 1.15rem;
+        letter-spacing: 0.03em;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      p {
+        margin: 0;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 16px;
+        display: grid;
+        gap: 10px;
+        min-width: 0;
+      }
+      .facts {
+        display: grid;
+        gap: 10px;
+        margin: 0;
+      }
+      .facts div {
+        display: grid;
+        grid-template-columns: 7.5rem 1fr;
+        gap: 10px;
+      }
+      .facts dt {
+        font-family: var(--display);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.85rem;
+        color: var(--muted);
+        padding-top: 2px;
+      }
+      .facts dd {
+        margin: 0;
+        min-width: 0;
+      }
+      .ask {
+        background: var(--accent-soft);
+        border: 1px dashed var(--accent);
+        border-radius: 10px;
+        padding: 14px 16px;
+        display: grid;
+        gap: 6px;
+      }
+      .ask h3 {
+        color: var(--accent);
+      }
+      .ask ul,
+      .plain {
+        margin: 0;
+        padding-left: 1.2em;
+        display: grid;
+        gap: 4px;
+      }
+      ol.steps {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        counter-reset: s;
+        display: grid;
+        gap: 10px;
+      }
+      ol.steps li {
+        counter-increment: s;
+        display: grid;
+        grid-template-columns: 2rem 1fr;
+        gap: 8px;
+      }
+      ol.steps li::before {
+        content: counter(s);
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 1.3rem;
+        color: var(--accent);
+        line-height: 1.2;
+      }
+      ol.steps b {
+        font-weight: 700;
+      }
+      .curve {
+        display: grid;
+        gap: 6px;
+      }
+      .curve .bar {
+        display: grid;
+        grid-template-columns: 4.2rem 1fr 3rem;
+        gap: 8px;
+        align-items: center;
+        font-variant-numeric: tabular-nums;
+      }
+      .curve .track {
+        height: 12px;
+        background: var(--bg);
+        border-radius: 6px;
+        position: relative;
+        overflow: hidden;
+      }
+      .curve .lo,
+      .curve .hi {
+        position: absolute;
+        inset: 0 auto 0 0;
+        border-radius: 6px;
+      }
+      .curve .hi {
+        background: var(--accent-soft);
+        border: 1px solid var(--accent);
+      }
+      .curve .lo {
+        background: var(--accent);
+      }
+      .curve .lab {
+        font-family: var(--display);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+      dl.mech {
+        margin: 0;
+        display: grid;
+        gap: 12px;
+      }
+      dl.mech div {
+        display: grid;
+        gap: 2px;
+      }
+      dl.mech dt {
+        font-weight: 700;
+      }
+      dl.mech dd {
+        margin: 0;
+        color: var(--fg);
+      }
+      dl.mech .gotcha {
+        display: block;
+        color: var(--muted);
+        font-size: 0.92rem;
+        margin-top: 2px;
+      }
+      .pip {
+        display: inline-grid;
+        place-items: center;
+        width: 1.05em;
+        height: 1.05em;
+        border-radius: 50%;
+        font-style: normal;
+        font-size: 0.78rem;
+        font-weight: 700;
+        line-height: 1;
+        flex: none;
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18);
+        font-family: var(--body);
+      }
+      .pW {
+        background: var(--pW);
+        color: var(--pW-fg);
+      }
+      .pU {
+        background: var(--pU);
+        color: var(--pU-fg);
+      }
+      .pB {
+        background: var(--pB);
+        color: var(--pB-fg);
+      }
+      .pR {
+        background: var(--pR);
+        color: var(--pR-fg);
+      }
+      .pG {
+        background: var(--pG);
+        color: var(--pG-fg);
+      }
+      .pN {
+        background: var(--pN);
+        color: var(--pN-fg);
+      }
+      .hy.pW.qU {
+        background: linear-gradient(135deg, var(--pW) 50%, var(--pU) 50%);
+      }
+      .hy.pU.qB {
+        background: linear-gradient(135deg, var(--pU) 50%, var(--pB) 50%);
+      }
+      .hy.pB.qR {
+        background: linear-gradient(135deg, var(--pB) 50%, var(--pR) 50%);
+      }
+      .hy.pR.qG {
+        background: linear-gradient(135deg, var(--pR) 50%, var(--pG) 50%);
+      }
+      .hy.pG.qW {
+        background: linear-gradient(135deg, var(--pG) 50%, var(--pW) 50%);
+      }
+      .hy.pW.qB {
+        background: linear-gradient(135deg, var(--pW) 50%, var(--pB) 50%);
+      }
+      .hy.pU.qR {
+        background: linear-gradient(135deg, var(--pU) 50%, var(--pR) 50%);
+      }
+      .hy.pB.qG {
+        background: linear-gradient(135deg, var(--pB) 50%, var(--pG) 50%);
+      }
+      .hy.pR.qW {
+        background: linear-gradient(135deg, var(--pR) 50%, var(--pW) 50%);
+      }
+      .hy.pG.qU {
+        background: linear-gradient(135deg, var(--pG) 50%, var(--pU) 50%);
+      }
+      .cost {
+        display: inline-flex;
+        gap: 2px;
+        align-items: center;
+      }
+      .colgrid {
+        display: grid;
+        gap: 14px;
+      }
+      @media (min-width: 640px) {
+        .colgrid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .colgroup {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 14px;
+        display: grid;
+        gap: 8px;
+        align-content: start;
+        min-width: 0;
+      }
+      .colgroup h3 .pip {
+        font-size: 1rem;
+      }
+      ul.cards {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 10px;
+      }
+      li.card {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        column-gap: 8px;
+        row-gap: 1px;
+        align-items: center;
+      }
+      li.card .nm {
+        font-weight: 700;
+        min-width: 0;
+      }
+      li.card .note {
+        grid-column: 1 / -1;
+        color: var(--muted);
+        font-size: 0.93rem;
+      }
+      .rar {
+        font-family: var(--display);
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        width: 1.4rem;
+        text-align: center;
+        border-radius: 4px;
+        color: var(--panel);
+        padding: 1px 0;
+      }
+      .rC {
+        background: var(--rC);
+      }
+      .rU {
+        background: var(--rU);
+      }
+      .rR {
+        background: var(--rR);
+      }
+      .rM {
+        background: var(--rM);
+      }
+      .archgrid {
+        display: grid;
+        gap: 12px;
+      }
+      @media (min-width: 640px) {
+        .archgrid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      article.arch {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 14px;
+        display: grid;
+        gap: 8px;
+        align-content: start;
+        min-width: 0;
+      }
+      article.arch header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .chips {
+        display: inline-flex;
+        gap: 3px;
+      }
+      .chips .pip {
+        font-size: 1rem;
+      }
+      .signs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .sign {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.85rem;
+        background: var(--bg);
+        border-radius: 999px;
+        padding: 3px 10px;
+      }
+      .wants {
+        font-size: 0.95rem;
+      }
+      .rating {
+        font-size: 0.88rem;
+        color: var(--accent);
+        font-style: italic;
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        font-size: 0.88rem;
+        color: var(--muted);
+        align-items: center;
+      }
+      .legend span {
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+      }
+      footer {
+        padding-block: 0 40px;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      a {
+        color: var(--accent);
+      }
+      .sources {
+        margin: 0;
+        padding-left: 1.2em;
+        display: grid;
+        gap: 6px;
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        html {
+          scroll-behavior: smooth;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="top">
+        <p class="eyebrow">Cheat sheet · Sealed · Prerelease Nov 6–12, 2026</p>
+        <h1>Star Trek Prerelease</h1>
+        <p class="lede">
+          Your first prerelease. You'll open six packs, build a 40-card deck from what you open, then play a few casual
+          games. Everything you need tonight is on this page, top to bottom in the order you'll need it.
+        </p>
+      </header>
+    </div>
+
+    <nav class="jump" aria-label="Sections">
+      <ul>
+        <li><a href="#tonight">Tonight</a></li>
+        <li><a href="#build">Build</a></li>
+        <li><a href="#mechanics">Mechanics</a></li>
+        <li><a href="#archetypes">Archetypes</a></li>
+        <li><a href="#removal">Removal</a></li>
+        <li><a href="#top">Top cards</a></li>
+        <li><a href="#tricks">Play around</a></li>
+        <li><a href="#rares">Rares</a></li>
+        <li><a href="#draft">Draft</a></li>
+        <li><a href="#sources">Sources</a></li>
+      </ul>
+    </nav>
+
+    <div class="wrap">
+      <main>
+        <section id="tonight">
+          <h2><span class="n">01</span>Tonight at a glance</h2>
+          <div class="panel">
+            <dl class="facts">
+              <div>
+                <dt>Format</dt>
+                <dd>Sealed, not draft. Nobody passes cards; you build only from your own Prerelease Pack.</dd>
+              </div>
+              <div>
+                <dt>The pack</dt>
+                <dd>6 Star Trek Play Boosters, 1 traditional foil promo, a deck box and a Spindown die (Wizards).</dd>
+              </div>
+              <div>
+                <dt>Your deck</dt>
+                <dd>
+                  At least 40 cards from your pool plus as many basic lands as you like. The store supplies basics.
+                  Everything you don't play is your sideboard.
+                </dd>
+              </div>
+              <div>
+                <dt>Bring</dt>
+                <dd>Nothing is required. Sleeves, a pen and paper for life totals, and some dice for counters help.</dd>
+              </div>
+              <div>
+                <dt>Vibe</dt>
+                <dd>
+                  Wizards calls it "casual, friendly play." Ask your opponent or the staff whenever a rule is unclear.
+                </dd>
+              </div>
+            </dl>
+          </div>
+          <div class="ask">
+            <h3>Ask at check-in</h3>
+            <ul>
+              <li>How many rounds, and what time does the first one start?</li>
+              <li>Best-of-one or best-of-three games per round?</li>
+              <li>Can you swap sideboard cards in between games?</li>
+              <li>Are basic lands at the tables?</li>
+              <li>What are the prizes?</li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="build">
+          <h2><span class="n">02</span>Build checklist</h2>
+          <div class="panel">
+            <ol class="steps">
+              <li>
+                <span
+                  ><b>Sort by color.</b> Make one pile per color, plus piles for multicolor, colorless and lands.</span
+                >
+              </li>
+              <li>
+                <span
+                  ><b>Find your two deepest colors.</b> Count playable cards and removal in each. Wizards: "Your deck
+                  should include two of Magic's colors."</span
+                >
+              </li>
+              <li>
+                <span
+                  ><b>Check the signposts.</b> A gold or hybrid uncommon in your pair names its plan (see Archetypes).
+                  Build from what the pool actually holds.</span
+                >
+              </li>
+              <li>
+                <span
+                  ><b>Pull removal first.</b> Wizards: "aim to include at least five removal spells across your two
+                  colors."</span
+                >
+              </li>
+              <li>
+                <span><b>Find two or three threats</b> in one of your colors, cards that win if left alone.</span>
+              </li>
+              <li>
+                <span><b>Fill the curve with creatures.</b> Use Wizards' target below for 23 spells.</span>
+              </li>
+              <li>
+                <span><b>Add 17 lands,</b> split by how many cards of each color you play.</span>
+              </li>
+              <li>
+                <span><b>Cut</b> situational cards and anything you'd be unhappy to draw.</span>
+              </li>
+            </ol>
+          </div>
+          <div class="panel">
+            <h3>
+              Mana curve target
+              <span class="muted" style="font-family: var(--body); font-weight: 400; font-size: 0.9rem"
+                >(Wizards, for a 40-card deck)</span
+              >
+            </h3>
+            <div class="curve" role="list">
+              <div class="bar" role="listitem">
+                <span class="lab">1 mana</span
+                ><span class="track"
+                  ><span class="hi" style="width: 25%"></span><span class="lo" style="width: 12.5%"></span></span
+                ><span>1–2</span>
+              </div>
+              <div class="bar" role="listitem">
+                <span class="lab">2 mana</span
+                ><span class="track"
+                  ><span class="hi" style="width: 100%"></span><span class="lo" style="width: 87.5%"></span></span
+                ><span>7–8</span>
+              </div>
+              <div class="bar" role="listitem">
+                <span class="lab">3 mana</span
+                ><span class="track"
+                  ><span class="hi" style="width: 75%"></span><span class="lo" style="width: 62.5%"></span></span
+                ><span>5–6</span>
+              </div>
+              <div class="bar" role="listitem">
+                <span class="lab">4 mana</span
+                ><span class="track"
+                  ><span class="hi" style="width: 50%"></span><span class="lo" style="width: 37.5%"></span></span
+                ><span>3–4</span>
+              </div>
+              <div class="bar" role="listitem">
+                <span class="lab">5 mana</span
+                ><span class="track"
+                  ><span class="hi" style="width: 37.5%"></span><span class="lo" style="width: 25%"></span></span
+                ><span>2–3</span>
+              </div>
+              <div class="bar" role="listitem">
+                <span class="lab">6+</span><span class="track"><span class="hi" style="width: 12.5%"></span></span
+                ><span>0–1</span>
+              </div>
+              <div class="bar" role="listitem">
+                <span class="lab">Lands</span><span class="track"><span class="lo" style="width: 100%"></span></span
+                ><span>17</span>
+              </div>
+            </div>
+            <p class="muted" style="font-size: 0.9rem">
+              Bars are scaled to 8 cards; the solid part is the low end of each range. The lands bar is off that scale.
+            </p>
+          </div>
+          <div class="panel">
+            <h3>Lands and splashing</h3>
+            <ul class="plain">
+              <li>
+                <b>Planet duals</b> are common, one per color pair (Vulcan, Bajor, Qo'noS…). They enter tapped, gain you
+                1 life and tap for either color.
+              </li>
+              <li>
+                <b>Anomaly lands</b> (uncommon) tap for colorless and later sacrifice for an effect plus a New Planet
+                token.
+              </li>
+              <li>
+                <b>Fixing for a splash:</b> Xenobotanist, Class-F Shuttlecraft, Warp Core, Unexplored Territory, Final
+                Frontier and the Planets. Splash a third color only for a bomb or premium removal.
+              </li>
+              <li>
+                <b>Basic landcycling {2}</b> on Horta, Humpback Whales, Rogue Artificial Intelligence, Free Borg
+                Revolutionaries and Cold-Blooded Crew turns a late-game body into a land early.
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="mechanics">
+          <h2><span class="n">03</span>Mechanics</h2>
+          <div class="panel">
+            <dl class="mech">
+              <div>
+                <dt>Spacecraft &amp; Station</dt>
+                <dd>
+                  Spacecraft are artifacts. Station: tap another creature you control to put charge counters equal to
+                  its power on the ship. At the number shown (6+, 8+…) the ship becomes an artifact creature with the
+                  listed abilities.<span class="gotcha"
+                    >Station only at sorcery speed. The creature you tap stays tapped through your opponent's turn, so
+                    it can't block. A ship that just became a creature can attack only if you've controlled it since the
+                    turn began.</span
+                  >
+                </dd>
+              </div>
+              <div>
+                <dt>Beam me up</dt>
+                <dd>
+                  Cast the card again from your graveyard for its beam me up cost if you also return a creature you
+                  control to your hand. Then it's exiled.<span class="gotcha"
+                    >Sorceries are still sorcery speed. Returning a creature with an enter effect lets you reuse that
+                    effect.</span
+                  >
+                </dd>
+              </div>
+              <div>
+                <dt>Face a dilemma</dt>
+                <dd>
+                  You face a dilemma whenever you choose one or more modes for a spell or ability, so any "Choose one"
+                  card. Several cards reward it.<span class="gotcha"
+                    >The triggers resolve before the modal spell does, even if the spell is later countered.</span
+                  >
+                </dd>
+              </div>
+              <div>
+                <dt>Stun counters</dt>
+                <dd>
+                  If a permanent with a stun counter would untap, remove a counter instead. It's this set's main tempo
+                  tool.
+                </dd>
+              </div>
+              <div>
+                <dt>Strange new worlds</dt>
+                <dd>
+                  Counts the <em>differently named</em> lands you control.<span class="gotcha"
+                    >Five Forests count as one. Planets, Anomalies, Unexplored Territory and New Planet tokens each add
+                    a name.</span
+                  >
+                </dd>
+              </div>
+              <div>
+                <dt>Federation</dt>
+                <dd>Counts creature types among your non-Borg creatures (Human, Vulcan, Officer…).</dd>
+              </div>
+              <div>
+                <dt>Landfall</dt>
+                <dd>Triggers whenever a land enters under your control, including from spells.</dd>
+              </div>
+              <div>
+                <dt>Total power 8</dt>
+                <dd>
+                  Red-white cards say "Whenever you attack while creatures you control have total power 8 or greater."
+                  That counts all your creatures, not just the attackers.
+                </dd>
+              </div>
+              <div>
+                <dt>Also seen</dt>
+                <dd>
+                  Surveil, Investigate (Clue tokens), Kicker, Ward, Basic landcycling, finality counters (it's exiled if
+                  it would die). Assimilate shows up only on a few Borg rares.
+                </dd>
+              </div>
+              <div>
+                <dt>Not in your packs</dt>
+                <dd>
+                  Battlefront and seek out appear on the Commander-deck cards, which guides say won't show up at the
+                  prerelease.
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </section>
+
+        <section id="archetypes">
+          <h2><span class="n">04</span>Archetypes</h2>
+          <p class="muted">
+            Each pair has two signpost uncommons (names from Wizards' guide). Use them to read what your pool wants, not
+            as a must-have.
+          </p>
+          <div class="archgrid">
+            <article class="arch">
+              <header>
+                <span class="chips"><i class="pip pW"></i><i class="pip pU"></i></span>
+                <h3>Spacecraft and Artificers</h3>
+              </header>
+              <div class="signs">
+                <span class="sign"
+                  >Hemmer, Fixing What Is Broken<span class="cost"
+                    ><i class="pip pW" aria-label="W"></i><i class="pip pU" aria-label="U"></i></span></span
+                ><span class="sign"
+                  >Constable Odo<span class="cost"
+                    ><i class="pip pN">3</i><i class="pip hy pW qU" aria-label="W or U"></i
+                    ><i class="pip hy pW qU" aria-label="W or U"></i></span
+                ></span>
+              </div>
+              <p class="wants">
+                Spacecraft (Suurok-Class, Oberth-Class, Enterprise NX-01), Warp Core, Rutherford, stun effects.
+              </p>
+            </article>
+            <article class="arch">
+              <header>
+                <span class="chips"><i class="pip pU"></i><i class="pip pB"></i></span>
+                <h3>Dilemma Control</h3>
+              </header>
+              <div class="signs">
+                <span class="sign"
+                  >Seven of Nine<span class="cost"
+                    ><i class="pip pN">2</i><i class="pip pU" aria-label="U"></i
+                    ><i class="pip pB" aria-label="B"></i></span></span
+                ><span class="sign"
+                  >Lore, Positronic Provocateur<span class="cost"
+                    ><i class="pip pN">1</i><i class="pip hy pU qB" aria-label="U or B"></i
+                    ><i class="pip hy pU qB" aria-label="U or B"></i></span
+                ></span>
+              </div>
+              <p class="wants">
+                Modal spells (the “Test of…” cycle, Consider the Prime Directive), Melkotian Adjudicator, Obsidian Order
+                Operative, Jett Reno.
+              </p>
+            </article>
+            <article class="arch">
+              <header>
+                <span class="chips"><i class="pip pB"></i><i class="pip pR"></i></span>
+                <h3>Klingons and Dies</h3>
+              </header>
+              <div class="signs">
+                <span class="sign"
+                  >L&#x27;Rell, Fierce Visionary<span class="cost"
+                    ><i class="pip pN">1</i><i class="pip pB" aria-label="B"></i
+                    ><i class="pip pR" aria-label="R"></i></span></span
+                ><span class="sign"
+                  >The Duras Sisters<span class="cost"
+                    ><i class="pip hy pB qR" aria-label="B or R"></i
+                    ><i class="pip hy pB qR" aria-label="B or R"></i></span
+                ></span>
+              </div>
+              <p class="wants">
+                Hasty 2/1 Klingon tokens, Battle-Scarred Survivalist, Dahar Master, Planetary Bombardment, Eject the
+                Warp Core.
+              </p>
+            </article>
+            <article class="arch">
+              <header>
+                <span class="chips"><i class="pip pR"></i><i class="pip pG"></i></span>
+                <h3>Away Team Landfall</h3>
+              </header>
+              <div class="signs">
+                <span class="sign"
+                  >Dal R&#x27;El, Augment Orphan<span class="cost"
+                    ><i class="pip pN">1</i><i class="pip pR" aria-label="R"></i
+                    ><i class="pip pG" aria-label="G"></i></span></span
+                ><span class="sign"
+                  >Cleveland Booker, Empath<span class="cost"
+                    ><i class="pip pN">2</i><i class="pip hy pR qG" aria-label="R or G"></i
+                    ><i class="pip hy pR qG" aria-label="R or G"></i></span
+                ></span>
+              </div>
+              <p class="wants">
+                Xindi Surveyors, Planetary Patrol, Saurian Explorer, Syndicate Liquidators, Final Frontier, landcyclers.
+              </p>
+            </article>
+            <article class="arch">
+              <header>
+                <span class="chips"><i class="pip pW"></i><i class="pip pG"></i></span>
+                <h3>Doctors and Counters</h3>
+              </header>
+              <div class="signs">
+                <span class="sign"
+                  >Phlox, Unorthodox Doctor<span class="cost"
+                    ><i class="pip pN">2</i><i class="pip pG" aria-label="G"></i
+                    ><i class="pip pW" aria-label="W"></i></span></span
+                ><span class="sign"
+                  >The Doctor, EMH<span class="cost"
+                    ><i class="pip pN">3</i><i class="pip hy pG qW" aria-label="G or W"></i
+                    ><i class="pip hy pG qW" aria-label="G or W"></i></span
+                ></span>
+              </div>
+              <p class="wants">
+                Emergency Medical Hologram, Dominion Supervisor, Pure Energy, Support Mission, Dr. McCoy.
+              </p>
+              <p class="rating">Draftsim: support “somewhat lacking.”</p>
+            </article>
+            <article class="arch">
+              <header>
+                <span class="chips"><i class="pip pW"></i><i class="pip pB"></i></span>
+                <h3>Borg Artifact Creatures</h3>
+              </header>
+              <div class="signs">
+                <span class="sign"
+                  >Locutus, the One Who Speaks<span class="cost"
+                    ><i class="pip pW" aria-label="W"></i><i class="pip pB" aria-label="B"></i></span></span
+                ><span class="sign"
+                  >Zero, Incorporeal Sensate<span class="cost"
+                    ><i class="pip pN">1</i><i class="pip hy pW qB" aria-label="W or B"></i
+                    ><i class="pip hy pW qB" aria-label="W or B"></i></span
+                ></span>
+              </div>
+              <p class="wants">
+                Drones (Tenacious, Vexing, Collective, Assault), Assembly Specialist, Command Subadjunct, Conquest
+                Mission.
+              </p>
+              <p class="rating">Draftsim: “one of the best supported.”</p>
+            </article>
+            <article class="arch">
+              <header>
+                <span class="chips"><i class="pip pU"></i><i class="pip pR"></i></span>
+                <h3>Scientists and Noncreatures</h3>
+              </header>
+              <div class="signs">
+                <span class="sign"
+                  >Spock, Always Your Friend<span class="cost"
+                    ><i class="pip pU" aria-label="U"></i><i class="pip pR" aria-label="R"></i></span></span
+                ><span class="sign"
+                  >Gray and Adira, Forever Joined<span class="cost"
+                    ><i class="pip pN">2</i><i class="pip hy pU qR" aria-label="U or R"></i
+                    ><i class="pip hy pU qR" aria-label="U or R"></i></span
+                ></span>
+              </div>
+              <p class="wants">
+                Academy Instructor, Tal Shiar Analyst, Cetacean Ops, Anthropological Mission. Spacecraft count as
+                noncreature spells.
+              </p>
+              <p class="rating">Draftsim: “pretty durdly.”</p>
+            </article>
+            <article class="arch">
+              <header>
+                <span class="chips"><i class="pip pB"></i><i class="pip pG"></i></span>
+                <h3>Archaeology Graveyard</h3>
+              </header>
+              <div class="signs">
+                <span class="sign"
+                  >Vash, Freelance Archaeologist<span class="cost"
+                    ><i class="pip pN">1</i><i class="pip pB" aria-label="B"></i
+                    ><i class="pip pG" aria-label="G"></i></span></span
+                ><span class="sign"
+                  >Daniels, Temporal Agent<span class="cost"
+                    ><i class="pip pN">2</i><i class="pip hy pB qG" aria-label="B or G"></i
+                    ><i class="pip hy pB qG" aria-label="B or G"></i></span
+                ></span>
+              </div>
+              <p class="wants">
+                Cards that leave your graveyard: beam me up spells, Relentless Drednok, Storied Veteran, Blastoneuron,
+                Hologram Stalker.
+              </p>
+            </article>
+            <article class="arch">
+              <header>
+                <span class="chips"><i class="pip pW"></i><i class="pip pR"></i></span>
+                <h3>Command: 8+ Total Power</h3>
+              </header>
+              <div class="signs">
+                <span class="sign"
+                  >Kirk, Commanding Officer<span class="cost"
+                    ><i class="pip pN">1</i><i class="pip pR" aria-label="R"></i
+                    ><i class="pip pW" aria-label="W"></i></span></span
+                ><span class="sign"
+                  >Worf, Honor-Bound Warrior<span class="cost"
+                    ><i class="pip hy pR qW" aria-label="R or W"></i
+                    ><i class="pip hy pR qW" aria-label="R or W"></i></span
+                ></span>
+              </div>
+              <p class="wants">
+                “Whenever you attack while creatures you control have total power 8 or greater”: Tactical Officer,
+                Cantankerous Captain, Hologram Janeway, La&#x27;An, Una Chin-Riley.
+              </p>
+            </article>
+            <article class="arch">
+              <header>
+                <span class="chips"><i class="pip pU"></i><i class="pip pG"></i></span>
+                <h3>Strange New Worlds</h3>
+              </header>
+              <div class="signs">
+                <span class="sign"
+                  >The Traveler<span class="cost"
+                    ><i class="pip pG" aria-label="G"></i><i class="pip pU" aria-label="U"></i></span></span
+                ><span class="sign"
+                  >D&#x27;Vana Tendi, Optimistic Ensign<span class="cost"
+                    ><i class="pip pN">1</i><i class="pip hy pG qU" aria-label="G or U"></i
+                    ><i class="pip hy pG qU" aria-label="G or U"></i></span
+                ></span>
+              </div>
+              <p class="wants">
+                Differently named lands: Planets, Anomalies, Final Frontier, Warp Speed, Astute Terraformer, Cloak and
+                Phaser.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="removal">
+          <h2><span class="n">05</span>Removal by color</h2>
+          <p class="muted">Pull these out first. Commons <span class="rar rC">C</span> are the ones you'll see most.</p>
+          <div class="colgrid">
+            <div class="colgroup">
+              <h3><i class="pip pW"></i>White</h3>
+              <ul class="cards">
+                <li class="card">
+                  <span class="nm">70,000 Light-Years from Home</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pW" aria-label="W"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note"
+                    >Sorcery. Exile a creature or Spacecraft; its controller may fetch a basic land.</span
+                  >
+                </li>
+                <li class="card">
+                  <span class="nm">Command Decision</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pW" aria-label="W"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Sorcery. Destroy a creature with power 4+, or draw a card.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Malfunctioning Holodeck</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pW" aria-label="W"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Artifact, ward 2. Exiles a nonland permanent until the Holodeck leaves.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Set Phasers to . . .</span
+                  ><span class="cost"><i class="pip pW" aria-label="W"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Instant. Tap + stun counter, or 3 damage to an attacker.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">U.S.S. Excelsior, Cutting Edge</span
+                  ><span class="cost"><i class="pip pN">3</i><i class="pip pW" aria-label="W"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Spacecraft. On entering, destroys a tapped opposing creature.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Saavik, Stoic Student</span
+                  ><span class="cost"><i class="pip pN">4</i><i class="pip pW" aria-label="W"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note"
+                    >Flash. X damage to an attacker or blocker (X = your non-Borg creature types).</span
+                  >
+                </li>
+                <li class="card">
+                  <span class="nm">The Measure of a Man</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pW" aria-label="W"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Saga. Exiles an artifact or creature for two turns, then gives it back.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="colgroup">
+              <h3><i class="pip pU"></i>Blue</h3>
+              <ul class="cards">
+                <li class="card">
+                  <span class="nm">Guidance Failure</span
+                  ><span class="cost"><i class="pip pN">3</i><i class="pip pU" aria-label="U"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note"
+                    >Instant. Puts a creature or Spacecraft on top or bottom of its owner's library. 1 cheaper on an
+                    attacker.</span
+                  >
+                </li>
+                <li class="card">
+                  <span class="nm">Marooned</span><span class="cost"><i class="pip pU" aria-label="U"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Aura. Stops a creature or artifact untapping; pay 3 to tap it now.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Interstellar Effigy</span
+                  ><span class="cost"><i class="pip pN">4</i><i class="pip pU" aria-label="U"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Creature. Bounces an opposing creature on entering.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Energize</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pU" aria-label="U"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Sorcery. Bounces an opposing creature; beam me up for a second use.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Consider the Prime Directive</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pU" aria-label="U"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Instant. Soft counter (unless they pay 3), or stun + draw.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Enterprise NX-01</span
+                  ><span class="cost"><i class="pip pN">3</i><i class="pip pU" aria-label="U"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Spacecraft. Taps + stuns an opposing creature on entering.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="colgroup">
+              <h3><i class="pip pB"></i>Black</h3>
+              <ul class="cards">
+                <li class="card">
+                  <span class="nm">He&#x27;s Dead, Jim</span
+                  ><span class="cost"><i class="pip pN">3</i><i class="pip pB" aria-label="B"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Instant. Destroy target creature, surveil 1.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Eject the Warp Core</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pB" aria-label="B"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Instant. -2/-2, or -6/-6 if you sacrifice an artifact or creature.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Resistance Is Futile</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pB" aria-label="B"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note"
+                    >Sorcery. Destroy a nonartifact creature, or reanimate a small artifact creature.</span
+                  >
+                </li>
+                <li class="card">
+                  <span class="nm">Impossible Choice</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pB" aria-label="B"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Instant. Destroy a creature (they get two 1/1s), or draw two.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Bat&#x27;leth</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pB" aria-label="B"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Equipment. -2/-2 to an opposing creature on entering, then +2/+0.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">De-evolve</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pB" aria-label="B"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Aura. -4/-0 and can't block; exiles it once you have 7+ cards in graveyard.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">D&#x27;Ghor Bloodletter</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pB" aria-label="B"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Creature. Each player sacrifices a creature, or all others get -1/-1.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">In the Pale Moonlight</span
+                  ><span class="cost"
+                    ><i class="pip pN">3</i><i class="pip pB" aria-label="B"></i
+                    ><i class="pip pB" aria-label="B"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note"
+                    >Saga. Opponent sacrifices a nontoken creature; then a Clue; then two 2/2s if you sacrifice
+                    something.</span
+                  >
+                </li>
+              </ul>
+            </div>
+            <div class="colgroup">
+              <h3><i class="pip pR"></i>Red</h3>
+              <ul class="cards">
+                <li class="card">
+                  <span class="nm">Planetary Bombardment</span
+                  ><span class="cost"><i class="pip pR" aria-label="R"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Sorcery. 2 damage to a creature, 4 if a creature died this turn.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Plasma Cascade</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pR" aria-label="R"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Instant. 3 damage to any target; may rummage.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Transporter Malfunction</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pR" aria-label="R"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Sorcery. 3 damage to any target; expensive beam me up.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Khaaaaaaaaaaaannn!</span
+                  ><span class="cost"><i class="pip pN">X</i><i class="pip pR" aria-label="R"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Instant. 2X damage to a creature and exiles it if it would die.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Genesis Effect</span
+                  ><span class="cost"><i class="pip pN">4</i><i class="pip pR" aria-label="R"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Instant. 6 damage to a creature; trades one of your lands for a New Planet.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Dahar Master</span
+                  ><span class="cost"><i class="pip pN">3</i><i class="pip pR" aria-label="R"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note"
+                    >Creature. On entering, may sacrifice another nonland permanent to deal 2 damage to any
+                    target.</span
+                  >
+                </li>
+                <li class="card">
+                  <span class="nm">Khan, Despot by Design</span
+                  ><span class="cost"><i class="pip pN">4</i><i class="pip pR" aria-label="R"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Creature. 1 damage to each opponent and each of their creatures.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="colgroup">
+              <h3><i class="pip pG"></i>Green</h3>
+              <ul class="cards">
+                <li class="card">
+                  <span class="nm">Common Goal</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pG" aria-label="G"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note"
+                    >Sorcery. One or two of your creatures deal damage equal to their power to an opposing
+                    creature.</span
+                  >
+                </li>
+                <li class="card">
+                  <span class="nm">Amok Time</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pG" aria-label="G"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Saga. Your creature fights theirs, then 3 life, then regrowth.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Moopsy</span><span class="cost"><i class="pip pG" aria-label="G"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">1-drop with deathtouch; reach for {2}. Trades up with anything.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Mugato</span
+                  ><span class="cost"
+                    ><i class="pip pN">3</i><i class="pip pG" aria-label="G"></i
+                    ><i class="pip pG" aria-label="G"></i></span
+                  ><span class="rar rU" title="uncommon">U</span><span class="note">Reach, vigilance, deathtouch.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="colgroup">
+              <h3><i class="pip pN"></i>Colorless</h3>
+              <ul class="cards">
+                <li class="card">
+                  <span class="nm">Type-2 Phaser</span><span class="cost"><i class="pip pN">2</i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Equipment. Taps + stuns an opposing creature on entering, then +3/+0.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section id="top">
+          <h2><span class="n">06</span>Top commons &amp; uncommons</h2>
+          <p class="muted">
+            Draftsim's Sealed guide picks, in its order, with notes from the card text. The set hasn't been released
+            yet, so these are opinions, not data.
+          </p>
+          <div class="colgrid">
+            <div class="colgroup">
+              <h3><i class="pip pW"></i>White</h3>
+              <ul class="cards">
+                <li class="card">
+                  <span class="nm">Malfunctioning Holodeck</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pW" aria-label="W"></i></span
+                  ><span class="rar rC" title="common">C</span><span class="note">Removal (above).</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Andromedan Automatons</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pW" aria-label="W"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Fetches every other copy from your library into your hand.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Command Decision</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pW" aria-label="W"></i></span
+                  ><span class="rar rC" title="common">C</span><span class="note">Removal or a card.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Emergency Medical Hologram</span
+                  ><span class="cost"><i class="pip pW" aria-label="W"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">1-drop that leaves a +1/+1 counter.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Rutherford, Upgraded Ensign</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pW" aria-label="W"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Finds an artifact from the top six.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Ghost of Illyria</span
+                  ><span class="cost"><i class="pip pN">3</i><i class="pip pW" aria-label="W"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Flyer that blinks your own enter-effect permanent.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Picard, Leading by Example</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pW" aria-label="W"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Pumps another creature by his power.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Brad Boimler, Eager Ensign</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pW" aria-label="W"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Lifelink. When he taps, counters you add that turn get one extra.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="colgroup">
+              <h3><i class="pip pU"></i>Blue</h3>
+              <ul class="cards">
+                <li class="card">
+                  <span class="nm">Make It So</span
+                  ><span class="cost"><i class="pip pN">3</i><i class="pip pU" aria-label="U"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Draw two, plus a token or an untap.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Interstellar Effigy</span
+                  ><span class="cost"><i class="pip pN">4</i><i class="pip pU" aria-label="U"></i></span
+                  ><span class="rar rC" title="common">C</span><span class="note">Bounce on a body.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Suurok-Class Science Vessel</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pU" aria-label="U"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Cantrip Spacecraft; flies at 5 counters.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Guidance Failure</span
+                  ><span class="cost"><i class="pip pN">3</i><i class="pip pU" aria-label="U"></i></span
+                  ><span class="rar rC" title="common">C</span><span class="note">Removal (above).</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Hoshi Sato, Exolinguist</span
+                  ><span class="cost"><i class="pip pN">4</i><i class="pip pU" aria-label="U"></i></span
+                  ><span class="rar rU" title="uncommon">U</span><span class="note">Digs for your best card.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Cloak and Phaser</span
+                  ><span class="cost"><i class="pip pN">8</i><i class="pip pU" aria-label="U"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Two 2/2s and card draw; cheaper per differently named land.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">V&#x27;Ger, the Intruder</span
+                  ><span class="cost"><i class="pip pN">6</i><i class="pip pU" aria-label="U"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">7-mana flyer with a choice each attack.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Data, New Life</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pU" aria-label="U"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Grows with every card you draw.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="colgroup">
+              <h3><i class="pip pB"></i>Black</h3>
+              <ul class="cards">
+                <li class="card">
+                  <span class="nm">He&#x27;s Dead, Jim</span
+                  ><span class="cost"><i class="pip pN">3</i><i class="pip pB" aria-label="B"></i></span
+                  ><span class="rar rC" title="common">C</span><span class="note">Unconditional removal.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Eject the Warp Core</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pB" aria-label="B"></i></span
+                  ><span class="rar rC" title="common">C</span><span class="note">Cheap removal.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Pattern Buffer Preservation</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pB" aria-label="B"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Card selection, twice with beam me up.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Fugitive Listener</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pB" aria-label="B"></i></span
+                  ><span class="rar rC" title="common">C</span><span class="note">Makes the opponent discard.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">In the Pale Moonlight</span
+                  ><span class="cost"
+                    ><i class="pip pN">3</i><i class="pip pB" aria-label="B"></i
+                    ><i class="pip pB" aria-label="B"></i></span
+                  ><span class="rar rU" title="uncommon">U</span><span class="note">Edict, Clue, two 2/2s.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Bat&#x27;leth</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pB" aria-label="B"></i></span
+                  ><span class="rar rU" title="uncommon">U</span><span class="note">Removal + equipment.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Commander Raffi Musiker</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pB" aria-label="B"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Clue or graveyard hate on a body.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">D&#x27;Ghor Bloodletter</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pB" aria-label="B"></i></span
+                  ><span class="rar rU" title="uncommon">U</span><span class="note">Edict or mini-sweeper.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="colgroup">
+              <h3><i class="pip pR"></i>Red</h3>
+              <ul class="cards">
+                <li class="card">
+                  <span class="nm">Savvy Profiteer</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pR" aria-label="R"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Mana creature that makes Treasure.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Planetary Bombardment</span
+                  ><span class="cost"><i class="pip pR" aria-label="R"></i></span
+                  ><span class="rar rC" title="common">C</span><span class="note">1-mana removal.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Plasma Cascade</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pR" aria-label="R"></i></span
+                  ><span class="rar rC" title="common">C</span><span class="note">Instant removal.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Silicate Surveyor</span
+                  ><span class="cost"><i class="pip pN">4</i><i class="pip pR" aria-label="R"></i></span
+                  ><span class="rar rC" title="common">C</span><span class="note">Reach body plus a card.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Khan, Despot by Design</span
+                  ><span class="cost"><i class="pip pN">4</i><i class="pip pR" aria-label="R"></i></span
+                  ><span class="rar rU" title="uncommon">U</span><span class="note">Pings their whole board.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Transporter Malfunction</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pR" aria-label="R"></i></span
+                  ><span class="rar rU" title="uncommon">U</span><span class="note">Removal, twice.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Khaaaaaaaaaaaannn!</span
+                  ><span class="cost"><i class="pip pN">X</i><i class="pip pR" aria-label="R"></i></span
+                  ><span class="rar rU" title="uncommon">U</span><span class="note">Scalable removal.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Munitions Enthusiast</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pR" aria-label="R"></i></span
+                  ><span class="rar rU" title="uncommon">U</span><span class="note">Trample; pings when it dies.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="colgroup">
+              <h3><i class="pip pG"></i>Green</h3>
+              <ul class="cards">
+                <li class="card">
+                  <span class="nm">Temporal Conqueror</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pG" aria-label="G"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Mills three, gets a land back or a Treasure.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Xenobotanist</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pG" aria-label="G"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Mana of any color: your splash enabler.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Common Goal</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pG" aria-label="G"></i></span
+                  ><span class="rar rC" title="common">C</span><span class="note">Green's best removal.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Dominion Assault Force</span
+                  ><span class="cost"><i class="pip pN">3</i><i class="pip pG" aria-label="G"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Vigilant body with surveil or graveyard hate.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Hologram Stalker</span
+                  ><span class="cost"
+                    ><i class="pip pN">4</i><i class="pip pG" aria-label="G"></i
+                    ><i class="pip pG" aria-label="G"></i></span
+                  ><span class="rar rU" title="uncommon">U</span><span class="note">Regrowth plus 3/3 tokens.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">U.S.S. Voyager, Lone Wanderer</span
+                  ><span class="cost"><i class="pip pN">3</i><i class="pip pG" aria-label="G"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Ramps two lands; flies at 8 counters.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">David and Carol Marcus, Creators</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pG" aria-label="G"></i></span
+                  ><span class="rar rU" title="uncommon">U</span><span class="note">Body + a New Planet land.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Species 8472</span
+                  ><span class="cost"
+                    ><i class="pip pN">4</i><i class="pip pG" aria-label="G"></i
+                    ><i class="pip pG" aria-label="G"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Can't be blocked by artifact creatures.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="colgroup">
+              <h3><i class="pip pN"></i>Colorless</h3>
+              <ul class="cards">
+                <li class="card">
+                  <span class="nm">Tricorder</span><span class="cost"><i class="pip pN">1</i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">+1/+1 and surveil on attack; cheap equip.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Warp Core</span><span class="cost"><i class="pip pN">2</i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Fetches a basic; charges Spacecraft.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Class-F Shuttlecraft</span><span class="cost"><i class="pip pN">3</i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Mana of any color; flies at 6 counters.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Tea, Earl Grey, Hot</span><span class="cost"><i class="pip pN">2</i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Cantrip; later 2 damage or 3 life.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Cybernetic Specialist</span><span class="cost"><i class="pip pN">2</i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">2-drop artifact creature with surveil.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section id="tricks">
+          <h2><span class="n">07</span>Play around these</h2>
+          <p class="muted">
+            Instants and flash cards at common and uncommon. When your opponent leaves mana open, check this list for
+            what that color can do with that much mana.
+          </p>
+          <div class="colgrid">
+            <div class="colgroup">
+              <h3><i class="pip pW"></i>White</h3>
+              <ul class="cards">
+                <li class="card">
+                  <span class="nm">Set Phasers to . . .</span
+                  ><span class="cost"><i class="pip pW" aria-label="W"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Stuns a blocker or deals 3 to an attacker.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Shields Up!</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pW" aria-label="W"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Hexproof, indestructible and a +1/+1 counter. Counters your removal.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Saavik, Stoic Student</span
+                  ><span class="cost"><i class="pip pN">4</i><i class="pip pW" aria-label="W"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Flash; damages an attacker or blocker.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="colgroup">
+              <h3><i class="pip pU"></i>Blue</h3>
+              <ul class="cards">
+                <li class="card">
+                  <span class="nm">Cloistered Telepath</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pU" aria-label="U"></i></span
+                  ><span class="rar rC" title="common">C</span><span class="note">Flash body.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Highly Illogical</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pU" aria-label="U"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Counters a 2-drop; any spell when kicked (4 mana).</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Test of Priorities</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pU" aria-label="U"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Blinks their own creature in response to removal.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Consider the Prime Directive</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pU" aria-label="U"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Counter unless you pay 3, or stun.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Guidance Failure</span
+                  ><span class="cost"><i class="pip pN">3</i><i class="pip pU" aria-label="U"></i></span
+                  ><span class="rar rC" title="common">C</span><span class="note">Tucks an attacker for 3.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="colgroup">
+              <h3><i class="pip pB"></i>Black</h3>
+              <ul class="cards">
+                <li class="card">
+                  <span class="nm">A Good Day to Die</span
+                  ><span class="cost"><i class="pip pB" aria-label="B"></i></span
+                  ><span class="rar rC" title="common">C</span><span class="note">+2/+0; they draw if it dies.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Eject the Warp Core</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pB" aria-label="B"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">-2/-2, or -6/-6 with a sacrifice.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Impossible Choice</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pB" aria-label="B"></i></span
+                  ><span class="rar rU" title="uncommon">U</span><span class="note">Destroys a creature.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">He&#x27;s Dead, Jim</span
+                  ><span class="cost"><i class="pip pN">3</i><i class="pip pB" aria-label="B"></i></span
+                  ><span class="rar rC" title="common">C</span><span class="note">Destroys a creature.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="colgroup">
+              <h3><i class="pip pR"></i>Red</h3>
+              <ul class="cards">
+                <li class="card">
+                  <span class="nm">Captain&#x27;s Tutelage</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pR" aria-label="R"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">Flash aura: +2/+0 and first strike this turn.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Perils of the Past</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pR" aria-label="R"></i></span
+                  ><span class="rar rC" title="common">C</span><span class="note">+3/+2, or destroys an artifact.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Test of Identity</span
+                  ><span class="cost"><i class="pip pN">1</i><i class="pip pR" aria-label="R"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">A Klingon gets +1/+1 and double strike.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Red Alert!</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pR" aria-label="R"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Team +2/+0. Costs just R while they're attacking you, so it wrecks blocks.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Plasma Cascade</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pR" aria-label="R"></i></span
+                  ><span class="rar rC" title="common">C</span><span class="note">3 damage.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Khaaaaaaaaaaaannn!</span
+                  ><span class="cost"><i class="pip pN">X</i><i class="pip pR" aria-label="R"></i></span
+                  ><span class="rar rU" title="uncommon">U</span><span class="note">2X damage.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Genesis Effect</span
+                  ><span class="cost"><i class="pip pN">4</i><i class="pip pR" aria-label="R"></i></span
+                  ><span class="rar rC" title="common">C</span><span class="note">6 damage.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="colgroup">
+              <h3><i class="pip pG"></i>Green</h3>
+              <ul class="cards">
+                <li class="card">
+                  <span class="nm">I&#x27;m a Doctor, Not a . . .</span
+                  ><span class="cost"><i class="pip pG" aria-label="G"></i></span
+                  ><span class="rar rC" title="common">C</span
+                  ><span class="note">+1/+1 counter, untap, +1/+1 this turn.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Saru, Unthreatened</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pG" aria-label="G"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Flash; gives another creature hexproof.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Dathon and Picard at El-Adrel</span
+                  ><span class="cost"><i class="pip pN">2</i><i class="pip pG" aria-label="G"></i></span
+                  ><span class="rar rC" title="common">C</span><span class="note">+3/+3 and trample.</span>
+                </li>
+                <li class="card">
+                  <span class="nm">Test of Courage</span><span class="cost"><i class="pip pG" aria-label="G"></i></span
+                  ><span class="rar rU" title="uncommon">U</span
+                  ><span class="note">Destroys an artifact or enchantment with mana value 3 or less.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section id="rares">
+          <h2><span class="n">08</span>Rares to know</h2>
+          <div class="panel">
+            <h3>Build around or answer</h3>
+            <ul class="cards">
+              <li class="card">
+                <span class="nm">Captain Jean-Luc Picard</span
+                ><span class="cost"><i class="pip pN">2</i><i class="pip pW" aria-label="W"></i></span
+                ><span class="rar rM" title="mythic">M</span
+                ><span class="note"
+                  >+1/+1 to your other creatures and a 1/1 for each creature or Spacecraft you cast.</span
+                >
+              </li>
+              <li class="card">
+                <span class="nm">U.S.S. Enterprise-A, Free Spirit</span
+                ><span class="cost"
+                  ><i class="pip pN">3</i><i class="pip pW" aria-label="W"></i
+                  ><i class="pip pW" aria-label="W"></i></span
+                ><span class="rar rM" title="mythic">M</span
+                ><span class="note">Three 1/1s on entering, then a flying lifelinker at 6 counters.</span>
+              </li>
+              <li class="card">
+                <span class="nm">U.S.S. Enterprise-D, Galaxy-Class</span
+                ><span class="cost"><i class="pip pN">3</i></span
+                ><span class="rar rR" title="rare">R</span
+                ><span class="note"
+                  >Card advantage whenever you station it. Draftsim: 8/10, “one of the strongest first picks in the
+                  entire set.”</span
+                >
+              </li>
+              <li class="card">
+                <span class="nm">Primary Unimatrix Adjunct</span
+                ><span class="cost"><i class="pip pN">3</i><i class="pip pW" aria-label="W"></i></span
+                ><span class="rar rR" title="rare">R</span
+                ><span class="note">Your artifact creatures have double strike.</span>
+              </li>
+              <li class="card">
+                <span class="nm">Crystalline Entity</span><span class="cost"><i class="pip pN">8</i></span
+                ><span class="rar rM" title="mythic">M</span
+                ><span class="note">8-mana flyer that destroys every nonartifact creature, yours too.</span>
+              </li>
+              <li class="card">
+                <span class="nm">The Wrath of Khan</span
+                ><span class="cost"><i class="pip pN">2</i><i class="pip pR" aria-label="R"></i></span
+                ><span class="rar rR" title="rare">R</span
+                ><span class="note">4 damage + steal it for a turn, loot, then an edict.</span>
+              </li>
+              <li class="card">
+                <span class="nm">Captain James T. Kirk</span
+                ><span class="cost"><i class="pip pN">2</i><i class="pip pR" aria-label="R"></i></span
+                ><span class="rar rM" title="mythic">M</span
+                ><span class="note">Value every time he enters or attacks.</span>
+              </li>
+              <li class="card">
+                <span class="nm">Armus, Skin of Evil</span
+                ><span class="cost"
+                  ><i class="pip pN">5</i><i class="pip pB" aria-label="B"></i
+                  ><i class="pip pB" aria-label="B"></i></span
+                ><span class="rar rR" title="rare">R</span
+                ><span class="note">7-mana menace; two discards a turn, or -4/-4 from hand. Draftsim: 7/10.</span>
+              </li>
+              <li class="card">
+                <span class="nm">Gul Dukat, Colonial Prefect</span
+                ><span class="cost"
+                  ><i class="pip pN">4</i><i class="pip pB" aria-label="B"></i><i class="pip pB" aria-label="B"></i
+                  ><i class="pip pB" aria-label="B"></i></span
+                ><span class="rar rM" title="mythic">M</span
+                ><span class="note">Doubles every point of life your opponent loses.</span>
+              </li>
+              <li class="card">
+                <span class="nm">Borg Cube</span
+                ><span class="cost"
+                  ><i class="pip pN">5</i><i class="pip pW" aria-label="W"></i
+                  ><i class="pip pB" aria-label="B"></i></span
+                ><span class="rar rM" title="mythic">M</span
+                ><span class="note">Exiles a creature on entering and attacking; cheaper per artifact creature.</span>
+              </li>
+              <li class="card">
+                <span class="nm">Encounter the Unknown</span
+                ><span class="cost"
+                  ><i class="pip pN">1</i><i class="pip pR" aria-label="R"></i
+                  ><i class="pip pR" aria-label="R"></i></span
+                ><span class="rar rR" title="rare">R</span
+                ><span class="note">Instant: 2 damage to every creature and player, or two cards.</span>
+              </li>
+              <li class="card">
+                <span class="nm">The Destruction of Praxis</span
+                ><span class="cost"
+                  ><i class="pip pN">3</i><i class="pip pB" aria-label="B"></i
+                  ><i class="pip pB" aria-label="B"></i></span
+                ><span class="rar rR" title="rare">R</span
+                ><span class="note">Sweeper sized by your differently named lands.</span>
+              </li>
+              <li class="card">
+                <span class="nm">Deanna Troi, Psychic Counsel</span
+                ><span class="cost"><i class="pip pN">1</i><i class="pip pW" aria-label="W"></i></span
+                ><span class="rar rR" title="rare">R</span
+                ><span class="note">Your other creatures enter with a +1/+1 counter.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>Think twice</h3>
+            <ul class="cards">
+              <li class="card">
+                <span class="nm">Kobayashi Maru Scenario</span
+                ><span class="cost"
+                  ><i class="pip pN">1</i><i class="pip pU" aria-label="U"></i
+                  ><i class="pip pU" aria-label="U"></i></span
+                ><span class="rar rM" title="mythic">M</span
+                ><span class="note"
+                  >Each upkeep you pick a mode you haven't picked yet. The fourth is “You lose the game,” so unless it
+                  leaves play you lose on your fourth upkeep.</span
+                >
+              </li>
+              <li class="card">
+                <span class="nm">Peace in Our Time</span
+                ><span class="cost"><i class="pip pN">3</i><i class="pip pW" aria-label="W"></i></span
+                ><span class="rar rR" title="rare">R</span><span class="note">Draftsim: 0/10.</span>
+              </li>
+              <li class="card">
+                <span class="nm">Georgiou, Terran Emperor</span
+                ><span class="cost"
+                  ><i class="pip pN">4</i><i class="pip pB" aria-label="B"></i
+                  ><i class="pip pB" aria-label="B"></i></span
+                ><span class="rar rM" title="mythic">M</span
+                ><span class="note">Draftsim says she can leave you “holding the bag.”</span>
+              </li>
+              <li class="card">
+                <span class="nm">Mr. Spock, Science Officer</span
+                ><span class="cost"
+                  ><i class="pip pN">2</i><i class="pip pU" aria-label="U"></i
+                  ><i class="pip pU" aria-label="U"></i></span
+                ><span class="rar rM" title="mythic">M</span
+                ><span class="note">Draws double. Draftsim warns he can deck you in a long game.</span>
+              </li>
+              <li class="card">
+                <span class="nm">Deep Space 9</span><span class="cost"><i class="pip pN">9</i></span
+                ><span class="rar rM" title="mythic">M</span
+                ><span class="note">9 mana. Draftsim flags decking risk.</span>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="draft">
+          <h2><span class="n">09</span>If it's a draft</h2>
+          <div class="panel">
+            <ul class="plain">
+              <li>
+                Three packs each. Pack 1 passes left, pack 2 right, pack 3 left. Take one card and pass the rest without
+                showing anyone.
+              </li>
+              <li>
+                <b>Pick order:</b> bombs, then removal, then evasive creatures, then efficient creatures, then filler.
+              </li>
+              <li>
+                Stay open for the first six or so picks. A color whose good cards keep arriving late in pack 1 is open.
+              </li>
+              <li>Aim for about 23 playables plus 17 lands, the same build as above.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="sources">
+          <h2><span class="n">10</span>Sources</h2>
+          <div class="panel">
+            <ul class="sources">
+              <li>
+                <a href="https://magic.wizards.com/en/news/feature/star-trek-prerelease-guide"
+                  >Wizards: Star Trek Prerelease Guide</a
+                >
+                (Oct 30, 2026): pack contents, archetypes, curve and removal advice.
+              </li>
+              <li>
+                <a href="https://magic.wizards.com/en/news/feature/star-trek-release-notes"
+                  >Wizards: Star Trek Release Notes</a
+                >
+                (Oct 30, 2026, updated Nov 4): mechanic rules.
+              </li>
+              <li>
+                <a href="https://draftsim.com/mtg-star-trek-sealed-guide/">Draftsim: Star Trek Sealed Guide</a>: top
+                commons and uncommons.
+              </li>
+              <li>
+                <a href="https://draftsim.com/mtg-trk-limited-set-review/">Draftsim: Star Trek Limited Set Review</a>:
+                card ratings.
+              </li>
+              <li>
+                <a href="https://turnzerohq.com/guides/star-trek-draft-archetypes"
+                  >Turnzero: Star Trek Draft Archetypes</a
+                >.
+              </li>
+              <li>Card names, costs, text and rarity: Scryfall data as of Nov 5, 2026.</li>
+            </ul>
+            <p class="muted" style="font-size: 0.9rem">
+              Unknown until the set is out: format speed and win-rate data (17lands). Ratings above are reviewers'
+              opinions from before release.
+            </p>
+          </div>
+          <div class="legend">
+            <span>Rarity:</span><span><i class="rar rC">C</i>common</span><span><i class="rar rU">U</i>uncommon</span
+            ><span><i class="rar rR">R</i>rare</span><span><i class="rar rM">M</i>mythic</span>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

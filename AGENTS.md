@@ -8,6 +8,7 @@ Read [README.md](README.md) first, and the deck's `deck.yaml` (under `builds/`, 
 - **[deck-review](.claude/skills/deck-review/SKILL.md):** reviewing, tuning or finishing a deck.
 - **[deck-upgrades](.claude/skills/deck-upgrades/SKILL.md):** suggesting and pricing purchases.
 - **[physical-deck](.claude/skills/physical-deck/SKILL.md):** building, swapping or tearing down a deck's physical cards.
+- **[limited-prep](.claude/skills/limited-prep/SKILL.md):** a strategy and cheat sheet for a Prerelease (Sealed) or Draft event in one set, saved to `docs/prereleases/<set>/`.
 - **[deckbuilding-strategy](.claude/skills/deckbuilding-strategy/SKILL.md):** the frameworks for plans, role counts, land counts and brackets.
 
 Every command documents its options with `mise run <task> -- --help`. Ask before adding infrastructure such as a database, server or frontend.

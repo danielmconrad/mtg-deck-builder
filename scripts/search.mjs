@@ -53,6 +53,20 @@ function parseRoles(roles = []) {
   return roles.map((role) => ROLE_PATTERNS[role]);
 }
 
+// Scryfall's rarities, from its rarity field.
+export const RARITY_CHOICES = ['common', 'uncommon', 'rare', 'mythic', 'special', 'bonus'];
+
+// Set codes, repeated or comma-separated, in Scryfall's lower case.
+const parseSets = (sets = []) =>
+  sets.length ? new Set(sets.flatMap((value) => value.split(',')).map((code) => code.trim().toLowerCase())) : undefined;
+
+function parseRarities(rarities = []) {
+  for (const rarity of rarities) {
+    if (!RARITY_CHOICES.includes(rarity)) throw new Error(`--rarity must be one of: ${RARITY_CHOICES.join(', ')}`);
+  }
+  return rarities.length ? new Set(rarities) : undefined;
+}
+
 function commanderFilters(name, index, legalIn) {
   const { card, problem } = index.lookup({ name });
   if (problem) throw new Error(problem);
@@ -76,10 +90,14 @@ export function searchFilters(options, index) {
     includeProtectedOnly: Boolean(options['include-protected']),
     allowProxies: Boolean(options.proxies),
     unowned: Boolean(options.unowned),
+    allCards: Boolean(options['all-cards']),
+    sets: parseSets(options.set),
+    rarities: parseRarities(options.rarity),
     maxPriceUsd: parseNumber(options['max-price'], '--max-price'),
     minCopies: parseNumber(options['min-copies'], '--min-copies'),
   };
   if (filters.unowned && filters.minCopies) throw new Error('Use --unowned or --min-copies, not both');
+  if (filters.unowned && filters.allCards) throw new Error('Use --unowned or --all-cards, not both');
   if (!options.commander) return filters;
   return { ...filters, ...commanderFilters(options.commander, index, filters.legalIn) };
 }
@@ -138,16 +156,22 @@ const RESULT_PREDICATES = [
 ];
 
 // The cards a search looks at: owned ones (protected-only ones too with includeProtectedOnly), or with
-// unowned every playable card in the cache.
+// unowned or allCards every playable card in the cache.
 function searchedOracleIds(index, owned, holdings, filters) {
-  if (filters.unowned) return new Set(index.playableOracleIds());
+  if (filters.unowned || filters.allCards) return new Set(index.playableOracleIds());
   const oracleIds = new Set(owned.counts.keys());
   if (filters.includeProtectedOnly) for (const oracleId of holdings.keys()) oracleIds.add(oracleId);
   return oracleIds;
 }
 
+// The printing a result stands for: the first (Scryfall's default first) in one of the sets and of one
+// of the rarities, or undefined when none is. Without either filter, the card's first printing.
+const matchingPrinting = (printings, { sets, rarities }) =>
+  printings.find((printing) => (!sets || sets.has(printing.set)) && (!rarities || rarities.has(printing.rarity)));
+
 // One result per card (oracle ID): copies in available collections, and protected copies by collection.
-// With unowned, the cards without an available copy, from the whole cache.
+// With unowned, the cards without an available copy, from the whole cache; with allCards, every card.
+// Copies count every printing, so with sets they aren't only copies from those sets.
 export function searchCollection(collections, index, filters = {}) {
   const policy = { allowProxies: filters.allowProxies };
   const owned = ownedCounts(collections.available, index, policy);
@@ -155,13 +179,17 @@ export function searchCollection(collections, index, filters = {}) {
   const holdings = protectedHoldings(collections.protected, index, policy);
   const oracleIds = searchedOracleIds(index, owned, holdings, filters);
   const results = [...oracleIds]
-    .map((oracleId) => ({
-      card: index.printingsOf(oracleId)[0],
-      available: owned.counts.get(oracleId) ?? 0,
-      protected: protectedOwned.counts.get(oracleId) ?? 0,
-      protectedIn: holdings.get(oracleId) ?? [],
-    }))
-    .filter(({ card }) => matches(card, filters))
+    .map((oracleId) => {
+      const printings = index.printingsOf(oracleId);
+      return {
+        card: printings[0],
+        printing: matchingPrinting(printings, filters),
+        available: owned.counts.get(oracleId) ?? 0,
+        protected: protectedOwned.counts.get(oracleId) ?? 0,
+        protectedIn: holdings.get(oracleId) ?? [],
+      };
+    })
+    .filter(({ card, printing }) => printing && matches(card, filters))
     .map((result) => ({ ...result, ...cardValue(index, result.card) }))
     .filter((result) => RESULT_PREDICATES.every((predicate) => predicate(result, filters)))
     .sort(byManaValueThenName);
@@ -174,15 +202,22 @@ export const countResults = (results) => ({
   copies: results.reduce((sum, result) => sum + result.available, 0),
 });
 
-const GROUP_KEYS = { identity: (card) => [identityLabel(card)], 'creature-type': creatureTypes, role: textRoles };
+const GROUP_KEYS = {
+  identity: (card) => [identityLabel(card)],
+  'creature-type': creatureTypes,
+  role: textRoles,
+  // The matched printing's, so with --set it's the rarity in that set.
+  rarity: (card, { printing }) => [printing?.rarity ?? 'unknown'],
+};
 export const GROUP_BY_CHOICES = Object.keys(GROUP_KEYS);
 
 // Distinct cards and available copies per group, largest first. A card counts once in each of its groups.
 export function groupResults(results, by) {
   if (!Object.hasOwn(GROUP_KEYS, by)) throw new Error(`--group-by must be one of: ${GROUP_BY_CHOICES.join(', ')}`);
   const groups = new Map();
-  for (const { card, available } of results) {
-    for (const key of GROUP_KEYS[by](card)) {
+  for (const result of results) {
+    const { card, available } = result;
+    for (const key of GROUP_KEYS[by](card, result)) {
       const group = groups.get(key) ?? { key, cards: 0, copies: 0 };
       group.cards += 1;
       group.copies += available;
